@@ -21,6 +21,7 @@ import { DialogProvider } from '@admin/components/Dialog';
 import { SessionProvider } from '@admin/components/Session';
 import { SITE_URL } from '@admin/site';
 import { usePathname } from './navigation';
+import { PendingNotice } from './PendingNotice';
 
 const PAGES: Record<string, ComponentType> = {
   '/': AdminHome, '/home/': HomePage, '/members/': MembersPage, '/research/': ResearchPage,
@@ -47,6 +48,7 @@ function App() {
       <SessionProvider>
         <AdminHeader siteUrl={SITE_URL} />
         <main id="main"><Page /></main>
+        <PendingNotice />
       </SessionProvider>
     </DialogProvider>
   );
