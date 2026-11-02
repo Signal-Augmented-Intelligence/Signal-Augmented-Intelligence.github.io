@@ -2,7 +2,7 @@
 
 import { type ChangeEvent, type DragEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { ApiError, signedOut } from '@admin/lib/api';
-import { type FileInfo, type FilePurpose, uploadFile } from '@admin/lib/files';
+import { type FileInfo, type FilePurpose, uploadFile, uploadingLabel } from '@admin/lib/files';
 import { fieldList } from '@admin/lib/errors';
 import { useDialog } from './Dialog';
 import styles from './PhotoGrid.module.css';
@@ -148,7 +148,7 @@ export function PhotoGrid<T extends GridItem>({ items, uploads, onDropFiles, onM
         <li key={`up-${u.key}`} className={styles.cell}>
           <span className={styles.photo} />
           <p className={styles.caption}>{u.name}</p>
-          <p className={styles.meta}>{u.percent === null ? '처리 중' : u.percent < 0 ? '대기 중' : `올리는 중 ${u.percent}%`}</p>
+          <p className={styles.meta}>{u.percent === null ? '처리 중' : u.percent < 0 ? '대기 중' : uploadingLabel(u.percent)}</p>
           <span className={styles.actions} />
           <span className={styles.order} />
         </li>

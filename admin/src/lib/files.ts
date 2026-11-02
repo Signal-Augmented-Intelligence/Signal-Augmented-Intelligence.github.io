@@ -54,7 +54,7 @@ export function uploadFile(file: File, purpose: FilePurpose, onProgress: (percen
         data = (await api.upload<FileInfo>('/files', form, onProgress)).data;
         break;
       } catch (err) {
-        if (!(err instanceof ApiError && err.code === 'CONFLICT') || attempt === BUSY_RETRIES) throw err;
+        if (!(err instanceof ApiError && (err.code === 'CONFLICT' || err.code === 'BUSY')) || attempt === BUSY_RETRIES) throw err;
         onQueued?.();
         await new Promise((resolve) => setTimeout(resolve, BUSY_RETRY_MS));
       }
@@ -75,7 +75,8 @@ export function retryFile(id: string, onQueued?: () => void, onProcessing?: (inf
         data = (await api.post<FileInfo>(`/files/${id}/retry`)).data;
         break;
       } catch (err) {
-        if (!(err instanceof ApiError && err.code === 'CONFLICT' && err.message.includes('다른 파일')) || attempt === BUSY_RETRIES) throw err;
+        const busy = err instanceof ApiError && (err.code === 'BUSY' || (err.code === 'CONFLICT' && err.message.includes('다른 파일')));
+        if (!busy || attempt === BUSY_RETRIES) throw err;
         onQueued?.();
         await new Promise((resolve) => setTimeout(resolve, BUSY_RETRY_MS));
       }
@@ -98,6 +99,9 @@ export async function waitForFile(start: Pick<FileInfo, 'id' | 'status'> & Parti
 }
 
 export const getFile = async (id: string) => (await api.get<FileInfo>(`/files/${id}`)).data;
+
+/** 올리는 중 글자. 전송률을 알 수 없으면(Apps Script 전환 빌드는 NaN을 넘김) 퍼센트를 붙이지 않습니다. */
+export const uploadingLabel = (percent: number) => (Number.isNaN(percent) ? '올리는 중' : `올리는 중 ${percent}%`);
 
 /** 8.4 MB, 820 KB */
 export function formatSize(bytes: number | null | undefined): string {

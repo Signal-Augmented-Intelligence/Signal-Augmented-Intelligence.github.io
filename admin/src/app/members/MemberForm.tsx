@@ -5,7 +5,7 @@ import { useDialog } from '@admin/components/Dialog';
 import { Field, FilePicker, focusField } from '@admin/components/Field';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
 import { errorBody, fieldList } from '@admin/lib/errors';
-import { uploadFile } from '@admin/lib/files';
+import { uploadFile, uploadingLabel } from '@admin/lib/files';
 import type { Member, MemberGroup, System } from '@admin/lib/types';
 import styles from './members.module.css';
 
@@ -82,7 +82,7 @@ export function MemberForm({ member, system, onSaved, onCancel, onConflict }: {
         if (photo.size > system.limits.photo_mb * 1024 * 1024) throw new Error(`사진이 ${system.limits.photo_mb} MB를 넘습니다.`);
         if (photo.type && !system.limits.photo_types.includes(photo.type)) throw new Error('지원하지 않는 사진 형식입니다.');
         const uploaded = await uploadFile(photo, 'person',
-          (percent) => setProgress(`사진 올리는 중 ${percent}%`), () => setProgress('사진 처리 중'));
+          (percent) => setProgress(`사진 ${uploadingLabel(percent)}`), () => setProgress('사진 처리 중'));
         photoId = uploaded.id;
         setReadyPhoto(photoId);
       }
