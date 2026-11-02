@@ -1,17 +1,37 @@
 /**
  * Apps Script 전환 빌드: 관리 화면을 HTML 파일 하나로 묶습니다 (npm run build:admin:apps-script).
- * - admin/gas-dist/Index.html: Apps Script 접수용 프로젝트에 넣을 파일 (HtmlService.createHtmlOutputFromFile('Index')).
+ * - admin/gas-dist/Admin.html: Apps Script 접수용 프로젝트에 Admin으로 넣을 파일 (intake doGet이 이 파일을 보여 줌).
  * - admin/gas-dist/mock.html: 가짜 google.script.run(mock.ts)을 넣은 로컬 확인용. Apps Script에 넣지 않습니다.
  * 기존 빌드(npm run build:admin → admin/out/)와 관리 서버 연결은 바꾸지 않습니다.
  */
 import { build } from 'esbuild';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const admin = join(here, '..');
 const out = join(admin, 'gas-dist');
+/** 관리 화면 그림은 화면에 보이는 폭(최대 174px, 196px)의 두 배로 줄여 넣습니다. */
+const IMAGE_WIDTH = { 'sai-lab-black.png': 360, 'hanshin-university.png': 400 };
+
+/** sharp(Next와 함께 설치됨)가 있으면 그림을 줄입니다. 없으면 원본을 그대로 넣습니다. */
+const shrinkImages = {
+  name: 'shrink-admin-images',
+  setup(b) {
+    b.onLoad({ filter: /public[\\/]images[\\/]admin[\\/][^\\/]+\.png$/ }, async (args) => {
+      const bytes = await readFile(args.path);
+      const width = IMAGE_WIDTH[args.path.split(/[\\/]/).pop()];
+      try {
+        const { default: sharp } = await import('sharp');
+        return { contents: await sharp(bytes).resize({ width, withoutEnlargement: true }).png({ compressionLevel: 9 }).toBuffer(), loader: 'dataurl' };
+      } catch {
+        return { contents: bytes, loader: 'dataurl', warnings: [{ text: `sharp unavailable; ${args.path} not resized` }] };
+      }
+    });
+  },
+};
+
 const PRETENDARD = 'https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css';
 
 async function bundle(entry, extra = {}) {
@@ -31,6 +51,7 @@ async function bundle(entry, extra = {}) {
       'process.env.NEXT_PUBLIC_ADMIN_TRANSPORT': '"apps-script"',
     },
     loader: { '.module.css': 'local-css', '.woff2': 'dataurl', '.woff': 'dataurl', '.png': 'dataurl', '.svg': 'dataurl' },
+    plugins: [shrinkImages],
     logLevel: 'warning',
     ...extra,
   });
@@ -64,7 +85,7 @@ ${before}<script>${safe(js, 'script')}</script>
 const app = await bundle(join(here, 'main.tsx'));
 const mock = await bundle(join(here, 'mock.ts'));
 await mkdir(out, { recursive: true });
-await writeFile(join(out, 'Index.html'), page(app));
+await writeFile(join(out, 'Admin.html'), page(app));
 await writeFile(join(out, 'mock.html'), page(app, `<script>${safe(mock.js, 'script')}</script>\n`));
 const kb = (s) => `${Math.round(Buffer.byteLength(s) / 1024)} KB`;
-console.log(`admin/gas-dist/Index.html ${kb(page(app))}, mock.html ${kb(page(app, mock.js))}`);
+console.log(`admin/gas-dist/Admin.html ${kb(page(app))}, mock.html ${kb(page(app, mock.js))}`);

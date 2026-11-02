@@ -113,6 +113,22 @@ async function read(path: string): Promise<Result<unknown>> {
 
 /* ---------- 변경 접수와 적용 기다리기 ---------- */
 
+/** 기다리는 변경의 단계. sending: 보내는 중, received: 접수됨(소유자 작업 대기), applying: 적용·반영 처리 중. */
+export type PendingStage = 'sending' | 'received' | 'applying';
+const pendingStages = new Map<string, PendingStage>();
+const pendingListeners = new Set<(stages: PendingStage[]) => void>();
+function setPending(id: string, stage: PendingStage | null) {
+  if (stage) pendingStages.set(id, stage); else pendingStages.delete(id);
+  const stages = [...pendingStages.values()];
+  pendingListeners.forEach((listener) => listener(stages));
+}
+/** 저장을 기다리는 동안 화면 아래에 상태를 보이려고 씁니다 (admin/gas/PendingNotice.tsx). */
+export function onPending(listener: (stages: PendingStage[]) => void): () => void {
+  pendingListeners.add(listener);
+  listener([...pendingStages.values()]);
+  return () => { pendingListeners.delete(listener); };
+}
+
 function readPending(): Record<string, string> {
   try { return JSON.parse(localStorage.getItem(PENDING_STORE) ?? '{}') as Record<string, string>; } catch { return {}; }
 }
@@ -148,14 +164,24 @@ async function mutate(method: Method, path: string, body: unknown): Promise<Resu
   const request_id = readPending()[fingerprint] ?? crypto.randomUUID();
   writePending((pending) => { pending[fingerprint] = request_id; });
 
-  await call('submitMutation', { request_id, method, path, body: payload, expected_version: expected });
+  setPending(request_id, 'sending');
+  try {
+    await call('submitMutation', { request_id, method, path, body: payload, expected_version: expected });
+    setPending(request_id, 'received');
+    return await waitApplied(request_id, method, path, fingerprint);
+  } finally {
+    setPending(request_id, null);
+  }
+}
 
+async function waitApplied(request_id: string, method: Method, path: string, fingerprint: string): Promise<Result<unknown>> {
   const started = Date.now();
   while (Date.now() - started < WAIT_LIMIT_MS) {
     await sleep(WAIT_POLL_MS);
     const snap = await snapshot(true).catch(() => null);
     const job = snap?.jobs[request_id];
     if (!snap || !job) continue;
+    if (job.state !== 'received' && job.state !== 'stored') setPending(request_id, 'applying');
     if (job.state === 'failed') {
       writePending((pending) => { delete pending[fingerprint]; });
       const [code, message] = job.error_code === 'CONFLICT'
