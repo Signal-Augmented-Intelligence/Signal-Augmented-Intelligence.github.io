@@ -1,19 +1,20 @@
 # Each item cites a publication record already listed on this site.
+# Format: 연도 행사·학술지명 성과 (연구실 학생 이름). See guideline.md §News.
 - date: 2026-08-24
-  text: "A paper on single-channel real-time speech enhancement for quadruped robots under measured ego-noise was accepted in The Journal of the Acoustical Society of Korea."
+  text: "2026 한국음향학회지 논문 게재 승인 (신현재)"
   link: /publications/quadruped-speech-enhancement/
 - date: 2026-08-25
-  text: "A paper evaluating Qwen3-ASR on multiple Korean speech corpora was accepted in The Journal of the Acoustical Society of Korea."
+  text: "2026 한국음향학회지 논문 게재 승인 (박소영)"
   link: /publications/qwen3-asr-evaluation/
 - date: 2026-06-19
-  text: "Paper Encouragement Award at the Korean Association of Data Science Summer Conference, for a correction-aware synthetic dataset for academic-regulation question answering."
+  text: "2026 한국데이터사이언스학회 하계종합학술대회 장려논문상 수상 (박소영)"
   link: /publications/qa-error-correction-dataset/
 - date: 2026-06-13
-  text: "Poster on inference parameter optimization of a public multilingual ASR model for Korean speech recognition at the Joint Spring Conference of the Korean Society of Speech Sciences and the Phonology-Morphology Circle of Korea."
+  text: "2026 한국음성학회·한국음운론학회 봄 공동학술대회 포스터 발표 (박소영)"
   link: /publications/multilingual-asr-korean/
 - date: 2025-11-15
-  text: "Outstanding Paper Award at the Korean Institute of Smart Media Fall Conference, for a rubric-based training dataset for university academic regulations."
+  text: "2025 한국스마트미디어학회 추계학술대회 우수논문상 수상 (박소영)"
   link: /publications/rubric-qa-dataset/
 - date: 2025-08
-  text: "Paper on low-latency denoising of self-generated footstep noise in quadruped robots presented at ICTCA 2025, Busan."
+  text: "ICTCA 2025 논문 발표 (신현재, 박소영)"
   link: /publications/quadruped-footstep-denoising/

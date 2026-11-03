@@ -4,8 +4,8 @@ import { formatDate } from '@/lib/format';
 import { DateList } from './DateList';
 
 /**
- * News entries as a date list. A link to a paper id (/publications/…/) opens the paper itself (article or PDF);
- * other links are used as written.
+ * News entries as a date list. A link to a paper id (/publications/…/) opens the paper itself (article or PDF)
+ * and reads "논문"; other links are used as written and read "기사".
  */
 export function NewsList({ news }: { news: NewsItem[] }) {
   const publications = getPublications();
@@ -13,10 +13,11 @@ export function NewsList({ news }: { news: NewsItem[] }) {
   return (
     <DateList wide items={news.map((n) => {
       const href = target(n.link);
-      const label = `Details: ${n.text}`;
+      const kind = n.link.startsWith('/publications/') ? '논문' : '기사';
+      const label = `${kind}: ${n.text}`;
       return { date: formatDate(n.date), content: <>{n.text}{href && <> {href.startsWith('/') && !href.startsWith('/files/')
-        ? <Link href={href} aria-label={label}>Details</Link>
-        : <a href={href} aria-label={label}>Details</a>}</>}</> };
+        ? <Link href={href} aria-label={label}>{kind} →</Link>
+        : <a href={href} aria-label={label}>{kind} →</a>}</>}</> };
     })} />
   );
 }
