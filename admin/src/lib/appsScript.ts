@@ -83,7 +83,8 @@ function publishOf(job: Job | undefined, id: string): Publish {
   if (!job) return { id, state: 'queued' };
   if (job.state === 'done') return { id, state: 'done' };
   if (job.state === 'failed') return { id, state: 'failed', message: job.message ?? null };
-  return { id, state: APPLIED.includes(job.state) ? 'running' : 'queued' };
+  // Saved but still publishing the site: the worker records the result first.
+  return { id, state: APPLIED.includes(job.state) || job.result != null ? 'running' : 'queued' };
 }
 
 /** 파일 정보: 소유자 작업이 만든 FileInfo가 있으면 그것, 없으면 접수 작업의 상태로 만듭니다. */
@@ -193,7 +194,8 @@ async function waitApplied(request_id: string, method: Method, path: string, fin
         : ['INTERNAL', job.message || '저장하지 못했습니다.'] as const;
       throw new ApiError(code, message, 0);
     }
-    if (!APPLIED.includes(job.state) && job.state !== 'failed') continue;
+    // The worker records the result before publishing the site, so a result means the save is done.
+    if (!APPLIED.includes(job.state) && job.state !== 'failed' && job.result == null) continue;
     writePending((pending) => { delete pending[fingerprint]; });
     const data = path === '/publish' ? publishOf(job, request_id)
       : job.result ?? (method === 'PATCH' ? fromCollection(snap, path) : undefined);
