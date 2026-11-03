@@ -1,2 +1,9 @@
 # Seminar schedules, conference notices, and recruitment announcements.
-[]
+- id: "96a35c80-756e-4253-a04c-2f113b31bf10"
+  date: "2026"
+  event_date: "2026"
+  kind: recruitment
+  title: "test_SAI LAB 학부연구생 모집합니다 (3,4학년 위주)"
+  body: "test"
+  link: ""
+  popup: true
