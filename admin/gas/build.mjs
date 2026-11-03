@@ -8,6 +8,7 @@ import { build } from 'esbuild';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { gzipSync } from 'node:zlib';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const admin = join(here, '..');
@@ -63,6 +64,10 @@ async function bundle(entry, extra = {}) {
 const safe = (code, tag) => code.replace(new RegExp(`</(${tag})`, 'gi'), '<\\/$1');
 
 function page({ js, css }, before = '') {
+  // HtmlService embeds the entire page through document.write. A large inline bundle can
+  // break that wrapper before our JavaScript runs. Keep the payload ASCII-only and small,
+  // then execute the decompressed bundle as a script element inside the HTML Service frame.
+  const packed = gzipSync(js).toString('base64');
   return `<!doctype html>
 <html lang="ko">
 <head>
@@ -76,7 +81,21 @@ function page({ js, css }, before = '') {
 </head>
 <body>
 <div id="root"></div>
-${before}<script>${safe(js, 'script')}</script>
+${before}<script id="sai-app-bundle" type="application/octet-stream">${packed}</script>
+<script>
+(async function () {
+  const encoded = document.getElementById('sai-app-bundle').textContent.trim();
+  const binary = atob(encoded);
+  const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+  const script = document.createElement('script');
+  script.textContent = await new Response(stream).text();
+  document.body.appendChild(script);
+})().catch(function (error) {
+  console.error('SAI Lab management bundle failed to load', error);
+  document.getElementById('root').textContent = '관리 화면을 열지 못했습니다. 페이지를 새로고침해 주세요.';
+});
+</script>
 </body>
 </html>
 `;
