@@ -99,12 +99,18 @@ function fileOf(snap: Snapshot, id: string): unknown {
 
 async function read(path: string): Promise<Result<unknown>> {
   if (path === '/session') {
-    await call('session');
+    const first = await call<{ session: { authenticated: boolean }; snapshot: Snapshot }>('bootstrap');
+    if (!first.session.authenticated) throw new ApiError('UNAUTHENTICATED', MESSAGES.UNAUTHENTICATED[1], 0);
+    cached = { at: Date.now(), value: Promise.resolve(first.snapshot) };
     return { data: { logged_in: true, csrf_token: '' } };
   }
   const snap = await snapshot();
   const publish = path.match(/^\/publish\/([^/?]+)$/);
-  if (publish) return { data: publishOf(snap.jobs[publish[1]], publish[1]) };
+  if (publish) {
+    const job = snap.jobs[publish[1]];
+    if (!job) throw notFound();
+    return { data: publishOf(job, publish[1]) };
+  }
   const file = path.match(/^\/files\/([^/?]+)$/);
   if (file) return { data: fileOf(snap, file[1]) };
   if (!(path in snap.collections)) throw notFound();
@@ -153,8 +159,6 @@ function fromCollection(snap: Snapshot, path: string): unknown {
 
 async function mutate(method: Method, path: string, body: unknown): Promise<Result<unknown>> {
   if (method === 'DELETE' && path === '/session') return { data: undefined };
-  if (path === '/publish') throw notSupported('다시 반영');
-  if (/^\/files\/[^/]+\/retry$/.test(path)) throw notSupported('파일 가공 다시 시도');
   if (method === 'DELETE') throw notSupported('삭제');
 
   const { version, ...rest } = (body ?? {}) as { version?: number };
@@ -182,16 +186,17 @@ async function waitApplied(request_id: string, method: Method, path: string, fin
     const job = snap?.jobs[request_id];
     if (!snap || !job) continue;
     if (job.state !== 'received' && job.state !== 'stored') setPending(request_id, 'applying');
-    if (job.state === 'failed') {
+    if (job.state === 'failed' && !(job.error_code === 'PUBLISH_FAILED' && job.result != null)) {
       writePending((pending) => { delete pending[fingerprint]; });
       const [code, message] = job.error_code === 'CONFLICT'
         ? ['CONFLICT', '다른 곳에서 먼저 고쳤습니다. 새로 고친 뒤 다시 저장해 주세요.'] as const
         : ['INTERNAL', job.message || '저장하지 못했습니다.'] as const;
       throw new ApiError(code, message, 0);
     }
-    if (!APPLIED.includes(job.state)) continue;
+    if (!APPLIED.includes(job.state) && job.state !== 'failed') continue;
     writePending((pending) => { delete pending[fingerprint]; });
-    const data = job.result ?? (method === 'PATCH' ? fromCollection(snap, path) : undefined);
+    const data = path === '/publish' ? publishOf(job, request_id)
+      : job.result ?? (method === 'PATCH' ? fromCollection(snap, path) : undefined);
     if (data === undefined) throw new ApiError('INTERNAL', '저장했지만 결과를 읽지 못했습니다. 화면을 새로 고쳐 주세요.', 0);
     return { data, publish: publishOf(job, request_id) };
   }
