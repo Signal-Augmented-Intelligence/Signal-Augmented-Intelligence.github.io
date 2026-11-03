@@ -2,7 +2,7 @@
 
 import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ApiError, signedOut } from '@admin/lib/api';
-import { FileProcessingError, type FileInfo, type FilePurpose, formatSize, retryFile, uploadFile, waitForFile } from '@admin/lib/files';
+import { FileProcessingError, type FileInfo, type FilePurpose, formatSize, retryFile, uploadFile, uploadingLabel, waitForFile } from '@admin/lib/files';
 import { useDialog } from './Dialog';
 import styles from './Field.module.css';
 
@@ -115,7 +115,7 @@ export function FileUpload({ name, purpose, accept, maxBytes, tooLarge, value, o
   };
 
   const status = busy
-    ? (busy.kind === 'uploading' ? `올리는 중 ${busy.percent}%` : busy.kind === 'queued' ? '대기 중' : '처리 중')
+    ? (busy.kind === 'uploading' ? uploadingLabel(busy.percent) : busy.kind === 'queued' ? '대기 중' : '처리 중')
     : value && !value.processing ? formatSize(value.size) : '';
 
   return (

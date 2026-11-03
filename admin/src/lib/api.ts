@@ -8,13 +8,20 @@
  *   화면은 이 오류를 팝업으로 띄우지 않습니다(signedOut). 그 자리에 로그인 칸이 나옵니다.
  */
 
+import * as appsScript from './appsScript';
+
 const BASE = '/api/v1';
+
+/** Apps Script 전환 빌드인지. 빌드할 때 정해집니다. 기존 빌드는 Apps Script 연결을 부르지 않고 /api/v1만 씁니다. */
+export const APPS_SCRIPT = process.env.NEXT_PUBLIC_ADMIN_TRANSPORT === 'apps-script';
 
 export type ErrorCode =
   | 'VALIDATION_FAILED' | 'UNAUTHENTICATED' | 'NOT_FOUND' | 'CONFLICT'
   | 'FILE_TOO_LARGE' | 'UNSUPPORTED_FILE' | 'STORAGE_UNAVAILABLE' | 'INTERNAL'
-  | 'NETWORK' | 'FILE_FAILED';
+  | 'NETWORK' | 'FILE_FAILED'
+  | 'FORBIDDEN' | 'BUSY' | 'PENDING' | 'NOT_SUPPORTED';
 // NETWORK: 관리 서버에 닿지 않음. FILE_FAILED: 파일 처리 결과가 failed (api.md 5장). 둘 다 화면에서만 쓰는 코드입니다.
+// FORBIDDEN·BUSY·PENDING·NOT_SUPPORTED: Apps Script 전환 빌드에서만 나옵니다 (lib/appsScript.ts).
 
 export class ApiError extends Error {
   constructor(
@@ -59,6 +66,14 @@ function toError(json: unknown, status: number): ApiError {
 type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
 async function request<T>(method: Method, path: string, body?: unknown): Promise<Result<T>> {
+  if (APPS_SCRIPT) {
+    try {
+      return await appsScript.request(method, path, body) as Result<T>;
+    } catch (err) {
+      if (err instanceof ApiError && err.code === 'UNAUTHENTICATED') onUnauthenticated();
+      throw err;
+    }
+  }
   const headers: Record<string, string> = { Accept: 'application/json' };
   let payload: BodyInit | undefined;
   if (body instanceof FormData) payload = body;
@@ -85,6 +100,7 @@ async function request<T>(method: Method, path: string, body?: unknown): Promise
  * onProgress에는 0~100을 넘깁니다.
  */
 function upload<T>(path: string, form: FormData, onProgress?: (percent: number) => void): Promise<Result<T>> {
+  if (APPS_SCRIPT) return appsScript.upload(form, onProgress) as Promise<Result<T>>;
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', `${BASE}${path}`);

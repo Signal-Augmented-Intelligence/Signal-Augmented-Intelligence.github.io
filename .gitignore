@@ -8,3 +8,6 @@ next-env.d.ts
 
 # 관리 화면 API 문서는 로컬에서만 관리
 admin/docs/
+
+# Apps Script 전환 빌드 결과 (npm run build:admin:apps-script)
+admin/gas-dist/

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Section } from '@/components/Section';
 import { useDialog } from '@admin/components/Dialog';
 import list from '@admin/components/List.module.css';
-import { api, type Publish, signedOut } from '@admin/lib/api';
+import { api, APPS_SCRIPT, type Publish, signedOut } from '@admin/lib/api';
 import { errorBody } from '@admin/lib/errors';
 import { formatTime } from '@admin/lib/format';
 import type { LastRun, System } from '@admin/lib/types';
@@ -106,8 +106,8 @@ export function StartScreen() {
       </ul>
     </Section>
 
-    {/* 휴대폰에서는 헤더에 "비밀번호 바꾸기"가 없어서 여기서 바꿉니다. PC에서도 같이 둡니다. */}
-    <Section title="계정">
+    {/* 휴대폰에서는 헤더에 "비밀번호 바꾸기"가 없어서 여기서 바꿉니다. PC에서도 같이 둡니다. Apps Script 전환 빌드에는 비밀번호가 없습니다. */}
+    {!APPS_SCRIPT && <Section title="계정">
       <ul className={list.list}>
         <li className={list.row}>
           <div className={list.main}><p className={list.title}>공용 비밀번호</p></div>
@@ -117,7 +117,7 @@ export function StartScreen() {
           </span>
         </li>
       </ul>
-    </Section>
+    </Section>}
     </>
   );
 }

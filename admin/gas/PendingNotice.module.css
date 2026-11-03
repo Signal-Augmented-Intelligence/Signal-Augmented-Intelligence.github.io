@@ -1,0 +1,7 @@
+.live { position: fixed; right: 16px; bottom: 16px; left: 16px; z-index: 20; display: flex; justify-content: flex-end; pointer-events: none; }
+.notice {
+  display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; max-width: 28rem; margin: 0; padding: 10px 14px;
+  border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); color: var(--ink);
+  font-size: var(--text-sm); box-shadow: 0 4px 16px rgb(0 0 0 / 12%); pointer-events: auto;
+}
+.hint { color: var(--muted); font-size: var(--text-xs); }

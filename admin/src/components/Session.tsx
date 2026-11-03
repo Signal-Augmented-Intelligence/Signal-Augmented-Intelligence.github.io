@@ -2,7 +2,7 @@
 
 import { createContext, type FormEvent, type ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Section } from '@/components/Section';
-import { api, ApiError, setCsrfToken, setUnauthenticatedHandler, signedOut } from '@admin/lib/api';
+import { api, ApiError, APPS_SCRIPT, setCsrfToken, setUnauthenticatedHandler, signedOut } from '@admin/lib/api';
 import { errorBody, fieldList } from '@admin/lib/errors';
 import { clearLocalWork } from '@admin/lib/edit';
 import type { System } from '@admin/lib/types';
@@ -17,9 +17,14 @@ import formStyles from './Field.module.css';
  * - 로그인 전이거나 어느 요청이든 401이 오면, 메뉴 대신 그 자리에 로그인 칸이 나옵니다(따로 화면을 두지 않음).
  *   세션이 만료됐을 때는 각 폼의 임시 입력을 이어서 씁니다. 명시적으로 로그아웃하면 공용 컴퓨터의 임시 입력을 지웁니다.
  * - 로그아웃, 비밀번호 바꾸기(팝업)는 헤더에서 부릅니다.
+ * Apps Script 전환 빌드(APPS_SCRIPT)에서는 접속한 Google 계정으로 권한을 확인합니다.
+ * 비밀번호 칸과 비밀번호 바꾸기는 없고, 로그아웃은 Google 로그아웃이 아니라 "나가기"(임시 입력 지우기와 계정 전환 안내)입니다.
  */
 type State = 'checking' | 'in' | 'out';
-type Session = { state: State; login: (password: string) => Promise<void>; logout: () => Promise<void>; changePassword: () => void };
+/** 'out'인 까닭 (Apps Script 전환 빌드). forbidden: 허용 목록에 없는 계정, closed: 나가기를 누름. */
+type OutReason = 'signed-out' | 'forbidden' | 'closed';
+type Session = { state: State; reason: OutReason; login: (password: string) => Promise<void>; logout: () => Promise<void>;
+  changePassword: () => void; check: () => Promise<void> };
 
 const SessionContext = createContext<Session | null>(null);
 
@@ -34,10 +39,12 @@ type SessionData = { logged_in: boolean; csrf_token: string };
 export function SessionProvider({ children }: { children: ReactNode }) {
   const dialog = useDialog();
   const [state, setState] = useState<State>('checking');
+  const [reason, setReason] = useState<OutReason>('signed-out');
   const [changing, setChanging] = useState(false);
 
   const apply = (data: SessionData) => {
     setCsrfToken(data.csrf_token);
+    setReason('signed-out');
     setState(data.logged_in ? 'in' : 'out');
   };
 
@@ -45,13 +52,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     try {
       apply((await api.get<SessionData>('/session')).data);
     } catch (err) {
+      if (signedOut(err)) return;
+      if (err instanceof ApiError && err.code === 'FORBIDDEN') { setReason('forbidden'); setState('out'); return; }
       if (await dialog.error('불러오지 못했습니다', errorBody(err), { retry: true })) void check();
     }
   }, [dialog]);
 
   useEffect(() => {
     // 로그인이 풀린 뒤에는 로그인 칸을 보이고, 다음 로그인에 쓸 CSRF 토큰을 새로 받습니다.
-    setUnauthenticatedHandler(() => { setState('out'); void check(); });
+    // Apps Script 전환 빌드는 /session 자체가 401로 답하므로 다시 묻지 않습니다(끝없이 되풀이됨). "다시 열기"로 묻습니다.
+    setUnauthenticatedHandler(() => { setState('out'); if (!APPS_SCRIPT) void check(); });
     void check();
   }, [check]);
 
@@ -60,6 +70,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    if (APPS_SCRIPT) {
+      clearLocalWork();
+      setReason('closed');
+      setState('out');
+      return;
+    }
     try {
       await api.delete('/session');
     } catch (err) {
@@ -71,7 +87,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <SessionContext.Provider value={{ state, login, logout, changePassword: () => setChanging(true) }}>
+    <SessionContext.Provider value={{ state, reason, login, logout, changePassword: () => setChanging(true), check }}>
       {children}
       {changing && <PasswordDialog onClose={() => setChanging(false)} />}
     </SessionContext.Provider>
@@ -80,6 +96,34 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
 /** 로그인 전에 각 화면 본문 자리에 나오는 로그인 칸. 제목 아래 선도 폼 폭(40rem)까지만 둡니다. */
 export function LoginForm() {
+  return APPS_SCRIPT ? <GoogleAccountNotice /> : <PasswordLoginForm />;
+}
+
+const NOTICE: Record<OutReason, { title: string; body: string }> = {
+  'signed-out': { title: 'Google 계정 확인', body: 'Google 계정을 확인하지 못했습니다. Google에 로그인한 뒤 이 주소를 다시 열어 주세요.' },
+  forbidden: { title: '권한 없음', body: '이 Google 계정에는 관리 권한이 없습니다. 다른 계정으로 쓰려면 Google에서 계정을 바꾼 뒤 이 주소를 다시 열어 주세요.' },
+  closed: { title: '나갔습니다', body: '이 컴퓨터에 남은 임시 입력을 지웠습니다. Google 계정은 로그인된 채로 남아 있습니다. 공용 컴퓨터라면 Google에서도 로그아웃해 주세요.' },
+};
+
+/** Apps Script 전환 빌드: 비밀번호 대신 Google 계정 상태를 알리고, 다시 확인할 수 있게 합니다. */
+function GoogleAccountNotice() {
+  const { reason, check } = useSession();
+  const [busy, setBusy] = useState(false);
+  const { title, body } = NOTICE[reason];
+  const again = async () => { setBusy(true); try { await check(); } finally { setBusy(false); } };
+  return (
+    <div className={formStyles.narrow}>
+    <Section title={title}>
+      <p>{body}</p>
+      <div className="admin-actions">
+        <button type="button" className="admin-button" onClick={() => void again()} disabled={busy}>{busy ? '확인 중' : '다시 열기'}</button>
+      </div>
+    </Section>
+    </div>
+  );
+}
+
+function PasswordLoginForm() {
   const dialog = useDialog();
   const { login } = useSession();
   const form = useRef<HTMLFormElement>(null);
