@@ -59,8 +59,8 @@ jobs:
         if: steps.media.outputs.mode == 'pages_artifact'
         uses: actions/checkout@v4
         with:
-          repository: Signal-Augmented-Intelligence/sai-lab-media-backup
-          token: ${{ secrets.MEDIA_BACKUP_READ_TOKEN }}
+          repository: Signal-Augmented-Intelligence/SAI_Pages_Media
+          token: ${{ secrets.MEDIA_PAGES_READ_TOKEN }}
           path: .private-media
           persist-credentials: false
           sparse-checkout: |
