@@ -18,6 +18,7 @@ export function currentMenu(path: string): MenuItem | undefined {
 export const MENU: MenuItem[] = [
   { title: '반영·백업', href: '/', site: '/', ready: true, note: '마지막 반영·백업, 원본 파일 저장소', group: 'start' },
   { title: 'Home', href: '/home/', site: '/', ready: true, note: '첫 화면 사진, 시, 랩 정보', group: 'content' },
+  { title: 'Professor', href: '/members/professor/', site: '/members/professor/', ready: true, note: '교수님 소개와 활동', group: 'content' },
   { title: 'Members', href: '/members/', site: '/members/', ready: true, note: '멤버 추가와 관리', group: 'content' },
   { title: 'Research', href: '/research/', site: '/research/', ready: true, note: '연구 분야, 논문', group: 'content' },
   { title: 'Seminars', href: '/seminars/', site: '/seminars/', ready: true, note: '세미나 올리기, 세미나 분야', group: 'content' },

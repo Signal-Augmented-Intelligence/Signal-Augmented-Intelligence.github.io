@@ -51,8 +51,15 @@ export type HomeSlide = Common & { file_id: string; preview_url: string | null; 
 export type ContentPublication = { state: 'publishing' | 'published' | 'failed'; job_id: string | null;
   message: string | null; commit_sha: string | null };
 export type LabInfo = { id: 'main'; name: string; full_name: string; name_ko: string;
-  institution: string; advisor: string; intro: string; email: string; location: string;
+  institution: string; advisor: string; intro: string; email: string; location: string; logo: string;
   draft: boolean; version: number; updated_at: string; publication: ContentPublication };
+export type ProfessorSection = 'links' | 'education' | 'career' | 'research_areas' | 'teaching' |
+  'publications' | 'software' | 'patents' | 'projects' | 'services' | 'student_awards';
+export type ProfessorItem = { id: string | null; hidden: boolean; data: Record<string, string> };
+export type ProfessorInfo = { id: 'main'; name: string; name_ko: string; position: string; affiliation: string;
+  field: string; office: string; email: string; phone: string; photo: string; bio: string; keywords: string;
+  sources_note: string; sections: Record<ProfessorSection, ProfessorItem[]>;
+  version: number; updated_at: string; publication: ContentPublication };
 export type PoemStanza = { id: string; lines: string[]; hidden: boolean };
 export type PoemInfo = { id: 'main'; title: string; hero: number; credit: string;
   stanzas: PoemStanza[]; version: number; updated_at: string; publication: ContentPublication };
