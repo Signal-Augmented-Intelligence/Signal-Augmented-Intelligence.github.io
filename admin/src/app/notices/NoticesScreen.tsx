@@ -39,7 +39,7 @@ export function NoticesScreen() {
     setOpen(null);
   };
   const setHidden = async (item: NoticeItem) => {
-    if (!item.hidden && !(await dialog.confirm('공지를 숨길까요?', '공개 목록과 팝업에서 빠집니다. 원본은 남습니다.', '숨기기'))) return;
+    if (!item.hidden && !(await dialog.confirm('공지를 숨길까요?', '공개 목록과 첫 화면 띠에서 빠집니다. 원본은 남습니다.', '숨기기'))) return;
     setBusy(item.id);
     try {
       const res = await api.patch<NoticeItem>(`/notices/${item.id}`, { version: item.version, hidden: !item.hidden });
@@ -61,7 +61,7 @@ export function NoticesScreen() {
           <div className={list.main}>
             <p className={list.title}>{item.title}</p>
             <p className={list.meta}><span className="num">{formatDay(item.date)}</span><span>{kinds[item.kind]}</span>
-              {item.event_date && <span>일정 {formatDay(item.event_date)}</span>}{item.popup && <span>첫 화면 팝업</span>}</p>
+              {item.event_date && <span>일정 {formatDay(item.event_date)}</span>}{item.popup && <span>첫 화면 띠</span>}</p>
           </div>
           <span className={list.status} title={item.publication.message ?? undefined}>
             {publishing(item.id) || item.publication.state === 'publishing' ? '반영 중'
@@ -95,7 +95,7 @@ function NoticeForm({ item, onSaved, onCancel, onConflict }: {
       || !draft.title.trim() || draft.title.length > 200 || draft.body.length > 20000
       || (draft.link && !/^(?:https?:\/\/\S+|\/\S+)$/.test(draft.link))
       || (draft.popup && draft.kind !== 'recruitment')) {
-      await dialog.error('저장하지 못했습니다', '날짜·제목·링크·팝업 설정을 확인해 주세요.'); return;
+      await dialog.error('저장하지 못했습니다', '날짜·제목·링크·첫 화면 띠 설정을 확인해 주세요.'); return;
     }
     setSaving(true);
     try {
@@ -120,7 +120,7 @@ function NoticeForm({ item, onSaved, onCancel, onConflict }: {
     <Field label="제목"><input value={draft.title} onChange={(e) => set({ title: e.target.value })} /></Field>
     <Field label="내용" optional><textarea className={styles.body} value={draft.body} onChange={(e) => set({ body: e.target.value })} /></Field>
     <Field label="자세히 보기 주소" optional><input value={draft.link} onChange={(e) => set({ link: e.target.value })} /></Field>
-    {draft.kind === 'recruitment' && <Field label="첫 화면 팝업" optional>
+    {draft.kind === 'recruitment' && <Field label="첫 화면 띠" optional>
       <label><input type="checkbox" checked={draft.popup} onChange={(e) => set({ popup: e.target.checked })} /> 표시</label>
     </Field>}
     <div className="admin-actions"><button type="submit" className="admin-button" disabled={saving}>{saving ? '저장 중' : '저장'}</button>

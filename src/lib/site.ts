@@ -23,12 +23,15 @@ export const RESEARCH_TABS: NavItem[] = [
   { title: 'Publications', href: '/research/publications/' },
 ];
 
+/** Same order as the main menu, with Research split into its two tabs. */
 export const FOOTER_LINKS: NavItem[] = [
+  { title: 'Members', href: '/members/professor/' },
   { title: 'Research Areas', href: '/research/' },
   { title: 'Publications', href: '/research/publications/' },
   { title: 'Seminars', href: '/seminars/' },
-  { title: '뉴스', href: '/news/' },
   { title: 'Album', href: '/album/', requires: 'album' },
+  { title: '뉴스', href: '/news/' },
+  { title: 'Notices', href: '/notices/' },
   { title: 'Contact', href: '/contact/', requires: 'contact' },
 ];
 

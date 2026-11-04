@@ -1,5 +1,5 @@
 ---
-title: "Evaluation and inference parameter analysis of Qwen3-ASR on multiple Korean speech corpora"
+title: "Evaluation and Inference Parameter Analysis of Qwen3-ASR on Multiple Korean Speech Corpora"
 title_ko: "다중 한국어 음성 코퍼스에서의 Qwen3-ASR 평가 및 추론 파라미터 분석"
 type: journal
 authors: ["So Yeong Park", "Seon Man Kim"]

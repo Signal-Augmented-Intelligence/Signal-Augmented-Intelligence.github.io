@@ -1,5 +1,5 @@
 ---
-title: "Real time single channel speech enhancement for quadruped robots under real world ego noise conditions"
+title: "Real-Time Single-Channel Speech Enhancement for Quadruped Robots under Real-World Ego-Noise Conditions"
 title_ko: "4족보행 로봇의 실측 자가소음 조건에서의 단일채널 실시간 음성 향상"
 type: journal
 authors: ["Hyun Jae Shin", "Juhyun Pyo", "Hyeongseok Song", "Chang-Min Ahn", "Murim Kim", "Seon Man Kim"]

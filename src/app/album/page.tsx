@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import { getAlbums } from '@/lib/content';
-import { formatDate } from '@/lib/format';
+import { formatDate, langOf } from '@/lib/format';
 import styles from './album.module.css';
 
 export const metadata: Metadata = { title: 'Album', description: 'Photos from SAI Lab, Hanshin University.' };
@@ -20,9 +20,9 @@ export default function AlbumPage() {
               <li key={a.slug}>
                 <Link href={`/album/${a.slug}/`} className={styles.album}>
                   <span className={styles.cover}><img src={a.cover.src} alt="" loading="lazy" /></span>
-                  <span className={styles.albumTitle}>{a.title}</span>
+                  <span className={styles.albumTitle} lang={langOf(a.title)}>{a.title}</span>
                   <span className={styles.albumMeta}>
-                    <span className="num">{formatDate(a.date)}</span> · <span className="num">{a.photos.length}</span> {a.photos.length === 1 ? 'photo' : 'photos'}
+                    <span className="num">{formatDate(a.date)}</span> · 사진 <span className="num">{a.photos.length}</span>장
                   </span>
                 </Link>
               </li>

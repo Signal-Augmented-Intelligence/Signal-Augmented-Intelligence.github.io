@@ -5,7 +5,7 @@
 .cover { display: block; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 8px; background: var(--surface); }
 .cover img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s ease; }
 .album:hover .cover img { opacity: 0.88; }
-.albumTitle { display: -webkit-box; margin-top: 12px; overflow: hidden; font-weight: 600; line-height: 1.4; -webkit-line-clamp: 2; -webkit-box-orient: vertical; min-height: 2.8em; }
+.albumTitle { display: block; margin-top: 12px; font-weight: 600; line-height: 1.4; }
 .album:hover .albumTitle { color: var(--accent); }
 .albumMeta { display: block; margin-top: 4px; color: var(--muted); font-size: var(--text-sm); }
 
