@@ -41,8 +41,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State>('checking');
   const [reason, setReason] = useState<OutReason>('signed-out');
   const [changing, setChanging] = useState(false);
+  const lastValidatedAt = useRef(0);
 
   const apply = (data: SessionData) => {
+    lastValidatedAt.current = Date.now();
     setCsrfToken(data.csrf_token);
     setReason('signed-out');
     setState(data.logged_in ? 'in' : 'out');
@@ -64,6 +66,38 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setUnauthenticatedHandler(() => { setState('out'); if (!APPS_SCRIPT) void check(); });
     void check();
   }, [check]);
+
+  useEffect(() => {
+    if (!APPS_SCRIPT || state !== 'in') return;
+    let refreshing = false;
+    let cancelled = false;
+    const refresh = async () => {
+      if (document.visibilityState !== 'visible' || refreshing || Date.now() - lastValidatedAt.current < 30_000) return;
+      refreshing = true;
+      try {
+        const data = (await api.get<SessionData>('/session')).data;
+        if (!cancelled) apply(data);
+      } catch (err) {
+        if (!cancelled && err instanceof ApiError && err.code === 'FORBIDDEN') {
+          setReason('forbidden');
+          setState('out');
+        }
+        // A transient read failure is retried on the next check or navigation.
+      } finally {
+        refreshing = false;
+      }
+    };
+    const timer = window.setInterval(() => void refresh(), 30_000);
+    const onFocus = () => void refresh();
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+    };
+  }, [state]);
 
   const login = async (password: string) => {
     apply((await api.post<SessionData>('/session', { password })).data);
