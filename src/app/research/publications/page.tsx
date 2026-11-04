@@ -15,7 +15,7 @@ export default function PublicationsPage() {
 
   return (
     <>
-      <PageHeader title="Research" tabs={RESEARCH_TABS} />
+      <PageHeader title="Research" tabs={RESEARCH_TABS.length > 1 ? RESEARCH_TABS : undefined} />
       <div className="container">
         {years.length > 1 && (
           <nav className={styles.years} aria-label="Years">

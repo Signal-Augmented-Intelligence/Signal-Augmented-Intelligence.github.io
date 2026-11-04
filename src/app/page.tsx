@@ -7,6 +7,7 @@ import { NewsList } from '@/components/NewsList';
 import { RecruitmentBanner } from '@/components/RecruitmentBanner';
 import { getHomeSlides, getLab, getNotices, getPeople, getPoem, getPublications, getResearchAreas } from '@/lib/content';
 import { getNewsEntries } from '@/lib/news';
+import { SHOW_RESEARCH_AREAS } from '@/lib/site';
 import styles from './home.module.css';
 
 export default function HomePage() {
@@ -35,7 +36,7 @@ export default function HomePage() {
         </Section>
       )}
 
-      <Section id="research" title="Research Areas" aside={<Link href="/research/">All areas</Link>}>
+      {SHOW_RESEARCH_AREAS && <Section id="research" title="Research Areas" aside={<Link href="/research/">All areas</Link>}>
         <ul className={styles.areas}>
           {areas.map((a) => (
             <li key={a.slug}>
@@ -44,7 +45,7 @@ export default function HomePage() {
             </li>
           ))}
         </ul>
-      </Section>
+      </Section>}
 
       <Section id="recent-publications" title="Recent Publications" aside={<Link href="/research/publications/">All publications</Link>}>
         <ol className={itemStyles.list}>

@@ -7,6 +7,8 @@ import { PublicationItem } from '@/components/PublicationItem';
 import { Section } from '@/components/Section';
 import { SeminarItem } from '@/components/SeminarItem';
 import { getPeople, getPublications, getResearchAreas, getSeminars } from '@/lib/content';
+import { Redirect, redirectMetadata } from '@/components/Redirect';
+import { SHOW_RESEARCH_AREAS } from '@/lib/site';
 import styles from '../research.module.css';
 
 type Params = { params: Promise<{ slug: string }> };
@@ -19,6 +21,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const area = getResearchAreas().find((a) => a.slug === slug);
+  if (!SHOW_RESEARCH_AREAS) return { title: area?.title, ...redirectMetadata };
   return area ? { title: area.title, description: area.summary } : {};
 }
 
@@ -26,6 +29,8 @@ export default async function ResearchAreaPage({ params }: Params) {
   const { slug } = await params;
   const area = getResearchAreas().find((a) => a.slug === slug);
   if (!area) notFound();
+  // Hidden for now: old links to an area forward to Publications (the pages are still built so they do not 404).
+  if (!SHOW_RESEARCH_AREAS) return <Redirect to="/research/publications/" />;
   const people = getPeople();
   const all = getPublications();
   const publications = area.publications.map((u) => all.find((p) => p.url === u)).filter((p) => p !== undefined)
