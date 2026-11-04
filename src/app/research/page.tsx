@@ -3,12 +3,16 @@ import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import { Section } from '@/components/Section';
 import { getResearchAreas } from '@/lib/content';
-import { RESEARCH_TABS } from '@/lib/site';
+import { Redirect, redirectMetadata } from '@/components/Redirect';
+import { RESEARCH_TABS, SHOW_RESEARCH_AREAS } from '@/lib/site';
 import styles from './research.module.css';
 
-export const metadata: Metadata = { title: 'Research Areas', description: 'Research areas at SAI Lab, Hanshin University.' };
+export const metadata: Metadata = SHOW_RESEARCH_AREAS
+  ? { title: 'Research Areas', description: 'Research areas at SAI Lab, Hanshin University.' }
+  : { title: 'Research', ...redirectMetadata };
 
 export default function ResearchPage() {
+  if (!SHOW_RESEARCH_AREAS) return <Redirect to="/research/publications/" />;
   const areas = getResearchAreas();
   return (
     <>
