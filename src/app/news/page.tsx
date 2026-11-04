@@ -3,7 +3,6 @@ import { NewsHighlights, type Highlight } from '@/components/NewsHighlights';
 import { NewsList } from '@/components/NewsList';
 import { PageHeader } from '@/components/PageHeader';
 import { Section } from '@/components/Section';
-import { formatDate } from '@/lib/format';
 import { visibleNav } from '@/lib/nav';
 import { getNewsEntries } from '@/lib/news';
 import { NEWS_TABS } from '@/lib/site';
@@ -17,8 +16,6 @@ export default function NewsPage() {
   const news = getNewsEntries();
   const tabs = visibleNav(NEWS_TABS);
   const highlights: Highlight[] = news.filter((n) => n.album).slice(0, HIGHLIGHTS).map((n) => ({
-    kind: n.kind,
-    date: formatDate(n.date),
     headline: n.headline,
     members: n.members,
     photo: n.album!.cover,

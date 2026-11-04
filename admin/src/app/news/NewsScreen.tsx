@@ -185,7 +185,7 @@ function NewsForm({ item, publications, onSaved, onCancel, onConflict }: {
         <input name="date" inputMode="numeric" value={draft.date} onChange={(e) => set({ date: e.target.value })} />
       </Field>
       <Field label="소식 제목" limit="한 줄, 500자 이내">
-        <input name="text" value={draft.text} placeholder="2026 한국음성학회 학술대회 우수논문 발표상 수상 (박소영)" onChange={(e) => set({ text: e.target.value })} />
+        <input name="text" value={draft.text} placeholder="2026 한국음성학회 학술대회 우수논문 발표상 수상 (박소영, 김선만)" onChange={(e) => set({ text: e.target.value })} />
       </Field>
       <Field label="관련 논문" optional>
         <select name="publication_id" value={draft.publication_id} onChange={(e) => set({ publication_id: e.target.value, link_url: '' })}>
