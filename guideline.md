@@ -137,7 +137,7 @@ Home 첫 화면과 뉴스 하이라이트 밖의 이미지 슬라이드, 카드 
 
 ### Members ▸ Our Team
 - 섹션: **Ph.D. Students → M.S. Students → Undergraduate Researchers** (사람이 있는 섹션만 표시)
-- "Our Team" 섹션 안에 구분별 소제목, 그 아래 **4열 사진 그리드**. 한 사람: 사진 / 영문 이름 / 국문 이름 / 한 줄 소개 / (선택) Website 링크. 개인 페이지는 따로 없습니다.
+- "Our Team" 섹션 안에 구분별 소제목, 그 아래 **4열 사진 그리드**. 한 사람: 사진 / 영문 이름 / 국문 이름 / 한 줄 소개(영어, 그 아래 한국어는 회색) / (선택) Website 링크. 한 언어만 있으면 그 줄만 보입니다. 개인 페이지는 따로 없습니다.
 - 사진 칸: 3:4 세로, 모두 같은 크기. 사진이 없으면 같은 크기의 옅은 빈 칸만 둡니다 (아이콘·이니셜 넣지 않음).
 - 파일: `public/images/people/<id>.jpg`, 긴 변 800px, 200KB 이하. 본인이 제공하고 게시에 동의한 것만.
 
@@ -255,7 +255,8 @@ Home 첫 화면과 뉴스 하이라이트 밖의 이미지 슬라이드, 카드 
   role: "Undergraduate Researcher"   # group에 따라 정해짐 (관리 화면에는 칸 없음, 저장 시 자동 입력)
   since: 2025-06
   until:                       # 졸업·이탈 시 입력하고 group을 alumni로
-  bio: "Korean speech recognition, LLM applications"   # 사진 옆 한 줄 소개 (본인 작성)
+  bio: "한국어 음성 인식, LLM 응용"   # 사진 옆 한 줄 소개, 한국어 (본인 작성)
+  bio_en: "Korean speech recognition, LLM applications"   # 같은 소개의 영어 (선택)
   photo: so-yeong-park.jpg     # 없으면 비워 둠 → 회색 칸
   url: "https://green4849.github.io/"
   after: ""                    # alumni 진로 (동의 시)

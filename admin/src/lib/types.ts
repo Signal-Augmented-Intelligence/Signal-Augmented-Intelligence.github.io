@@ -18,7 +18,9 @@ export type PickerPerson = { id: string; name: string; name_ko: string; group: s
 export type MemberGroup = 'faculty' | 'phd' | 'ms' | 'undergrad' | 'alumni';
 export type Member = Common & {
   name: string; name_ko: string; aliases: string[]; group: MemberGroup; role: string;
-  since: string; until: string; bio: string; url: string; after: string;
+  since: string; until: string;
+  /** 한 줄 소개: bio는 한국어, bio_en은 영어. bio_en은 서버가 아직 받지 않으면 빠져서 옵니다. */
+  bio: string; bio_en?: string; url: string; after: string;
   photo_file_id: string | null; photo_preview_url: string | null;
   /** Absent on older management server releases. */
   publication?: ContentPublication | { state: 'unverified'; job_id: null; message: null; commit_sha: null };

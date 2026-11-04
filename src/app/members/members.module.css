@@ -5,6 +5,7 @@
 .name { margin-top: 16px; font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; }
 .nameKo { margin-top: 2px; color: var(--muted); font-size: var(--text-sm); }
 .bio { margin-top: 10px; font-size: var(--text-sm); line-height: 1.55; }
+.bioSecond { margin-top: 4px; color: var(--muted); }
 .link { margin-top: 10px; font-size: 0.8125rem; font-weight: 600; }
 
 .alumni { display: grid; }

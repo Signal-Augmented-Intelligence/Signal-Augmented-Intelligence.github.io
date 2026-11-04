@@ -70,7 +70,9 @@ export type Person = {
   name_ko: string;
   group: Group;
   role: string;
+  /** One-line introduction: bio in Korean, bio_en in English (either may be empty). */
   bio: string;
+  bio_en: string;
   photo: string;
   url: string;
   after: string;
@@ -85,6 +87,7 @@ export function getPeople(): Person[] {
     group: str(p.group) as Group,
     role: str(p.role),
     bio: str(p.bio),
+    bio_en: str(p.bio_en),
     photo: str(p.photo),
     url: str(p.url),
     after: str(p.after),
