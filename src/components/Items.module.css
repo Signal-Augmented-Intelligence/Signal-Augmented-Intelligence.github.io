@@ -3,11 +3,11 @@
 .list > li { padding: 22px 0; border-bottom: 1px solid var(--rule); }
 .list > li:first-child { padding-top: 0; }
 
-.item { max-width: 52rem; }
+/* Publications use the full content width so a long title stays on one line on a wide screen. */
 /* Publications: no rule between entries, just space (reference: KAIST Smart Sound Lab). */
 .list > .item { padding: 14px 0; border-bottom: 0; }
 .list > .item + .item { margin-top: 4px; }
-.title { font-size: 1rem; font-weight: 600; line-height: 1.45; letter-spacing: -0.01em; }
+.title { font-size: 1rem; font-weight: 600; line-height: 1.45; letter-spacing: -0.01em; text-wrap: balance; }
 .title a { color: var(--ink); }
 .title a:hover { color: var(--accent); text-decoration: none; }
 .authors { margin-top: 4px; font-size: var(--text-sm); color: #3d4757; }
