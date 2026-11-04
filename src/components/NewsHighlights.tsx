@@ -16,8 +16,8 @@ const SLIDE_MS = 6000;
 
 /**
  * 뉴스 highlights: the title on the left, the event photo on the right. The next photo wipes in from the right
- * and the text rises. No on-screen controls; it pauses while hovered or focused (a link inside takes focus),
- * and with reduced motion it stays on the first item.
+ * (from the left when going back) and the text rises. Two plain arrows under the text turn it by hand.
+ * It pauses while hovered or focused (an arrow or link inside takes focus); with reduced motion it only moves by the arrows.
  */
 export function NewsHighlights({ items }: { items: Highlight[] }) {
   const [current, setCurrent] = useState(0);
@@ -25,9 +25,11 @@ export function NewsHighlights({ items }: { items: Highlight[] }) {
   const [cycle, setCycle] = useState(0);
   const [paused, setPaused] = useState(false);
   const [still, setStill] = useState(true);
+  const [back, setBack] = useState(false);
   const currentRef = useRef(0);
 
-  const go = useCallback((n: number) => {
+  const go = useCallback((n: number, backward = false) => {
+    setBack(backward);
     const next = (n + items.length) % items.length;
     setPrevious(currentRef.current === next ? -1 : currentRef.current);
     currentRef.current = next;
@@ -45,6 +47,7 @@ export function NewsHighlights({ items }: { items: Highlight[] }) {
   return (
     <section
       className={styles.highlights}
+      data-dir={back ? 'back' : undefined}
       aria-roledescription="carousel"
       aria-label="뉴스 하이라이트"
       onMouseEnter={() => setPaused(true)}
@@ -73,6 +76,16 @@ export function NewsHighlights({ items }: { items: Highlight[] }) {
             </div>
           ))}
         </div>
+        {items.length > 1 && (
+          <div className={styles.arrows}>
+            <button type="button" className={styles.arrow} aria-label="이전 소식" onClick={() => go(currentRef.current - 1, true)}>
+              <Chevron flip />
+            </button>
+            <button type="button" className={styles.arrow} aria-label="다음 소식" onClick={() => go(currentRef.current + 1)}>
+              <Chevron />
+            </button>
+          </div>
+        )}
       </div>
       <div className={styles.photo}>
         {items.map((it, k) => (
@@ -81,5 +94,13 @@ export function NewsHighlights({ items }: { items: Highlight[] }) {
         ))}
       </div>
     </section>
+  );
+}
+
+function Chevron({ flip = false }: { flip?: boolean }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+      <path d={flip ? 'M17 6 9 14l8 8' : 'M11 6l8 8-8 8'} fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
