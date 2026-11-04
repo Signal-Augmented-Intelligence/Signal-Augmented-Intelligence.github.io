@@ -11,6 +11,7 @@ import type { PickerPerson, Publication, ResearchArea, System } from '@admin/lib
 import { usePublish } from '@admin/lib/usePublish';
 import { AreaForm } from './AreaForm';
 import { PublicationForm, TYPES } from './PublicationForm';
+import { canDelete, useDeletePost } from '@admin/lib/deletePost';
 
 /**
  * Research 한 화면 (설계 문서 2장): 논문(발표일 최신순)과 연구 분야(공개 순서).
@@ -28,6 +29,8 @@ const typeLabel = (t: string) => TYPES.find((x) => x.id === t)?.label ?? t;
 export function ResearchScreen() {
   const dialog = useDialog();
   const { publishing, track, settled } = usePublish();
+  // Called after render only, so load is defined by then.
+  const { remove, deleting } = useDeletePost(() => void load());
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [open, setOpen] = useState<Open>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -137,6 +140,8 @@ export function ResearchScreen() {
                 <span className={list.actions}>
                   <button type="button" className="admin-text-button" disabled={locked || busy === p.id} onClick={() => setOpen({ kind: 'publication', id: p.id })}>고치기</button>
                   <button type="button" className="admin-text-button" disabled={locked || busy === p.id} onClick={() => void hidePublication(p, !p.hidden)}>{p.hidden ? '다시 보이기' : '숨기기'}</button>
+                  {canDelete(p, publishing(p.id)) && <button type="button" className="admin-text-button" disabled={deleting !== null || locked || busy === p.id}
+                    onClick={() => void remove('publications', p, '논문을 삭제할까요?')}>{deleting === p.id ? '삭제 중' : '삭제'}</button>}
                 </span>
               </li>
             ))}

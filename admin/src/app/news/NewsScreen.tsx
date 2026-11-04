@@ -12,6 +12,7 @@ import { formatDay } from '@admin/lib/format';
 import type { NewsItem, Publication } from '@admin/lib/types';
 import { usePublish } from '@admin/lib/usePublish';
 import styles from './news.module.css';
+import { canDelete, useDeletePost } from '@admin/lib/deletePost';
 
 /**
  * News 한 화면 (설계 문서 3장): 소식 목록(날짜 최신순), 추가·고치기·숨기기. 순서는 날짜로만 정합니다.
@@ -23,6 +24,8 @@ const byDate = (a: NewsItem, b: NewsItem) => b.date.localeCompare(a.date);
 export function NewsScreen() {
   const dialog = useDialog();
   const { publishing, track, settled } = usePublish();
+  // Called after render only, so load is defined by then.
+  const { remove, deleting } = useDeletePost(() => void load());
   const [items, setItems] = useState<NewsItem[] | null>(null);
   const [publications, setPublications] = useState<Publication[]>([]);
   const [open, setOpen] = useState<string | null>(null); // 'new' 또는 소식 id
@@ -100,6 +103,8 @@ export function NewsScreen() {
               <span className={list.actions}>
                 <button type="button" className="admin-text-button" disabled={locked || busy === n.id} onClick={() => setOpen(n.id)}>고치기</button>
                 <button type="button" className="admin-text-button" disabled={locked || busy === n.id} onClick={() => void setHidden(n, !n.hidden)}>{n.hidden ? '다시 보이기' : '숨기기'}</button>
+                {canDelete(n, publishing(n.id)) && <button type="button" className="admin-text-button" disabled={deleting !== null || locked || busy === n.id}
+                  onClick={() => void remove('news', n, '소식을 삭제할까요?')}>{deleting === n.id ? '삭제 중' : '삭제'}</button>}
               </span>
             </li>
           ))}

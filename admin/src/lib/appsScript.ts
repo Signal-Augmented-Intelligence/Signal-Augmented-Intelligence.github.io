@@ -77,7 +77,6 @@ function snapshot(fresh = false): Promise<Snapshot> {
 }
 
 const notFound = () => new ApiError('NOT_FOUND', '찾을 수 없습니다. 목록을 새로 고쳐 주세요.', 404);
-const notSupported = (what: string) => new ApiError('NOT_SUPPORTED', `${what}은(는) 전환 빌드에서 아직 쓸 수 없습니다.`, 0);
 
 function publishOf(job: Job | undefined, id: string): Publish {
   if (!job) return { id, state: 'queued' };
@@ -160,11 +159,11 @@ function fromCollection(snap: Snapshot, path: string): unknown {
 
 async function mutate(method: Method, path: string, body: unknown): Promise<Result<unknown>> {
   if (method === 'DELETE' && path === '/session') return { data: undefined };
-  if (method === 'DELETE') throw notSupported('삭제');
 
   const { version, ...rest } = (body ?? {}) as { version?: number };
-  const expected = method === 'PATCH' ? version : undefined;
-  const payload = method === 'PATCH' ? rest : body ?? null;
+  const versioned = method === 'PATCH' || method === 'DELETE';
+  const expected = versioned ? version : undefined;
+  const payload = versioned ? rest : body ?? null;
   const fingerprint = JSON.stringify([method, path, payload, expected ?? null]);
   const request_id = readPending()[fingerprint] ?? crypto.randomUUID();
   writePending((pending) => { pending[fingerprint] = request_id; });

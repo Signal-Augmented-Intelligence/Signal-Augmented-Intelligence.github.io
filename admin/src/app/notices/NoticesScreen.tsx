@@ -11,6 +11,7 @@ import { errorBody } from '@admin/lib/errors';
 import { formatDay } from '@admin/lib/format';
 import type { NoticeItem } from '@admin/lib/types';
 import { usePublish } from '@admin/lib/usePublish';
+import { canDelete, useDeletePost } from '@admin/lib/deletePost';
 import styles from './notices.module.css';
 
 type Draft = Pick<NoticeItem, 'date' | 'event_date' | 'kind' | 'title' | 'body' | 'link' | 'popup'>;
@@ -32,6 +33,7 @@ export function NoticesScreen() {
   }, [dialog]);
   useEffect(() => { void load(); }, [load]);
   useEffect(() => { if (settled) void load(); }, [settled, load]);
+  const { remove, deleting } = useDeletePost(() => void load());
   if (!items) return <p className="admin-muted">불러오는 중입니다.</p>;
   const saved = (notice: NoticeItem, publish?: Publish) => {
     setItems((old) => old && sorted([notice, ...old.filter((item) => item.id !== notice.id)]));
@@ -70,6 +72,8 @@ export function NoticesScreen() {
           <span className={list.actions}>
             <button type="button" className="admin-text-button" disabled={open !== null || busy === item.id} onClick={() => setOpen(item.id)}>고치기</button>
             <button type="button" className="admin-text-button" disabled={open !== null || busy === item.id} onClick={() => void setHidden(item)}>{item.hidden ? '다시 보이기' : '숨기기'}</button>
+            {canDelete(item, publishing(item.id)) && <button type="button" className="admin-text-button" disabled={deleting !== null || open !== null || busy === item.id}
+              onClick={() => void remove('notices', item, '공지를 삭제할까요?')}>{deleting === item.id ? '삭제 중' : '삭제'}</button>}
           </span>
         </li>)}</ul>}
   </Section>;

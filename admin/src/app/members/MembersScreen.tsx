@@ -10,6 +10,7 @@ import type { Member, MemberGroup, System } from '@admin/lib/types';
 import { usePublish } from '@admin/lib/usePublish';
 import { MemberForm } from './MemberForm';
 import styles from './members.module.css';
+import { canDelete, useDeletePost } from '@admin/lib/deletePost';
 
 const GROUP_NAMES: Record<MemberGroup, string> = {
   faculty: 'Faculty', phd: 'Ph.D. Students', ms: 'M.S. Students',
@@ -28,6 +29,8 @@ function statusLabel(member: Member, pending: boolean): string {
 export function MembersScreen() {
   const dialog = useDialog();
   const { publishing, track, settled } = usePublish();
+  // Called after render only, so load is defined by then.
+  const { remove, deleting } = useDeletePost(() => void load());
   const [system, setSystem] = useState<System | null>(null);
   const [members, setMembers] = useState<Member[] | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -103,6 +106,9 @@ export function MembersScreen() {
                   onClick={() => setEditing(member.id)}>고치기</button>
                 <button type="button" className="admin-text-button" disabled={busyRow === member.id || editing !== null}
                   onClick={() => void setHidden(member, !member.hidden)}>{member.hidden ? '다시 보이기' : '숨기기'}</button>
+                {canDelete(member, publishing(member.id)) && <button type="button" className="admin-text-button"
+                  disabled={deleting !== null || busyRow === member.id || editing !== null}
+                  onClick={() => void remove('people', member, '멤버를 삭제할까요?')}>{deleting === member.id ? '삭제 중' : '삭제'}</button>}
               </span>
             </li>
           ))}

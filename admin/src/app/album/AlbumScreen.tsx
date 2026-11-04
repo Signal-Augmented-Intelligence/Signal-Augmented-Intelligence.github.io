@@ -12,6 +12,7 @@ import { usePublish } from '@admin/lib/usePublish';
 import { AlbumForm, clearAlbumDraft } from './AlbumForm';
 import { AlbumPhotos } from './AlbumPhotos';
 import styles from './album.module.css';
+import { canDelete, useDeletePost } from '@admin/lib/deletePost';
 
 /**
  * Album 한 화면 (규칙 문서 3-1, api.md 6장).
@@ -30,6 +31,8 @@ const byDate = (a: Album, b: Album) => b.date.localeCompare(a.date);
 export function AlbumScreen() {
   const dialog = useDialog();
   const { publishing, track, settled } = usePublish();
+  // Called after render only, so load is defined by then.
+  const { remove, deleting } = useDeletePost(() => void load());
   const [system, setSystem] = useState<System | null>(null);
   const [albums, setAlbums] = useState<Album[] | null>(null);
   const [open, setOpen] = useState<string | null>(null); // 'new' 또는 펼친 행사 id
@@ -162,6 +165,8 @@ export function AlbumScreen() {
                 {a.hidden
                   ? <button type="button" className="admin-text-button" disabled={locked(a)} onClick={() => setHidden(a, false)}>다시 보이기</button>
                   : <button type="button" className="admin-text-button" disabled={locked(a)} onClick={() => setHidden(a, true)}>숨기기</button>}
+                {canDelete(a, publishing(a.id)) && <button type="button" className="admin-text-button" disabled={deleting !== null || locked(a)}
+                  onClick={() => void remove('albums', a, '행사를 삭제할까요?')}>{deleting === a.id ? '삭제 중' : '삭제'}</button>}
               </span>
             </li>
           ))}
