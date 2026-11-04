@@ -5,7 +5,8 @@ import { PublicationItem } from '@/components/PublicationItem';
 import { Section } from '@/components/Section';
 import { NewsList } from '@/components/NewsList';
 import { RecruitmentBanner } from '@/components/RecruitmentBanner';
-import { getHomeSlides, getLab, getNews, getNotices, getPeople, getPoem, getPublications, getResearchAreas } from '@/lib/content';
+import { getHomeSlides, getLab, getNotices, getPeople, getPoem, getPublications, getResearchAreas } from '@/lib/content';
+import { getNewsEntries } from '@/lib/news';
 import styles from './home.module.css';
 
 export default function HomePage() {
@@ -14,7 +15,7 @@ export default function HomePage() {
   const people = getPeople();
   const areas = getResearchAreas();
   const publications = getPublications().slice(0, 3);
-  const news = getNews().slice(0, 5);
+  const news = getNewsEntries().slice(0, 5);
   const recruitment = getNotices().find((notice) => notice.popup && notice.kind === 'recruitment');
 
   return (

@@ -6,8 +6,7 @@ export const MAIN_NAV: NavItem[] = [
   { title: 'Members', href: '/members/professor/', match: ['/members/'] },
   { title: 'Research', href: '/research/', match: ['/research/', '/publications/'] },
   { title: 'Seminars', href: '/seminars/', match: ['/seminars/'] },
-  { title: 'Album', href: '/album/', match: ['/album/'], requires: 'album' },
-  { title: '뉴스', href: '/news/' },
+  { title: '뉴스', href: '/news/', match: ['/news/', '/album/'] },
   { title: 'Notices', href: '/notices/' },
   { title: 'Home', href: '/' },
 ];
@@ -23,14 +22,20 @@ export const RESEARCH_TABS: NavItem[] = [
   { title: 'Publications', href: '/research/publications/' },
 ];
 
-/** Same order as the main menu, with Research split into its two tabs. */
+/** Album has no menu item of its own: it is a tab under 뉴스. */
+export const NEWS_TABS: NavItem[] = [
+  { title: '뉴스', href: '/news/' },
+  { title: 'Album', href: '/album/', match: ['/album/'], requires: 'album' },
+];
+
+/** Same order as the main menu, with Research and 뉴스 split into their tabs. */
 export const FOOTER_LINKS: NavItem[] = [
   { title: 'Members', href: '/members/professor/' },
   { title: 'Research Areas', href: '/research/' },
   { title: 'Publications', href: '/research/publications/' },
   { title: 'Seminars', href: '/seminars/' },
-  { title: 'Album', href: '/album/', requires: 'album' },
   { title: '뉴스', href: '/news/' },
+  { title: 'Album', href: '/album/', requires: 'album' },
   { title: 'Notices', href: '/notices/' },
   { title: 'Contact', href: '/contact/', requires: 'contact' },
 ];
