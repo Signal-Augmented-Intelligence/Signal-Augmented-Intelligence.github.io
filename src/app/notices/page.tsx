@@ -14,7 +14,7 @@ export default function NoticesPage() {
     <PageHeader title="Notices" />
     <div className="container">
       {notices.length === 0 ? <p className="muted">No notices yet.</p> :
-        <ol className={styles.list}>{notices.map((notice) => <li key={notice.id} className={styles.row}>
+        <ol className={styles.list}>{notices.map((notice) => <li key={notice.id} id={`notice-${notice.id}`} className={styles.row}>
           <time className={`${styles.date} num`}>{formatDate(notice.date)}</time>
           <div>
             <strong className={styles.kind}>{kinds[notice.kind]}</strong>

@@ -4,7 +4,7 @@ import itemStyles from '@/components/Items.module.css';
 import { PublicationItem } from '@/components/PublicationItem';
 import { Section } from '@/components/Section';
 import { NewsList } from '@/components/NewsList';
-import { RecruitmentPopup } from '@/components/RecruitmentPopup';
+import { RecruitmentBanner } from '@/components/RecruitmentBanner';
 import { getHomeSlides, getLab, getNews, getNotices, getPeople, getPoem, getPublications, getResearchAreas } from '@/lib/content';
 import styles from './home.module.css';
 
@@ -15,11 +15,11 @@ export default function HomePage() {
   const areas = getResearchAreas();
   const publications = getPublications().slice(0, 3);
   const news = getNews().slice(0, 5);
-  const popup = getNotices().find((notice) => notice.popup && notice.kind === 'recruitment');
+  const recruitment = getNotices().find((notice) => notice.popup && notice.kind === 'recruitment');
 
   return (
     <>
-      {popup && <RecruitmentPopup notice={popup} />}
+      {recruitment && <RecruitmentBanner notice={recruitment} />}
       <Hero
         name={lab.name}
         institution={lab.institution}
