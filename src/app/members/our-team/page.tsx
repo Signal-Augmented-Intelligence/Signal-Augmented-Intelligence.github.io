@@ -3,6 +3,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { PhotoSlot } from '@/components/PhotoSlot';
 import { Section } from '@/components/Section';
 import { getPeople } from '@/lib/content';
+import { visibleNav } from '@/lib/nav';
 import { MEMBERS_TABS, TEAM_GROUPS } from '@/lib/site';
 import styles from '../members.module.css';
 import { langOf } from '@/lib/format';
@@ -15,7 +16,7 @@ export default function TeamPage() {
 
   return (
     <>
-      <PageHeader title="Members" tabs={MEMBERS_TABS} />
+      <PageHeader title="Members" tabs={visibleNav(MEMBERS_TABS)} />
       <Section id="our-team" title="Our Team">
         {groups.length === 0 && <p className="muted">Members will be listed here.</p>}
         {groups.map((g) => (

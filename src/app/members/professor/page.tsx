@@ -5,6 +5,7 @@ import { PhotoSlot } from '@/components/PhotoSlot';
 import { Section } from '@/components/Section';
 import { getProfessor } from '@/lib/content';
 import { formatDate } from '@/lib/format';
+import { visibleNav } from '@/lib/nav';
 import { MEMBERS_TABS } from '@/lib/site';
 import styles from './professor.module.css';
 
@@ -18,7 +19,7 @@ export default function ProfessorPage() {
 
   return (
     <>
-      <PageHeader title="Members" tabs={MEMBERS_TABS} />
+      <PageHeader title="Members" tabs={visibleNav(MEMBERS_TABS)} />
 
       <div className={`container ${styles.profile}`}>
         <PhotoSlot photo={p.photo} alt={p.name} className={styles.photo} eager />

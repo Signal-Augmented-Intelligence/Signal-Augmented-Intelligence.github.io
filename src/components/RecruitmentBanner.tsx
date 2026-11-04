@@ -28,7 +28,7 @@ export function RecruitmentBanner({ notice }: { notice: Notice }) {
   const href = notice.link || `/notices/#notice-${notice.id}`;
   return <aside className={styles.banner} aria-label="모집 공지">
     <div className={`container container-header ${styles.inner}`}>
-      <span className={styles.tag}>RECRUITING</span>
+      <strong className={styles.tag} lang="ko">모집</strong>
       <p className={styles.title}>{notice.title}</p>
       {href.startsWith('/')
         ? <Link href={href} className={styles.link}>공고 보기 →</Link>
