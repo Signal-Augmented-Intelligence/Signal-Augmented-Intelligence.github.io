@@ -87,9 +87,10 @@ export function StartScreen() {
         </li>
         <li className={list.row}>
           <div className={list.main}>
-            <p className={list.title}>마지막 백업</p>
+            <p className={list.title}>마지막 원본 DB 백업</p>
             <p className={list.meta}>
-              {backup?.finished_at ? <span className="num">{formatTime(backup.finished_at)}</span> : <span>{backup ? '진행 중' : '백업 설정 전'}</span>}
+              {backup?.finished_at ? <span className="num">{formatTime(backup.finished_at)}</span> : <span>{backup ? '진행 중' : '백업 기록 없음'}</span>}
+              <span>Drive에 30일 보관</span>
               {backup?.state === 'failed' && backup.message && <span>{backup.message}</span>}
             </p>
           </div>
@@ -121,3 +122,4 @@ export function StartScreen() {
     </>
   );
 }
+

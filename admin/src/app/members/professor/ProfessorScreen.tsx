@@ -17,6 +17,17 @@ const FIELDS = [
   ['photo', '프로필 사진 파일명'], ['bio', '소개'], ['keywords', '키워드'], ['sources_note', '자료 출처 메모'],
 ] as const;
 type FieldKey = typeof FIELDS[number][0];
+const DRAFT_KEY = 'sai-admin:professor-draft';
+const savedDraft = (current: ProfessorInfo): ProfessorInfo | null => {
+  try {
+    const draft = JSON.parse(sessionStorage.getItem(DRAFT_KEY) ?? 'null') as ProfessorInfo | null;
+    return draft?.version === current.version && draft.sections ? draft : null;
+  } catch { return null; }
+};
+const storeDraft = (draft: ProfessorInfo | null) => {
+  try { if (draft) sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    else sessionStorage.removeItem(DRAFT_KEY); } catch { /* Editing remains possible without storage. */ }
+};
 const SECTIONS: { key: ProfessorSection; title: string; fields: readonly [string, string][] }[] = [
   { key: 'links', title: '링크', fields: [['label', '이름'], ['url', '주소']] },
   { key: 'education', title: '학력', fields: [['degree', '학위'], ['date', '연도'], ['school', '학교']] },
@@ -46,11 +57,17 @@ export function ProfessorScreen() {
     }
   }, [dialog]);
   useEffect(() => { void load(); }, [load, settled]);
-  const edit = () => { if (professor) setDraft(structuredClone(professor)); };
-  const cancel = () => { setDraft(null); setPhoto(null); setProgress(null); };
-  const setField = (key: FieldKey, value: string) => setDraft((current) => current && ({ ...current, [key]: value }));
+  const edit = () => { if (professor) setDraft(savedDraft(professor) ?? structuredClone(professor)); };
+  const cancel = () => { storeDraft(null); setDraft(null); setPhoto(null); setProgress(null); };
+  const changeDraft = (change: (current: ProfessorInfo) => ProfessorInfo) => setDraft((current) => {
+    if (!current) return current;
+    const next = change(current);
+    storeDraft(next);
+    return next;
+  });
+  const setField = (key: FieldKey, value: string) => changeDraft((current) => ({ ...current, [key]: value }));
   const changeItems = (section: ProfessorSection, change: (items: ProfessorItem[]) => ProfessorItem[]) =>
-    setDraft((current) => current && ({ ...current, sections: { ...current.sections,
+    changeDraft((current) => ({ ...current, sections: { ...current.sections,
       [section]: change(current.sections[section]) } }));
   const changeItem = (section: ProfessorSection, index: number, change: Partial<ProfessorItem>) =>
     changeItems(section, (items) => items.map((item, i) => i === index ? { ...item, ...change } : item));
@@ -88,6 +105,9 @@ export function ProfessorScreen() {
     : professor?.publication.state === 'failed' ? '반영 실패' : '공개 중';
   return <Section title="교수님 페이지" aside={professor && <span title={professor.publication.message ?? undefined}>{state}</span>}>
     {!professor ? <p className="admin-muted">불러오는 중입니다.</p> : draft ? <form className="admin-form" onSubmit={save}>
+      <div className="admin-actions"><button type="submit" className="admin-button" disabled={saving}>{saving ? '저장 중' : '저장'}</button>
+        <button type="button" className="admin-text-button" disabled={saving} onClick={cancel}>취소</button></div>
+      <p className="admin-muted">이 탭에서 다른 화면으로 이동해도 작성 중인 내용은 보관됩니다.</p>
       {FIELDS.map(([key, label]) => <Field key={key} label={label} optional={key !== 'name'}>
         {key === 'bio' || key === 'sources_note' ? <textarea value={draft[key]} onChange={(e) => setField(key, e.target.value)} />
           : <input value={draft[key]} onChange={(e) => setField(key, e.target.value)} />}
@@ -95,8 +115,9 @@ export function ProfessorScreen() {
       <Field label="프로필 사진 올리기" optional><input type="file" accept="image/jpeg,image/png,image/webp,image/heic"
         onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} /></Field>
       {progress && <p className="admin-muted">{progress}</p>}
-      {SECTIONS.map(({ key, title, fields }) => <div key={key} className={styles.section}>
-        <h2>{title}</h2>
+      {SECTIONS.map(({ key, title, fields }) => <details key={key} className={styles.section}>
+        <summary>{title} <span className={styles.count}>{draft.sections[key].filter((item) => !item.hidden).length}개 공개 ·
+          {draft.sections[key].filter((item) => item.hidden).length}개 숨김</span></summary>
         {draft.sections[key].map((item, index) => <div key={item.id ?? `new-${index}`} className={styles.item}>
           <div className={styles.actions}>
             <strong>{index + 1}{item.hidden ? ' · 숨김' : ''}</strong>
@@ -114,7 +135,7 @@ export function ProfessorScreen() {
         <button type="button" className="admin-text-button" onClick={() => changeItems(key, (items) =>
           [...items, { id: null, hidden: false, data: Object.fromEntries(fields.map(([field]) => [field, ''])) }])}>
           항목 추가</button>
-      </div>)}
+      </details>)}
       <div className="admin-actions"><button type="submit" className="admin-button" disabled={saving}>저장</button>
         <button type="button" className="admin-text-button" disabled={saving} onClick={cancel}>취소</button></div>
     </form> : <>
@@ -131,3 +152,4 @@ export function ProfessorScreen() {
     </>}
   </Section>;
 }
+

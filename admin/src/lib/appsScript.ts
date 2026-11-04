@@ -147,6 +147,38 @@ function writePending(change: (pending: Record<string, string>) => void) {
   } catch { /* 보관하지 못하면 다음 저장이 새 접수 번호를 씁니다. */ }
 }
 
+export type RecoveredRequest = { id: string; label: string;
+  phase: 'unconfirmed' | 'received' | 'applying' | 'saved' | 'done' | 'failed'; message: string | null };
+
+/** Find accepted saves left behind when the tab was closed before a result arrived. */
+export async function recoverPendingRequests(): Promise<RecoveredRequest[]> {
+  const entries = Object.entries(readPending()).filter(([, id]) => !pendingStages.has(id));
+  if (!entries.length) return [];
+  const snap = await snapshot(true);
+  const labels: Record<string, string> = { lab: '랩 정보', poem: '시', professor: '교수님 페이지',
+    seminars: '세미나', albums: '행사', people: '멤버', publications: '논문',
+    news: '소식', notices: '공지', 'home-slides': '첫 화면 사진', 'research-areas': '연구 분야', publish: '공개 반영' };
+  return entries.map(([fingerprint, id]) => {
+    let route = '';
+    try { route = String(JSON.parse(fingerprint)?.[1] ?? ''); } catch { /* Old receipt: use a generic label. */ }
+    const label = labels[route.split('/')[1]] ?? '관리 항목';
+    const job = snap.jobs[id];
+    const phase = !job ? 'unconfirmed' : ['received', 'stored', 'queued'].includes(job.state) ? 'received'
+      : job.state === 'failed' ? 'failed'
+        : job.state === 'done' ? 'done'
+          : job.result != null || APPLIED.includes(job.state) ? 'saved' : 'applying';
+    return { id, label, phase,
+      message: !job ? '접수 기록을 찾는 중입니다. 잠시 후에도 그대로면 같은 내용으로 다시 저장해 주세요.'
+        : job.state === 'failed' ? job.message ?? '작업 기록을 확인해 주세요.' : null };
+  });
+}
+
+export function dismissRecoveredRequest(id: string): void {
+  writePending((pending) => {
+    for (const [fingerprint, savedId] of Object.entries(pending)) if (savedId === id) delete pending[fingerprint];
+  });
+}
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** PATCH /xs/{id}가 결과를 싣지 않았을 때 목록 사본에서 같은 id를 찾습니다. */
@@ -248,3 +280,4 @@ export async function upload(form: FormData, onProgress?: (percent: number) => v
     element.remove();
   }
 }
+
