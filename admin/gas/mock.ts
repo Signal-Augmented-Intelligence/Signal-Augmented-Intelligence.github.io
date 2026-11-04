@@ -128,6 +128,11 @@ function apply(method: string, path: string, body: Record<string, unknown> | nul
   const item = target?.find((x) => x.id === id);
   if (!item) fail('NOT_FOUND');
   if (item!.version !== expected) fail('CONFLICT');
+  if (method === 'DELETE') {
+    if (!(item as { hidden?: boolean }).hidden) fail('DELETE_NOT_READY');
+    target.splice(target.indexOf(item!), 1);
+    return { id, deleted: true };
+  }
   Object.assign(item!, body, { version: item!.version + 1, updated_at: now() });
   return structuredClone(item);
 }
@@ -160,8 +165,8 @@ function runJob(id: string, work: () => unknown) {
 function submitMutation(command: { request_id: string; method: string; path: string; body: unknown; expected_version?: number }) {
   actor();
   const { request_id: id, method, path, body } = command;
-  if (!ID.test(id) || !['POST', 'PATCH', 'PUT'].includes(method) || !MUTATIONS.some((re) => re.test(path))) fail('VALIDATION_FAILED');
-  if (method === 'PATCH' && !Number.isInteger(command.expected_version)) fail('VALIDATION_FAILED');
+  if (!ID.test(id) || !['POST', 'PATCH', 'PUT', 'DELETE'].includes(method) || !MUTATIONS.some((re) => re.test(path))) fail('VALIDATION_FAILED');
+  if ((method === 'PATCH' || method === 'DELETE') && !Number.isInteger(command.expected_version)) fail('VALIDATION_FAILED');
   const fingerprint = JSON.stringify([method, path, body, command.expected_version ?? null]);
   if (fingerprints[id]) {
     if (fingerprints[id] !== fingerprint) fail('CONFLICT');
@@ -196,7 +201,8 @@ function submitFile(form: HTMLFormElement) {
   return { request_id: id, file_id: fileId, state: 'received' };
 }
 
-const api: Record<string, (...args: never[]) => unknown> = { session: () => ({ authenticated: true, email: actor() }), snapshot, submitMutation, submitFile };
+const api: Record<string, (...args: never[]) => unknown> = { session: () => ({ authenticated: true, email: actor() }),
+  bootstrap: () => ({ session: { authenticated: true, email: actor() }, snapshot: snapshot() }), snapshot, submitMutation, submitFile };
 
 function runner(success: (v: unknown) => void = () => {}, failure: (e: Error) => void = () => {}): unknown {
   const self: Record<string, unknown> = {

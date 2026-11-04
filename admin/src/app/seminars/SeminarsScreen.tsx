@@ -10,6 +10,7 @@ import { usePublish } from '@admin/lib/usePublish';
 import { AreaList } from './AreaList';
 import { SeminarForm } from './SeminarForm';
 import list from '@admin/components/List.module.css';
+import { canDelete, useDeletePost } from '@admin/lib/deletePost';
 
 /**
  * Seminars 한 화면 (세미나 업로드 설계 5장, 규칙 문서 3-2).
@@ -35,6 +36,8 @@ export function presenterName(s: Seminar, people: PickerPerson[]) {
 export function SeminarsScreen() {
   const dialog = useDialog();
   const { publishing, track, settled } = usePublish();
+  // Called after render only, so load is defined by then.
+  const { remove, deleting } = useDeletePost(() => void load());
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [editing, setEditing] = useState<string | null>(null); // 'new' 또는 세미나 id
   const [busyRow, setBusyRow] = useState<string | null>(null);
@@ -135,6 +138,8 @@ export function SeminarsScreen() {
                   ) : (
                     <button type="button" className="admin-text-button" disabled={locked(s)} onClick={() => hide(s)}>숨기기</button>
                   )}
+                  {canDelete(s, publishing(s.id)) && <button type="button" className="admin-text-button" disabled={deleting !== null || locked(s)}
+                    onClick={() => void remove('seminars', s, '세미나를 삭제할까요?')}>{deleting === s.id ? '삭제 중' : '삭제'}</button>}
                 </span>
               </li>
             ))}
