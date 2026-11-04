@@ -2,7 +2,7 @@
 # id: lowercase-hyphen, never changed (publications and seminars link to it).
 # group: faculty / phd / ms / undergrad / alumni
 #   faculty is shown on Members > Professor (details in content/professor.yml), the rest on Our Team / Alumni.
-# bio: one line next to the photo, written by the member (English or 국문).
+# bio: one-line introduction in Korean; bio_en: the same in English (optional), both written by the member.
 # photo: file name in public/images/people/ (3:4, long side 800px, <= 200 KB). Leave empty for a grey placeholder.
 # aliases: other English spellings printed in papers (optional), so those author names link too.
 # after: alumni only — current position, one line (with the person's consent).
