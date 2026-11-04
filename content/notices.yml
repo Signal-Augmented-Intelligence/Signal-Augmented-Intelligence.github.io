@@ -1,9 +1,9 @@
 # Seminar schedules, conference notices, and recruitment announcements.
 - id: "96a35c80-756e-4253-a04c-2f113b31bf10"
-  date: "2026"
-  event_date: "2026"
+  date: "2026-11-04"
+  event_date: ""
   kind: recruitment
-  title: "test_SAI LAB 학부연구생 모집합니다 (3,4학년 위주)"
-  body: "test"
+  title: "SAI Lab 학부연구생 모집 (3·4학년 우선)"
+  body: "SAI Lab(지도교수 김선만)에서 함께 연구할 학부연구생을 모집합니다.\n\n· 연구 분야: Signal, LLM\n· 대상: AI·SW학과 3·4학년 우선\n· 활동: 주간 세미나, 논문 리뷰, 학술대회 참여\n\n문의: smkim@hs.ac.kr"
   link: ""
   popup: true
