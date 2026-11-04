@@ -33,7 +33,9 @@ type Runner = Record<string, (...args: unknown[]) => void> & {
 declare global { interface Window { google?: { script?: { run?: Runner } } } }
 
 const APPLIED: JobState[] = ['applied', 'backed_up', 'media_staged', 'publishing', 'done'];
-const SNAPSHOT_MS = 2000;
+// An authenticated tab rechecks its session every 30 seconds. Keep its snapshot
+// warm between those checks so moving between sections does not wait on Drive.
+const SNAPSHOT_MS = 45_000;
 const WAIT_POLL_MS = 3000;
 const WAIT_LIMIT_MS = 10 * 60 * 1000;
 const PENDING_STORE = 'sai-admin:apps-script-requests';
@@ -66,13 +68,28 @@ function call<T>(name: string, ...args: unknown[]): Promise<T> {
   });
 }
 
-let cached: { at: number; value: Promise<Snapshot> } | null = null;
-/** 짧은 시간 안의 여러 조회(한 화면이 동시에 부르는 GET 여러 개)는 사본 한 번으로 답합니다. */
-function snapshot(fresh = false): Promise<Snapshot> {
-  if (!fresh && cached && Date.now() - cached.at < SNAPSHOT_MS) return cached.value;
-  const value = call<Snapshot>('snapshot');
+let cached: { at: number; value: Snapshot } | null = null;
+let loading: Promise<Snapshot> | null = null;
+let requested = 0;
+let applied = 0;
+
+function remember(value: Snapshot, order: number) {
+  // A slower, earlier request must not replace a newer snapshot.
+  if (order < applied) return;
+  applied = order;
   cached = { at: Date.now(), value };
-  value.catch(() => { if (cached?.value === value) cached = null; });
+}
+
+/** Share one in-flight read and reuse the verified snapshot while the session is warm. */
+function snapshot(fresh = false): Promise<Snapshot> {
+  if (!fresh && cached && Date.now() - cached.at < SNAPSHOT_MS) return Promise.resolve(cached.value);
+  if (loading) return loading;
+  const order = ++requested;
+  const value = call<Snapshot>('snapshot').then((result) => {
+    remember(result, order);
+    return result;
+  }).finally(() => { if (loading === value) loading = null; });
+  loading = value;
   return value;
 }
 
@@ -99,19 +116,26 @@ function fileOf(snap: Snapshot, id: string): unknown {
 
 async function read(path: string): Promise<Result<unknown>> {
   if (path === '/session') {
-    const first = await call<{ session: { authenticated: boolean }; snapshot: Snapshot }>('bootstrap');
-    if (!first.session.authenticated) throw new ApiError('UNAUTHENTICATED', MESSAGES.UNAUTHENTICATED[1], 0);
-    cached = { at: Date.now(), value: Promise.resolve(first.snapshot) };
+    const order = ++requested;
+    const value = call<{ session: { authenticated: boolean }; snapshot: Snapshot }>('bootstrap').then((first) => {
+      if (!first.session.authenticated) throw new ApiError('UNAUTHENTICATED', MESSAGES.UNAUTHENTICATED[1], 0);
+      remember(first.snapshot, order);
+      return first.snapshot;
+    }).finally(() => { if (loading === value) loading = null; });
+    loading = value;
+    await value;
     return { data: { logged_in: true, csrf_token: '' } };
   }
-  const snap = await snapshot();
   const publish = path.match(/^\/publish\/([^/?]+)$/);
+  const file = path.match(/^\/files\/([^/?]+)$/);
+  // These two paths are polled while work is running; a cached result would
+  // make a completed save or file appear stuck until the cache expires.
+  const snap = await snapshot(Boolean(publish || file));
   if (publish) {
     const job = snap.jobs[publish[1]];
     if (!job) throw notFound();
     return { data: publishOf(job, publish[1]) };
   }
-  const file = path.match(/^\/files\/([^/?]+)$/);
   if (file) return { data: fileOf(snap, file[1]) };
   if (!(path in snap.collections)) throw notFound();
   return { data: snap.collections[path] };
