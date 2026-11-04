@@ -2,7 +2,7 @@
 title: "Low-Latency Deep Learning-Based Denoising of Self-Generated Footstep Noise in Quadruped Robots for Remote Acoustic Situational Awareness"
 title_ko: ""
 type: conference-paper
-authors: ["Hyeon Jae Shin", "Jin Tae Seok", "So Yeong Park", "Seon Man Kim"]
+authors: ["Hyun Jae Shin", "Jin Tae Seok", "So Yeong Park", "Seon Man Kim"]
 venue: "16th International Conference on Theoretical and Computational Acoustics (ICTCA 2025), Busan"
 pub_date: "2025-08"
 status: ""

@@ -6,3 +6,8 @@ export function formatDate(value: string, style: 'full' | 'day' | 'month' = 'ful
   if (!day || style === 'month') return `${year}.${month}`;
   return `${year}.${month}.${day}`;
 }
+
+/** `lang="ko"` for text that contains Hangul (the page itself is `lang="en"`), so screen readers and line breaking treat it as Korean. */
+export function langOf(text: string): 'ko' | undefined {
+  return /[ㄱ-ㆎ가-힣]/.test(text) ? 'ko' : undefined;
+}

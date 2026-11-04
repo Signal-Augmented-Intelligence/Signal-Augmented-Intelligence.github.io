@@ -1,5 +1,5 @@
 import { type Person, SEMINAR_TYPES, type Seminar, seminarFileUrl } from '@/lib/content';
-import { formatDate } from '@/lib/format';
+import { formatDate, langOf } from '@/lib/format';
 import { PersonName } from './PersonName';
 import styles from './Items.module.css';
 
@@ -11,7 +11,7 @@ export function SeminarItem({ seminar, people }: { seminar: Seminar; people: Per
     <li className={styles.seminar}>
       <span className={`${styles.date} num`}>{formatDate(seminar.date, 'full')}</span>
       <div>
-        <p className={styles.title}>{file ? <a href={file}>{seminar.title}</a> : seminar.title}</p>
+        <p className={styles.title} lang={langOf(seminar.title)}>{file ? <a href={file}>{seminar.title}</a> : seminar.title}</p>
         <p className={styles.meta}>
           <PersonName name={seminar.presenter} people={people} />
           {meta && <span className={styles.metaExtra}>{meta}</span>}

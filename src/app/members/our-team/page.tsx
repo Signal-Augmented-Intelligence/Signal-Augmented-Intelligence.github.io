@@ -5,6 +5,7 @@ import { Section } from '@/components/Section';
 import { getPeople } from '@/lib/content';
 import { MEMBERS_TABS, TEAM_GROUPS } from '@/lib/site';
 import styles from '../members.module.css';
+import { langOf } from '@/lib/format';
 
 export const metadata: Metadata = { title: 'Our Team', description: 'Members of SAI Lab, Hanshin University.' };
 
@@ -26,7 +27,7 @@ export default function TeamPage() {
                   <PhotoSlot photo={m.photo} alt={m.name} eager={index < 4} />
                   <p className={styles.name}>{m.name}</p>
                   {m.name_ko && <p className={styles.nameKo} lang="ko">{m.name_ko}</p>}
-                  {m.bio && <p className={styles.bio}>{m.bio}</p>}
+                  {m.bio && <p className={styles.bio} lang={langOf(m.bio)}>{m.bio}</p>}
                   {m.url && <p className={styles.link}><a href={m.url}>Website</a></p>}
                 </li>
               ))}

@@ -1,5 +1,5 @@
 ---
-title: "Exploratory study on Android low-latency audio platform for real-time implementation of hearing augmentation neural network model"
+title: "Exploratory Study on Android Low-Latency Audio Platform for Real-Time Implementation of Hearing Augmentation Neural Network Model"
 title_ko: "청력 증강 신경망 모델의 실시간 구현을 위한 안드로이드 저지연 오디오 플랫폼 탐색 연구"
 type: conference-paper
 authors: ["Jin Tae Seok", "Hyun Jae Shin", "Seon Man Kim"]

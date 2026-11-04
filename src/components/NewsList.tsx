@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getPublications, type NewsItem } from '@/lib/content';
-import { formatDate } from '@/lib/format';
+import { formatDate, langOf } from '@/lib/format';
 import { DateList } from './DateList';
 
 /**
@@ -15,9 +15,9 @@ export function NewsList({ news }: { news: NewsItem[] }) {
       const href = target(n.link);
       const kind = n.link.startsWith('/publications/') ? '논문' : '기사';
       const label = `${kind}: ${n.text}`;
-      return { date: formatDate(n.date), content: <>{n.text}{href && <> {href.startsWith('/') && !href.startsWith('/files/')
-        ? <Link href={href} aria-label={label}>{kind} →</Link>
-        : <a href={href} aria-label={label}>{kind} →</a>}</>}</> };
+      return { date: formatDate(n.date), content: <><span lang={langOf(n.text)}>{n.text}</span>{href && <> {href.startsWith('/') && !href.startsWith('/files/')
+        ? <Link href={href} aria-label={label} lang="ko" className="nowrap">{kind} →</Link>
+        : <a href={href} aria-label={label} lang="ko" className="nowrap">{kind} →</a>}</>}</> };
     })} />
   );
 }

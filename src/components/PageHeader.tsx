@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { NavItem } from '@/lib/site';
 import { NavLinks } from './NavLinks';
 import styles from './PageHeader.module.css';
+import { langOf } from '@/lib/format';
 
 /**
  * Navy page banner (title, optional back link) and an optional tab bar under it.
@@ -14,7 +15,7 @@ export function PageHeader({ title, lede, tabs, back, long = false }: { title: s
       <div className={styles.banner}>
         <div className="container">
           {back && <p className={styles.back}>{back}</p>}
-          <h1 className={long ? `${styles.title} ${styles.titleLong}` : styles.title}>{title}</h1>
+          <h1 className={long ? `${styles.title} ${styles.titleLong}` : styles.title} lang={langOf(title)}>{title}</h1>
           {lede && <p className={styles.lede}>{lede}</p>}
         </div>
       </div>

@@ -183,7 +183,7 @@ export type Publication = {
    * Empty: the title is plain text. There are no per-paper pages on this site.
    */
   href: string;
-  /** Which link `href` is, shown after the venue (e.g. "DOI", "PDF"). */
+  /** Which kind of link `href` is, shown after the venue: "Article" or "PDF". */
   hrefLabel: string;
   excerpt: string;
   figure: string;
@@ -215,7 +215,8 @@ export function getPublications(): Publication[] {
     .map((p) => {
       const link = p.links.find((l) => l.url);
       const pdf = p.pdf ? mediaUrl(`/files/publications/${p.pdf}`) : '';
-      return { ...p, href: link?.url ?? pdf, hrefLabel: link ? link.label : pdf ? 'PDF' : '' };
+      // One label per kind, whatever the record calls its link (DOI, KCI record …): the article, or the PDF.
+      return { ...p, href: link?.url ?? pdf, hrefLabel: link ? 'Article' : pdf ? 'PDF' : '' };
     })
     .sort((a, b) => b.pub_date.localeCompare(a.pub_date));
 }

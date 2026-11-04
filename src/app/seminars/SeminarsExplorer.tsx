@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Seminar } from '@/lib/content';
 import styles from './seminars.module.css';
 import { mediaUrl } from '@/lib/media';
+import { langOf } from '@/lib/format';
 
 const normalize = (value: string) => value.normalize('NFKC').toLocaleLowerCase().replace(/\s+/g, ' ').trim();
 const fileUrl = (seminar: SeminarEntry) => seminar.file ? mediaUrl(`/files/seminars/${seminar.file}`) : '';
@@ -87,7 +88,7 @@ export function SeminarsExplorer({ seminars }: { seminars: SeminarEntry[] }) {
                   <li key={`${seminar.date}-${seminar.title}-${index}`} className={styles.row}>
                     <time className={`${styles.date} num`} dateTime={seminar.date}>{seminar.date.replaceAll('-', '.')}</time>
                     <div>
-                      <h3 className={styles.title}>{file ? <a href={file}>{seminar.title}</a> : seminar.title}</h3>
+                      <h3 className={styles.title} lang={langOf(seminar.title)}>{file ? <a href={file}>{seminar.title}</a> : seminar.title}</h3>
                       {seminar.presenterName && <p className={styles.presenter}>{seminar.presenterName}</p>}
                       {seminar.area && <p className={styles.areaLabel}>{seminar.area}</p>}
                     </div>
