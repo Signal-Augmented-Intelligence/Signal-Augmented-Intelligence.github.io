@@ -20,13 +20,13 @@ const GROUPS = [
 
 type Draft = {
   name: string; name_ko: string; group: Exclude<MemberGroup, 'faculty'>;
-  since: string; until: string; bio: string; url: string; after: string; aliases: string;
+  since: string; until: string; bio: string; bio_en: string; url: string; after: string; aliases: string;
 };
 const fromMember = (member?: Member): Draft => ({
   name: member?.name ?? '', name_ko: member?.name_ko ?? '',
   group: member?.group === 'faculty' ? 'undergrad' : member?.group ?? 'undergrad',
   since: member?.since ?? '', until: member?.until ?? '',
-  bio: member?.bio ?? '', url: member?.url ?? '', after: member?.after ?? '',
+  bio: member?.bio ?? '', bio_en: member?.bio_en ?? '', url: member?.url ?? '', after: member?.after ?? '',
   aliases: member?.aliases.join(', ') ?? '',
 });
 
@@ -89,7 +89,7 @@ export function MemberForm({ member, system, onSaved, onCancel, onConflict }: {
       setProgress('멤버 저장 중');
       const body: Record<string, unknown> = {
         ...draft, name: draft.name.trim(), name_ko: draft.name_ko.trim(), role: ROLES[draft.group],
-        bio: draft.bio.trim(), url: draft.url.trim(), after: draft.after.trim(),
+        bio: draft.bio.trim(), bio_en: draft.bio_en.trim(), url: draft.url.trim(), after: draft.after.trim(),
         aliases: draft.aliases.split(',').map((alias) => alias.trim()).filter(Boolean),
       };
       if (photoId) body.photo_file_id = photoId;
@@ -115,7 +115,8 @@ export function MemberForm({ member, system, onSaved, onCancel, onConflict }: {
       <Field label="구분"><select name="group" value={draft.group} onChange={(event) => set({ group: event.target.value as Draft['group'] })}>{GROUPS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>
       <Field label="연구실 합류" optional><input name="since" inputMode="numeric" placeholder="YYYY-MM" value={draft.since} onChange={(event) => set({ since: event.target.value })} /></Field>
       {draft.group === 'alumni' && <Field label="연구실 종료" optional><input name="until" inputMode="numeric" placeholder="YYYY-MM" value={draft.until} onChange={(event) => set({ until: event.target.value })} /></Field>}
-      <Field label="한 줄 소개" optional><input name="bio" value={draft.bio} onChange={(event) => set({ bio: event.target.value })} /></Field>
+      <Field label="한 줄 소개 (한국어)" optional><input name="bio" lang="ko" value={draft.bio} onChange={(event) => set({ bio: event.target.value })} /></Field>
+      <Field label="한 줄 소개 (영어)" optional><input name="bio_en" lang="en" value={draft.bio_en} onChange={(event) => set({ bio_en: event.target.value })} /></Field>
       <Field label="Website" optional><input type="url" name="url" value={draft.url} onChange={(event) => set({ url: event.target.value })} /></Field>
       <Field label="논문에 쓰인 다른 영문 표기" optional><input name="aliases" value={draft.aliases} onChange={(event) => set({ aliases: event.target.value })} placeholder="쉼표로 구분" /></Field>
       {draft.group === 'alumni' && <Field label="현재 소속" optional><input name="after" value={draft.after} onChange={(event) => set({ after: event.target.value })} /></Field>}

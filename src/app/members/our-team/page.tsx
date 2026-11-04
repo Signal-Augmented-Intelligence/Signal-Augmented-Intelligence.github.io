@@ -27,7 +27,8 @@ export default function TeamPage() {
                   <PhotoSlot photo={m.photo} alt={m.name} eager={index < 4} />
                   <p className={styles.name}>{m.name}</p>
                   {m.name_ko && <p className={styles.nameKo} lang="ko">{m.name_ko}</p>}
-                  {m.bio && <p className={styles.bio} lang={langOf(m.bio)}>{m.bio}</p>}
+                  {m.bio_en && <p className={styles.bio} lang={langOf(m.bio_en)}>{m.bio_en}</p>}
+                  {m.bio && <p className={`${styles.bio} ${m.bio_en ? styles.bioSecond : ''}`} lang={langOf(m.bio)}>{m.bio}</p>}
                   {m.url && <p className={styles.link}><a href={m.url}>Website</a></p>}
                 </li>
               ))}
