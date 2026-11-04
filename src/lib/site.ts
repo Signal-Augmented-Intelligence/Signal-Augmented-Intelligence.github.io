@@ -1,6 +1,6 @@
 /** Menus and tabs. Page content lives in content/; this file only decides structure. */
-/** `requires`: shown only when the lab has official contact details / at least one album with photos. */
-export type NavItem = { title: string; href: string; match?: string[]; requires?: 'contact' | 'album' };
+/** `requires`: shown only when the lab has official contact details / at least one album with photos / at least one alumnus. */
+export type NavItem = { title: string; href: string; match?: string[]; requires?: 'contact' | 'album' | 'alumni' };
 
 /**
  * Research areas stay in content/research/ and the 관리 화면, but the public site hides them until their content is settled:
@@ -20,7 +20,7 @@ export const MAIN_NAV: NavItem[] = [
 export const MEMBERS_TABS: NavItem[] = [
   { title: 'Professor', href: '/members/professor/' },
   { title: 'Our Team', href: '/members/our-team/' },
-  { title: 'Alumni', href: '/members/alumni/' },
+  { title: 'Alumni', href: '/members/alumni/', requires: 'alumni' },
 ];
 
 /** With areas hidden only Publications is left, so pages show no tab bar. */

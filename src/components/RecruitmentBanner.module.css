@@ -1,7 +1,8 @@
 /* Absolute from the page top: sits right under the sticky header and scrolls away under it (header z-index 10). */
 .banner { position: absolute; top: var(--site-header-h); left: 0; right: 0; z-index: 5; background: var(--accent); color: #ffffff; font-size: var(--text-sm); }
 .inner { display: flex; align-items: center; gap: 16px; min-height: 48px; padding-top: 8px; padding-bottom: 8px; }
-.tag { flex: none; padding: 3px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.18); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.12em; }
+/* The kind is plain bold text like the 뉴스 list (guideline: no pill badges or uppercase labels), set off by a thin rule. */
+.tag { flex: none; padding-right: 16px; border-right: 1px solid rgba(255, 255, 255, 0.35); font-weight: 700; }
 .title { min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .link { flex: none; color: #ffffff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .actions { display: flex; align-items: center; gap: 12px; flex: none; margin-left: auto; }
