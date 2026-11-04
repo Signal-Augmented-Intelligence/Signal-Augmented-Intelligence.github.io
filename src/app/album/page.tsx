@@ -3,16 +3,17 @@ import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import { getAlbums } from '@/lib/content';
 import { formatDate, langOf } from '@/lib/format';
+import { NEWS_TABS } from '@/lib/site';
 import styles from './album.module.css';
 
 export const metadata: Metadata = { title: 'Album', description: 'Photos from SAI Lab, Hanshin University.' };
 
-/** Album list: one cover photo per event (newest first). A cover opens that event's photos. */
+/** Album list (a tab under 뉴스): one cover photo per event (newest first). A cover opens that event's photos. */
 export default function AlbumPage() {
   const albums = getAlbums();
   return (
     <>
-      <PageHeader title="Album" />
+      <PageHeader title="뉴스" tabs={NEWS_TABS} />
       <div className="container">
         {albums.length === 0 ? <p className="muted">Photos will be posted here.</p> : (
           <ul className={styles.albums}>
