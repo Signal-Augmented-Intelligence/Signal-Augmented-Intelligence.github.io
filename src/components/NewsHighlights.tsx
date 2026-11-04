@@ -5,8 +5,6 @@ import Link from 'next/link';
 import styles from './NewsHighlights.module.css';
 
 export type Highlight = {
-  kind: string;
-  date: string;
   headline: string;
   members: { name: string; photo: string }[];
   photo: string;
@@ -17,9 +15,9 @@ export type Highlight = {
 const SLIDE_MS = 6000;
 
 /**
- * 뉴스 highlights: text on the left, the event photo on the right. The next photo wipes in from the right
- * and the text rises; a bar per slide fills while it shows. Pauses while hovered or focused;
- * with reduced motion it does not advance on its own.
+ * 뉴스 highlights: the title on the left, the event photo on the right. The next photo wipes in from the right
+ * and the text rises. No on-screen controls; it pauses while hovered or focused (a link inside takes focus),
+ * and with reduced motion it stays on the first item.
  */
 export function NewsHighlights({ items }: { items: Highlight[] }) {
   const [current, setCurrent] = useState(0);
@@ -49,7 +47,6 @@ export function NewsHighlights({ items }: { items: Highlight[] }) {
       className={styles.highlights}
       aria-roledescription="carousel"
       aria-label="뉴스 하이라이트"
-      data-paused={paused || still || undefined}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -60,7 +57,6 @@ export function NewsHighlights({ items }: { items: Highlight[] }) {
           {items.map((it, k) => (
             <div key={k} className={styles.slide} data-state={k === current ? 'on' : k === previous ? 'out' : undefined}
               aria-roledescription="slide" aria-label={`${k + 1} / ${items.length}`} aria-hidden={k !== current} inert={k !== current}>
-              <p className={styles.meta}><strong className={styles.kind}>{it.kind}</strong><span className="num">{it.date}</span></p>
               <h2 className={styles.headline} lang="ko">{it.headline}</h2>
               {it.members.length > 0 && (
                 <p className={styles.members} lang="ko">
@@ -77,23 +73,6 @@ export function NewsHighlights({ items }: { items: Highlight[] }) {
             </div>
           ))}
         </div>
-        {items.length > 1 && (
-          <div className={styles.controls}>
-            <span className={`${styles.count} num`}><b>{String(current + 1).padStart(2, '0')}</b> / {String(items.length).padStart(2, '0')}</span>
-            <div className={styles.bars}>
-              {items.map((_, k) => (
-                <button key={k === current ? `${k}-${cycle}` : k} type="button" className={styles.bar} aria-label={`${k + 1}번째 소식`}
-                  aria-current={k === current || undefined} data-state={k < current ? 'done' : k === current ? 'run' : undefined} onClick={() => go(k)}>
-                  <i />
-                </button>
-              ))}
-            </div>
-            <div className={styles.arrows}>
-              <button type="button" aria-label="이전 소식" onClick={() => go(current - 1)}>‹</button>
-              <button type="button" aria-label="다음 소식" onClick={() => go(current + 1)}>›</button>
-            </div>
-          </div>
-        )}
       </div>
       <div className={styles.photo}>
         {items.map((it, k) => (
