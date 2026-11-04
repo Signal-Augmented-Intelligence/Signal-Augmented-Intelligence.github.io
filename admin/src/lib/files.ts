@@ -9,6 +9,7 @@ export type FileInfo = {
   original_name: string;
   preview_url: string | null;
   content_url?: string | null;
+  public_path?: string | null;
   public_size_bytes?: number | null;
   message?: string | null;
   error_code?: string | null;

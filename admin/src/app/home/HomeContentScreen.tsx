@@ -7,6 +7,7 @@ import { Field, focusField } from '@admin/components/Field';
 import { api, ApiError, signedOut } from '@admin/lib/api';
 import { changedFields, readDraft, writeDraft } from '@admin/lib/edit';
 import { errorBody, fieldList } from '@admin/lib/errors';
+import { uploadFile, uploadingLabel } from '@admin/lib/files';
 import type { LabInfo, PoemInfo } from '@admin/lib/types';
 import type { usePublish } from '@admin/lib/usePublish';
 import styles from './home-content.module.css';
@@ -16,7 +17,7 @@ const POEM_KEY = 'sai-admin:poem';
 const LAB_FIELDS = [
   ['name', '랩 이름'], ['full_name', '영문 전체 이름'], ['name_ko', '국문 이름'],
   ['institution', '대학교'], ['advisor', '지도교수'], ['intro', '소개'],
-  ['email', '공식 이메일'], ['location', '위치'],
+  ['email', '공식 이메일'], ['location', '위치'], ['logo', '랩 로고 경로'],
 ] as const;
 type LabField = typeof LAB_FIELDS[number][0];
 type LabDraft = Pick<LabInfo, LabField | 'draft'>;
@@ -26,7 +27,7 @@ type PoemDraft = { title: string; credit: string; heroKey: string; stanzas: Stan
 const labDraft = (lab: LabInfo): LabDraft => ({
   name: lab.name, full_name: lab.full_name, name_ko: lab.name_ko,
   institution: lab.institution, advisor: lab.advisor, intro: lab.intro,
-  email: lab.email, location: lab.location, draft: lab.draft,
+  email: lab.email, location: lab.location, logo: lab.logo, draft: lab.draft,
 });
 const poemDraft = (poem: PoemInfo): PoemDraft => {
   const visible = poem.stanzas.filter((s) => !s.hidden);
@@ -47,6 +48,8 @@ export function HomeContentScreen({ publish: { publishing, track, settled } }: {
   const [labEdit, setLabEdit] = useState<LabDraft | null>(null);
   const [poemEdit, setPoemEdit] = useState<PoemDraft | null>(null);
   const [saving, setSaving] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoProgress, setLogoProgress] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -74,7 +77,7 @@ export function HomeContentScreen({ publish: { publishing, track, settled } }: {
     writeDraft(POEM_KEY, next);
     return next;
   });
-  const cancelLab = () => { writeDraft(LAB_KEY, null); setLabEdit(null); };
+  const cancelLab = () => { writeDraft(LAB_KEY, null); setLabEdit(null); setLogoFile(null); setLogoProgress(null); };
   const cancelPoem = () => { writeDraft(POEM_KEY, null); setPoemEdit(null); };
 
   const saveLab = async (event: FormEvent) => {
@@ -90,12 +93,20 @@ export function HomeContentScreen({ publish: { publishing, track, settled } }: {
       focusField(labForm.current, invalid.map(([key]) => key));
       return;
     }
-    const next = Object.fromEntries(LAB_FIELDS.map(([key]) => [key, labEdit[key].trim()])) as
-      Pick<LabDraft, LabField>;
-    const change = changedFields(lab, { ...next, draft: labEdit.draft });
-    if (!Object.keys(change).length) { cancelLab(); return; }
     setSaving(true);
     try {
+      let logo = labEdit.logo.trim();
+      if (logoFile) {
+        const uploaded = await uploadFile(logoFile, 'research_figure',
+          (percent) => setLogoProgress(`로고 ${uploadingLabel(percent)}`), () => setLogoProgress('로고 처리 중'));
+        if (!uploaded.public_path) throw new Error('로고의 공개 경로를 확인하지 못했습니다.');
+        logo = uploaded.public_path;
+        setLabValue({ logo });
+      }
+      const next = Object.fromEntries(LAB_FIELDS.map(([key]) => [key, key === 'logo' ? logo : labEdit[key].trim()])) as
+        Pick<LabDraft, LabField>;
+      const change = changedFields(lab, { ...next, draft: labEdit.draft });
+      if (!Object.keys(change).length) { cancelLab(); return; }
       const result = await api.patch<LabInfo>('/lab', { ...change, version: lab.version });
       setLab(result.data);
       track('lab', result.publish);
@@ -164,6 +175,9 @@ export function HomeContentScreen({ publish: { publishing, track, settled } }: {
           {LAB_FIELDS.map(([key, label]) => <Field key={key} label={label} optional={key !== 'name'}>
             <input name={key} value={labEdit[key]} onChange={(e) => setLabValue({ [key]: e.target.value })} />
           </Field>)}
+          <Field label="로고 이미지" optional><input type="file" accept="image/jpeg,image/png,image/webp,image/heic"
+            onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)} /></Field>
+          {logoProgress && <p className="admin-muted">{logoProgress}</p>}
           <label className="admin-check"><input type="checkbox" checked={labEdit.draft}
             onChange={(e) => setLabValue({ draft: e.target.checked })} />내부 검토 표시</label>
           <div className="admin-actions">
