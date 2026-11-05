@@ -3,6 +3,7 @@
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Section } from '@/components/Section';
 import { useDialog } from '@admin/components/Dialog';
+import { PublishFailure } from '@admin/components/PublishFailure';
 import { Field, focusField } from '@admin/components/Field';
 import { api, ApiError, signedOut } from '@admin/lib/api';
 import { changedFields, readDraft, writeDraft } from '@admin/lib/edit';
@@ -168,8 +169,9 @@ export function HomeContentScreen({ publish: { publishing, track, settled } }: {
   };
 
   return <>
-    <Section title="랩 정보" aside={lab && <span className={styles.status} title={lab.publication.message ?? undefined}>
+    <Section title="랩 정보" aside={lab && <span className={styles.status}>
       {status(lab, publishing('lab'))}</span>}>
+      <PublishFailure className={styles.failure} publication={lab?.publication} pending={publishing('lab')} />
       {!lab ? <p className="admin-muted">불러오는 중입니다.</p> : labEdit ? (
         <form ref={labForm} className="admin-form" onSubmit={saveLab} noValidate>
           {LAB_FIELDS.map(([key, label]) => <Field key={key} label={label} optional={key !== 'name'}>
@@ -192,8 +194,9 @@ export function HomeContentScreen({ publish: { publishing, track, settled } }: {
         <button type="button" className="admin-text-button" onClick={editLab}>수정</button>
       </>}
     </Section>
-    <Section title="시" aside={poem && <span className={styles.status} title={poem.publication.message ?? undefined}>
+    <Section title="시" aside={poem && <span className={styles.status}>
       {status(poem, publishing('poem'))}</span>}>
+      <PublishFailure className={styles.failure} publication={poem?.publication} pending={publishing('poem')} />
       {!poem ? <p className="admin-muted">불러오는 중입니다.</p> : poemEdit ? (
         <form ref={poemForm} className={`admin-form ${styles.poemForm}`} onSubmit={savePoem} noValidate>
           <Field label="제목"><input name="title" value={poemEdit.title}

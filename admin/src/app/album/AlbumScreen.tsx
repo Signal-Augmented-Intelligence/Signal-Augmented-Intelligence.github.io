@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Section } from '@/components/Section';
 import { useDialog } from '@admin/components/Dialog';
 import list from '@admin/components/List.module.css';
+import { PublishFailure } from '@admin/components/PublishFailure';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
 import { errorBody } from '@admin/lib/errors';
 import { formatDay } from '@admin/lib/format';
@@ -24,7 +25,7 @@ import { canDelete, useDeletePost } from '@admin/lib/deletePost';
  * - 공개 사이트에는 숨기지 않은 사진이 1장 이상인 행사만 나옵니다. 그런 사진이 없으면 상태를 "사진 없음"으로 씁니다.
  */
 const HIDE_BODY = '숨기면 공개 사이트에서 이 행사가 보이지 않습니다. 원본은 남아 있어 다시 보이게 할 수 있습니다.';
-const DISCARD_BODY = '접으면 고친 날짜와 행사 이름은 저장되지 않습니다. 사진은 이미 저장되어 있습니다.';
+const DISCARD_BODY = '접으면 수정한 날짜와 행사 이름은 저장되지 않습니다. 사진은 이미 저장되어 있습니다.';
 
 const byDate = (a: Album, b: Album) => b.date.localeCompare(a.date);
 
@@ -113,8 +114,9 @@ export function AlbumScreen() {
           <span className="num">{formatDay(a.date)}</span>
           <span>사진 <span className="num">{a.photo_count}</span>장</span>
         </p>
+        <PublishFailure publication={a.publication} pending={publishing(a.id)} />
       </div>
-      <span className={list.status} title={a.publication.message ?? undefined}>{status(a)}</span>
+      <span className={list.status}>{status(a)}</span>
     </>
   );
 

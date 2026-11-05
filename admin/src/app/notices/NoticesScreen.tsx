@@ -6,6 +6,7 @@ import { useDialog } from '@admin/components/Dialog';
 import { Field, focusField } from '@admin/components/Field';
 import { FileUpload, type FileValue } from '@admin/components/FileUpload';
 import list from '@admin/components/List.module.css';
+import { PublishFailure } from '@admin/components/PublishFailure';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
 import { changedFields, PARTIAL_DATE, readDraft, writeDraft } from '@admin/lib/edit';
 import { errorBody, fieldList } from '@admin/lib/errors';
@@ -72,8 +73,9 @@ export function NoticesScreen() {
             <p className={list.title}>{item.title}</p>
             <p className={list.meta}><span className="num">{formatDay(item.date)}</span><span>{kinds[item.kind]}</span>
               {item.event_date && <span>일정 {formatDay(item.event_date)}</span>}{item.photo_file_id && <span>사진</span>}{item.popup && <span>첫 화면 띠</span>}</p>
+            <PublishFailure publication={item.publication} pending={publishing(item.id)} />
           </div>
-          <span className={list.status} title={item.publication.message ?? undefined}>
+          <span className={list.status}>
             {publishing(item.id) || item.publication.state === 'publishing' ? '반영 중'
               : item.publication.state === 'failed' ? '반영 실패' : item.hidden ? '숨김' : '공개 중'}
           </span>
@@ -108,13 +110,16 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (saving) return;
+    // 서버도 앞뒤 공백을 지우므로, 붙여 넣은 주소의 공백 때문에 저장이 막히지 않게 먼저 지우고 확인합니다.
+    const date = draft.date.trim(); const event_date = draft.event_date.trim(); const title = draft.title.trim();
+    const content = draft.body.trim(); const link = draft.link.trim();
     const problems: [string, string][] = [];
-    if (item && draft.date && !PARTIAL_DATE.test(draft.date)) problems.push(['date', '게시 날짜를 YYYY, YYYY-MM 또는 YYYY-MM-DD로 적어 주세요.']);
-    if (draft.event_date && !PARTIAL_DATE.test(draft.event_date)) problems.push(['event_date', '행사 날짜를 YYYY, YYYY-MM 또는 YYYY-MM-DD로 적어 주세요.']);
-    if (!draft.title.trim()) problems.push(['title', '제목을 적어 주세요.']);
-    else if (draft.title.length > 200) problems.push(['title', '제목은 200자 이내로 적어 주세요.']);
-    if (draft.body.length > 20000) problems.push(['body', '내용은 20,000자 이내로 적어 주세요.']);
-    if (draft.link && !/^(?:https?:\/\/\S+|\/\S+)$/.test(draft.link)) problems.push(['link', '자세히 보기 주소는 https:// 주소 또는 사이트 내부 주소로 적어 주세요.']);
+    if (item && date && !PARTIAL_DATE.test(date)) problems.push(['date', '게시 날짜를 YYYY, YYYY-MM 또는 YYYY-MM-DD로 적어 주세요.']);
+    if (event_date && !PARTIAL_DATE.test(event_date)) problems.push(['event_date', '행사 날짜를 YYYY, YYYY-MM 또는 YYYY-MM-DD로 적어 주세요.']);
+    if (!title) problems.push(['title', '제목을 적어 주세요.']);
+    else if (title.length > 200) problems.push(['title', '제목은 200자 이내로 적어 주세요.']);
+    if (content.length > 20000) problems.push(['body', '내용은 20,000자 이내로 적어 주세요.']);
+    if (link && !/^(?:https?:\/\/\S+|\/\S+)$/.test(link)) problems.push(['link', '자세히 보기 주소는 https:// 주소 또는 사이트 내부 주소로 적어 주세요.']);
     if (draft.popup && draft.kind !== 'recruitment') problems.push(['popup', '첫 화면 띠는 학부연구생 모집 공지에만 표시할 수 있습니다.']);
     if (problems.length > 0) {
       await dialog.error('저장하지 못했습니다', fieldList(problems.map(([, message]) => message)));
@@ -127,7 +132,7 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
       const uploaded = wait ? await wait : null;
       if (wait && !uploaded) return;
       const photo = wait ? uploaded : draft.photo;
-      const { date, event_date, kind, title, body: content, link, popup } = draft;
+      const { kind, popup } = draft;
       const payload = { date: item ? date : todayInSeoul(), event_date, kind, title, body: content, link, popup,
         photo_file_id: photo?.id ?? null };
       const body = item ? changedFields(item, payload) : payload;
@@ -151,8 +156,8 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
     <Field label="행사 날짜" optional><input name="event_date" placeholder="YYYY, YYYY-MM, YYYY-MM-DD" value={draft.event_date} onChange={(e) => set({ event_date: e.target.value })} /></Field>
     <Field label="제목"><input name="title" value={draft.title} onChange={(e) => set({ title: e.target.value })} /></Field>
     <Field label="내용" optional><textarea name="body" className={styles.body} value={draft.body} onChange={(e) => set({ body: e.target.value })} /></Field>
-    {system.storage.connected && <Field label="사진" optional limit={`${photoLimit} MB 이하`}>
-      <FileUpload name="photo" purpose="notice" accept={system.limits.photo_types.join(',')}
+    {system.storage.connected && <Field label="사진" optional limit={`${photoLimit} MB 이하`} group>
+      <FileUpload name="photo" label="사진" purpose="notice" accept={system.limits.photo_types.join(',')}
         maxBytes={photoLimit * MB} tooLarge={`사진이 ${photoLimit} MB를 넘습니다.`}
         value={draft.photo} onChange={(photo) => set({ photo })}
         onPending={(promise) => { pending.current = promise; }} />

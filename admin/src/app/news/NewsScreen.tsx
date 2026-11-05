@@ -5,6 +5,7 @@ import { Section } from '@/components/Section';
 import { useDialog } from '@admin/components/Dialog';
 import { Field, focusField } from '@admin/components/Field';
 import list from '@admin/components/List.module.css';
+import { PublishFailure } from '@admin/components/PublishFailure';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
 import { changedFields, PARTIAL_DATE, readDraft, writeDraft } from '@admin/lib/edit';
 import { errorBody, fieldList } from '@admin/lib/errors';
@@ -18,7 +19,7 @@ import { canDelete, useDeletePost } from '@admin/lib/deletePost';
  * News 한 화면 (설계 문서 3장): 소식 목록(날짜 최신순), 추가·고치기·숨기기. 순서는 날짜로만 정합니다.
  * 칸: 날짜(모르면 공란), 소식 제목(국문 가능), 관련 논문 또는 근거 링크.
  */
-const HIDE_BODY = '숨기면 공개 사이트의 News에서 빠집니다. 원본은 남아 있어 다시 보이게 할 수 있습니다.';
+const HIDE_BODY = '숨기면 공개 사이트의 뉴스에서 빠집니다. 원본은 남아 있어 다시 보이게 할 수 있습니다.';
 const byDate = (a: NewsItem, b: NewsItem) => b.date.localeCompare(a.date);
 
 export function NewsScreen() {
@@ -95,8 +96,9 @@ export function NewsScreen() {
                   <span className="num">{formatDay(n.date)}</span>
                   {pubTitle(n.publication_id) && <span>{pubTitle(n.publication_id)}</span>}
                 </p>
+                <PublishFailure publication={n.publication} pending={publishing(n.id)} />
               </div>
-              <span className={list.status} title={n.publication.message ?? undefined}>
+              <span className={list.status}>
                 {publishing(n.id) || n.publication.state === 'publishing' ? '반영 중'
                   : n.publication.state === 'failed' ? '반영 실패' : n.hidden ? '숨김' : '공개 중'}
               </span>

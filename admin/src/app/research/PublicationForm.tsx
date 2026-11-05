@@ -192,8 +192,8 @@ export function PublicationForm({ publication, people, areas, system, onSaved, o
       <Field label="본문" optional>
         <textarea name="body" value={draft.body} onChange={(e) => set({ body: e.target.value })} />
       </Field>
-      {system.storage.connected && <Field label="PDF" optional limit={`${system.limits.seminar_pdf_upload_mb} MB 이하`}>
-        <FileUpload name="pdf" purpose="publication_pdf" accept="application/pdf" maxBytes={system.limits.seminar_pdf_upload_mb * MB}
+      {system.storage.connected && <Field label="PDF" optional limit={`${system.limits.seminar_pdf_upload_mb} MB 이하`} group>
+        <FileUpload name="pdf" label="PDF" purpose="publication_pdf" accept="application/pdf" maxBytes={system.limits.seminar_pdf_upload_mb * MB}
           tooLarge={`PDF가 ${system.limits.seminar_pdf_upload_mb} MB를 넘습니다.`} value={draft.pdf}
           onChange={(pdf) => set({ pdf })} onPending={(p) => { pending.current = p; }} />
       </Field>}

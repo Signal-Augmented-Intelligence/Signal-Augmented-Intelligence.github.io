@@ -6,27 +6,15 @@
 import '@fontsource-variable/instrument-sans/wght.css';
 import '@/app/globals.css';
 import '@admin/components/admin.css';
-import { type ComponentType, StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import AdminHome from '@admin/app/page';
-import AlbumPage from '@admin/app/album/page';
-import HomePage from '@admin/app/home/page';
-import MembersPage from '@admin/app/members/page';
-import NewsPage from '@admin/app/news/page';
-import NoticesPage from '@admin/app/notices/page';
-import ResearchPage from '@admin/app/research/page';
-import SeminarsPage from '@admin/app/seminars/page';
 import { AdminHeader } from '@admin/components/AdminHeader';
 import { DialogProvider } from '@admin/components/Dialog';
 import { SessionProvider } from '@admin/components/Session';
 import { SITE_URL } from '@admin/site';
 import { usePathname } from './navigation';
+import { PAGES } from './pages';
 import { PendingNotice } from './PendingNotice';
-
-const PAGES: Record<string, ComponentType> = {
-  '/': AdminHome, '/home/': HomePage, '/members/': MembersPage, '/research/': ResearchPage,
-  '/seminars/': SeminarsPage, '/album/': AlbumPage, '/news/': NewsPage, '/notices/': NoticesPage,
-};
 
 /** 화면 안의 관리 화면 링크("/", "/members/")를 해시 이동으로 바꿉니다. 새 탭 링크와 다른 사이트 링크는 그대로 둡니다. */
 document.addEventListener('click', (e) => {

@@ -5,6 +5,7 @@
  * 기존 빌드(npm run build:admin → admin/out/)와 관리 서버 연결은 바꾸지 않습니다.
  */
 import { build } from 'esbuild';
+import { bundleOptions } from './bundle-options.mjs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -37,21 +38,12 @@ const PRETENDARD = 'https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/varia
 
 async function bundle(entry, extra = {}) {
   const result = await build({
+    ...bundleOptions,
     entryPoints: [entry],
-    bundle: true,
     write: false,
     outdir: out,
     format: 'iife',
-    target: 'es2022',
     minify: true,
-    jsx: 'automatic',
-    tsconfig: join(admin, 'tsconfig.json'),
-    alias: { 'next/image': join(here, 'image.tsx'), 'next/navigation': join(here, 'navigation.ts') },
-    define: {
-      'process.env.NODE_ENV': '"production"',
-      'process.env.NEXT_PUBLIC_ADMIN_TRANSPORT': '"apps-script"',
-    },
-    loader: { '.module.css': 'local-css', '.woff2': 'dataurl', '.woff': 'dataurl', '.png': 'dataurl', '.svg': 'dataurl' },
     plugins: [shrinkImages],
     logLevel: 'warning',
     ...extra,

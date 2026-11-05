@@ -1,4 +1,5 @@
 .status { color: var(--muted); font-size: var(--text-sm); }
+.failure { margin-bottom: 16px; color: var(--muted); font-size: var(--text-sm); }
 .details { display: grid; gap: 12px; margin: 0 0 24px; }
 .details > div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 20px; }
 .details dt { color: var(--muted); }

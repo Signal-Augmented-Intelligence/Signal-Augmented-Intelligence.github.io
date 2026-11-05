@@ -3,13 +3,17 @@
  * apps-script/intake/Code.gs의 공개 함수(session, snapshot, submitMutation, submitFile)와
  * 소유자 작업의 단계 진행(received → stored → applied → publishing → done)을 브라우저 메모리에서 흉내 냅니다.
  * 주소 뒤 ?account=forbidden | none 으로 권한 없음·계정 없음을 시험합니다.
+ * 주소 뒤 ?publication=failed 로 모든 항목을 공개 반영 실패 상태로 시작합니다.
  * 콘솔에서 __mock.failNext = 'CONFLICT' | 'WORKFLOW_FAILED' 로 다음 변경 하나를 실패시킵니다.
  */
 type Item = Record<string, unknown> & { id: string; version: number; sort_order: number; hidden: boolean };
 type Job = { request_id: string; kind: string; state: string; error_code: string | null; message: string | null; result?: unknown };
 
 const now = () => new Date().toISOString();
-const pub = { state: 'published', job_id: null, message: null, commit_sha: null };
+const params = new URLSearchParams(location.search);
+const pub = params.get('publication') === 'failed'
+  ? { state: 'failed', job_id: 'job1', message: '공개 반영 작업이 실패했습니다.', commit_sha: null }
+  : { state: 'published', job_id: null, message: null, commit_sha: null };
 const common = (id: string, sort_order: number) => ({ id, hidden: false, sort_order, version: 1, updated_at: '2026-10-30T09:00:00Z', publication: pub });
 const swatch = (color: string, label: string) => `data:image/svg+xml,${encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320"><rect width="100%" height="100%" fill="${color}"/><text x="24" y="296" font-family="sans-serif" font-size="28" fill="#fff">${label}</text></svg>`)}`;
@@ -47,6 +51,9 @@ const photos: Record<string, Item[]> = {
 const singles: Record<string, Record<string, unknown> & { version: number }> = {
   '/lab': { id: 'main', name: 'SAI Lab', full_name: 'Signal Augmented Intelligence Lab', name_ko: '신호증강지능연구실', institution: '한신대학교', advisor: '', intro: '', email: '', location: '', draft: false, version: 1, updated_at: '2026-10-30T09:00:00Z', publication: pub },
   '/poem': { id: 'main', title: '', hero: 0, credit: '', stanzas: [], version: 1, updated_at: '2026-10-30T09:00:00Z', publication: pub },
+  '/professor': { id: 'main', name: 'Minji Kim', name_ko: '김민지', position: 'Professor', affiliation: '한신대학교', field: '', office: '', email: '', phone: '', photo: '', bio: '', keywords: '', sources_note: '',
+    sections: { links: [], education: [{ id: 'pe1', hidden: false, data: { degree: 'Ph.D.', date: '2015', school: '예시대학교' } }], career: [], research_areas: [], teaching: [], publications: [], software: [], patents: [], projects: [], services: [], student_awards: [] },
+    version: 1, updated_at: '2026-10-30T09:00:00Z', publication: pub },
 };
 const files: Record<string, unknown> = {};
 const jobs: Record<string, Job> = {};
@@ -56,7 +63,6 @@ let lastPublish: { id: string; state: string; finished_at: string | null; messag
 const mock = { failNext: null as string | null };
 (window as unknown as { __mock: typeof mock }).__mock = mock;
 
-const params = new URLSearchParams(location.search);
 const fail = (code: string) => { throw new Error(code); };
 function actor() {
   const account = params.get('account');
@@ -85,7 +91,7 @@ function snapshot() {
 
 const MUTATIONS = [
   /^\/(?:seminars|seminar-areas|people|albums|home-slides|research-areas|publications|news|notices)(?:\/[a-zA-Z0-9_-]+)?$/,
-  /^\/(?:lab|poem)$/,
+  /^\/(?:lab|poem|professor)$/,
   /^\/(?:seminar-areas|research-areas|home-slides)\/order$/,
   /^\/albums\/[a-zA-Z0-9_-]+\/photos(?:\/[a-zA-Z0-9_-]+|\/order)?$/,
 ];

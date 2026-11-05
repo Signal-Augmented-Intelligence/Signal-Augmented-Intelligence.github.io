@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Section } from '@/components/Section';
 import { useDialog } from '@admin/components/Dialog';
 import list from '@admin/components/List.module.css';
+import { PublishFailure } from '@admin/components/PublishFailure';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
 import { errorBody } from '@admin/lib/errors';
 import type { Member, MemberGroup, System } from '@admin/lib/types';
@@ -96,8 +97,7 @@ export function MembersScreen() {
                 <div className={list.main}>
                   <p className={list.title}>{member.name} {member.name_ko && <span>({member.name_ko})</span>}</p>
                   <p className={list.meta}><span>{GROUP_NAMES[member.group]}</span></p>
-                  {member.publication?.state === 'failed' && member.publication.message &&
-                    <p className={list.meta}>반영 실패: {member.publication.message}</p>}
+                  <PublishFailure publication={member.publication} pending={publishing(member.id)} />
                 </div>
               </div>
               <span className={list.status}>{statusLabel(member, publishing(member.id))}</span>

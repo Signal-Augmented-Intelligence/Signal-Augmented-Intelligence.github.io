@@ -4,6 +4,7 @@ import { type FormEvent, useRef, useState } from 'react';
 import { useDialog } from '@admin/components/Dialog';
 import { Field, FilePicker, focusField } from '@admin/components/Field';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
+import { changedFields, readDraft, writeDraft } from '@admin/lib/edit';
 import { errorBody, fieldList } from '@admin/lib/errors';
 import { uploadFile, uploadingLabel } from '@admin/lib/files';
 import type { Member, MemberGroup, System } from '@admin/lib/types';
@@ -22,6 +23,7 @@ type Draft = {
   name: string; name_ko: string; group: Exclude<MemberGroup, 'faculty'>;
   since: string; until: string; bio: string; bio_en: string; url: string; after: string;
 };
+const draftKey = (id?: string) => `sai-admin:members:${id ?? 'new'}`;
 const fromMember = (member?: Member): Draft => ({
   name: member?.name ?? '', name_ko: member?.name_ko ?? '',
   group: member?.group === 'faculty' ? 'undergrad' : member?.group ?? 'undergrad',
@@ -36,14 +38,20 @@ export function MemberForm({ member, system, onSaved, onCancel, onConflict }: {
 }) {
   const dialog = useDialog();
   const form = useRef<HTMLFormElement>(null);
-  const [draft, setDraft] = useState(() => fromMember(member));
+  // 글자 칸만 임시 보관합니다. 고른 사진 파일과 공개 동의 확인은 다시 열면 새로 합니다.
+  const [draft, setDraft] = useState<Draft>(() => ({ ...fromMember(member), ...readDraft<Draft>(draftKey(member?.id)) }));
   const [photo, setPhoto] = useState<File | null>(null);
   const [readyPhoto, setReadyPhoto] = useState<string | null>(null);
   const [removePhoto, setRemovePhoto] = useState(false);
   const [consent, setConsent] = useState(false);
   const [saving, setSaving] = useState(false);
   const [progress, setProgress] = useState<string | null>(null);
-  const set = (change: Partial<Draft>) => setDraft((current) => ({ ...current, ...change }));
+  const set = (change: Partial<Draft>) => setDraft((current) => {
+    const next = { ...current, ...change };
+    writeDraft(draftKey(member?.id), next);
+    return next;
+  });
+  const cancel = () => { writeDraft(draftKey(member?.id), null); onCancel(); };
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -86,15 +94,20 @@ export function MemberForm({ member, system, onSaved, onCancel, onConflict }: {
         setReadyPhoto(photoId);
       }
       setProgress('멤버 저장 중');
-      const body: Record<string, unknown> = {
+      const body: Partial<Member> = {
         ...draft, name: draft.name.trim(), name_ko: draft.name_ko.trim(), role: ROLES[draft.group],
+        since: draft.since.trim(), until: draft.until.trim(),
         bio: draft.bio.trim(), bio_en: draft.bio_en.trim(), url: draft.url.trim(), after: draft.after.trim(),
       };
       if (photoId) body.photo_file_id = photoId;
       else if (removePhoto) body.photo_file_id = null;
+      // 수정은 바꾼 칸만 보냅니다. 오래된 임시 입력이 다른 사람이 고친 칸을 덮어쓰지 않게 합니다.
+      const changed = member ? changedFields(member, body) : body;
+      if (member && Object.keys(changed).length === 0) { cancel(); return; }
       const result = member
-        ? await api.patch<Member>(`/people/${member.id}`, { ...body, version: member.version })
+        ? await api.patch<Member>(`/people/${member.id}`, { ...changed, version: member.version })
         : await api.post<Member>('/people', body);
+      writeDraft(draftKey(member?.id), null);
       onSaved(result.data, result.publish);
     } catch (error) {
       if (signedOut(error)) return;
@@ -130,7 +143,7 @@ export function MemberForm({ member, system, onSaved, onCancel, onConflict }: {
       {progress && <p className={styles.formNote} role="status">{progress}</p>}
       <div className="admin-actions">
         <button type="submit" className="admin-button" disabled={saving}>{saving ? '저장 중' : '저장'}</button>
-        <button type="button" className="admin-text-button" onClick={onCancel} disabled={saving}>취소</button>
+        <button type="button" className="admin-text-button" onClick={cancel} disabled={saving}>취소</button>
       </div>
     </form>
   );
