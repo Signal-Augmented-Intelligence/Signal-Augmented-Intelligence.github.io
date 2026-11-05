@@ -303,13 +303,13 @@ export function getNews(): NewsItem[] {
 /* ---------- notices ---------- */
 export type Notice = {
   id: string; date: string; event_date: string; kind: 'seminar' | 'conference' | 'recruitment' | 'other';
-  title: string; body: string; link: string; popup: boolean;
+  title: string; body: string; link: string; photo: string; popup: boolean;
 };
 export function getNotices(): Notice[] {
   return readYaml<Record<string, unknown>[]>('notices.yml', [])
     .map((n) => ({ id: str(n.id), date: str(n.date), event_date: str(n.event_date),
       kind: str(n.kind) as Notice['kind'], title: str(n.title), body: str(n.body),
-      link: mediaUrl(str(n.link)), popup: n.popup === true }))
+      link: mediaUrl(str(n.link)), photo: mediaUrl(str(n.photo)), popup: n.popup === true }))
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 

@@ -3,7 +3,7 @@ import delivery from '../../content/media-delivery.json';
 
 const base = delivery.base_url.replace(/\/+$/, '');
 
-const managed = /^\/(?:files\/(?:seminars|publications)|images\/(?:seminars|people|home|album|figures))\//;
+const managed = /^\/(?:files\/(?:seminars|publications)|images\/(?:seminars|people|home|album|figures|notices))\//;
 
 export function mediaUrl(path: string): string {
   if (!managed.test(path) || !base) return path;

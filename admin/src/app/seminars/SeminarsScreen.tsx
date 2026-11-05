@@ -132,7 +132,7 @@ export function SeminarsScreen() {
                 </div>
                 <span className={list.status}>{status(s)}</span>
                 <span className={list.actions}>
-                  <button type="button" className="admin-text-button" disabled={locked(s)} onClick={() => setEditing(s.id)}>고치기</button>
+                  <button type="button" className="admin-text-button" disabled={locked(s)} onClick={() => setEditing(s.id)}>수정</button>
                   {s.hidden ? (
                     <button type="button" className="admin-text-button" disabled={locked(s)} onClick={() => patch(s, { hidden: false })}>다시 보이기</button>
                   ) : (

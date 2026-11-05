@@ -103,7 +103,7 @@ export function MembersScreen() {
               <span className={list.status}>{statusLabel(member, publishing(member.id))}</span>
               <span className={list.actions}>
                 <button type="button" className="admin-text-button" disabled={busyRow === member.id || editing !== null}
-                  onClick={() => setEditing(member.id)}>고치기</button>
+                  onClick={() => setEditing(member.id)}>수정</button>
                 <button type="button" className="admin-text-button" disabled={busyRow === member.id || editing !== null}
                   onClick={() => void setHidden(member, !member.hidden)}>{member.hidden ? '다시 보이기' : '숨기기'}</button>
                 {canDelete(member, publishing(member.id)) && <button type="button" className="admin-text-button"

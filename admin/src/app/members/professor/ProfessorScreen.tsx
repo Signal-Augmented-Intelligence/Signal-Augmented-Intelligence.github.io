@@ -148,7 +148,7 @@ export function ProfessorScreen() {
         {professor.sections[key].filter((item) => !item.hidden).slice(0, 3).map((item) =>
           <p key={item.id}>{fields.map(([field]) => item.data[field]).filter(Boolean).join(' · ')}</p>)}
       </div>)}
-      <button type="button" className="admin-text-button" onClick={edit}>고치기</button>
+      <button type="button" className="admin-text-button" onClick={edit}>수정</button>
     </>}
   </Section>;
 }

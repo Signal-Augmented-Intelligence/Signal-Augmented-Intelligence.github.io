@@ -101,7 +101,7 @@ export function NewsScreen() {
                   : n.publication.state === 'failed' ? '반영 실패' : n.hidden ? '숨김' : '공개 중'}
               </span>
               <span className={list.actions}>
-                <button type="button" className="admin-text-button" disabled={locked || busy === n.id} onClick={() => setOpen(n.id)}>고치기</button>
+                <button type="button" className="admin-text-button" disabled={locked || busy === n.id} onClick={() => setOpen(n.id)}>수정</button>
                 <button type="button" className="admin-text-button" disabled={locked || busy === n.id} onClick={() => void setHidden(n, !n.hidden)}>{n.hidden ? '다시 보이기' : '숨기기'}</button>
                 {canDelete(n, publishing(n.id)) && <button type="button" className="admin-text-button" disabled={deleting !== null || locked || busy === n.id}
                   onClick={() => void remove('news', n, '소식을 삭제할까요?')}>{deleting === n.id ? '삭제 중' : '삭제'}</button>}

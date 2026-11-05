@@ -26,7 +26,7 @@ MEDIA_DELIVERY = json.loads(Path('content/media-delivery.json').read_text())
 EXTERNAL_MEDIA = bool(MEDIA_DELIVERY['base_url'])
 SKIP_PRIVATE_MEDIA = (MEDIA_DELIVERY.get('mode') == 'pages_artifact' and
                       os.environ.get('SAI_SKIP_PRIVATE_MEDIA_CHECK') == '1')
-MANAGED_MEDIA = re.compile(r'^/(?:files/(?:seminars|publications)|images/(?:seminars|people|home|album|figures))/')
+MANAGED_MEDIA = re.compile(r'^/(?:files/(?:seminars|publications)|images/(?:seminars|people|home|album|figures|notices))/')
 
 
 # ---- rendered site ----
