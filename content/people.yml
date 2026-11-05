@@ -24,7 +24,8 @@
   role: "Undergraduate Researcher"
   since: 2025-06
   until:
-  bio: "LLM이 인식 오류를 개선한다면 우리는  애초에 정답이 아니라 무엇을 남겨줘야 하는가?"
+  bio: "정교한 음향 표상은 소리의 맥락을 얼마나 충실하게 반영하는가?"
+  bio_en: "Does better acoustic representation guarantee better audio understanding?"
   photo: "2026-10-30-bc372ee5.jpg"
   url: ""
   after: ""
