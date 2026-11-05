@@ -207,9 +207,9 @@ export function SeminarForm({ loaded, seminar, onSaved, onCancel, onConflict }: 
         <p className="admin-muted">불러오는 중입니다.</p>
       ) : (
         <>
-          <Field label="PDF" optional limit={`${system.limits.seminar_pdf_upload_mb} MB 이하`}>
+          <Field label="PDF" optional limit={`${system.limits.seminar_pdf_upload_mb} MB 이하`} group>
             <FileUpload
-              name="pdf" purpose="seminar_pdf" accept="application/pdf"
+              name="pdf" label="PDF" purpose="seminar_pdf" accept="application/pdf"
               maxBytes={system.limits.seminar_pdf_upload_mb * MB}
               tooLarge={`PDF가 ${system.limits.seminar_pdf_upload_mb} MB를 넘습니다.`}
               value={draft.pdf}
@@ -218,9 +218,9 @@ export function SeminarForm({ loaded, seminar, onSaved, onCancel, onConflict }: 
             />
           </Field>
           {draft.pdf && (
-            <Field label="표지" optional>
+            <Field label="표지" optional group>
               <FileUpload
-                name="cover" purpose="seminar_cover" accept={system.limits.photo_types.join(',')}
+                name="cover" label="표지" purpose="seminar_cover" accept={system.limits.photo_types.join(',')}
                 maxBytes={system.limits.photo_mb * MB}
                 tooLarge={`표지 이미지가 ${system.limits.photo_mb} MB를 넘습니다.`}
                 value={draft.cover}

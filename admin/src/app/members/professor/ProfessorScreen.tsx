@@ -4,7 +4,9 @@ import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { Section } from '@/components/Section';
 import { useDialog } from '@admin/components/Dialog';
 import { Field } from '@admin/components/Field';
+import { PublishFailure } from '@admin/components/PublishFailure';
 import { api, ApiError, signedOut } from '@admin/lib/api';
+import { readDraft, writeDraft } from '@admin/lib/edit';
 import { errorBody } from '@admin/lib/errors';
 import { uploadFile, uploadingLabel } from '@admin/lib/files';
 import type { ProfessorInfo, ProfessorItem, ProfessorSection } from '@admin/lib/types';
@@ -18,15 +20,10 @@ const FIELDS = [
 ] as const;
 type FieldKey = typeof FIELDS[number][0];
 const DRAFT_KEY = 'sai-admin:professor-draft';
+/** 다른 폼과 같은 임시 보관. "나가기"를 누르면 지워지고, 그사이 다른 곳에서 저장했으면(버전이 다르면) 쓰지 않습니다. */
 const savedDraft = (current: ProfessorInfo): ProfessorInfo | null => {
-  try {
-    const draft = JSON.parse(sessionStorage.getItem(DRAFT_KEY) ?? 'null') as ProfessorInfo | null;
-    return draft?.version === current.version && draft.sections ? draft : null;
-  } catch { return null; }
-};
-const storeDraft = (draft: ProfessorInfo | null) => {
-  try { if (draft) sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-    else sessionStorage.removeItem(DRAFT_KEY); } catch { /* Editing remains possible without storage. */ }
+  const draft = readDraft<ProfessorInfo>(DRAFT_KEY);
+  return draft?.version === current.version && draft.sections ? draft : null;
 };
 const SECTIONS: { key: ProfessorSection; title: string; fields: readonly [string, string][] }[] = [
   { key: 'links', title: '링크', fields: [['label', '이름'], ['url', '주소']] },
@@ -58,11 +55,11 @@ export function ProfessorScreen() {
   }, [dialog]);
   useEffect(() => { void load(); }, [load, settled]);
   const edit = () => { if (professor) setDraft(savedDraft(professor) ?? structuredClone(professor)); };
-  const cancel = () => { storeDraft(null); setDraft(null); setPhoto(null); setProgress(null); };
+  const cancel = () => { writeDraft(DRAFT_KEY, null); setDraft(null); setPhoto(null); setProgress(null); };
   const changeDraft = (change: (current: ProfessorInfo) => ProfessorInfo) => setDraft((current) => {
     if (!current) return current;
     const next = change(current);
-    storeDraft(next);
+    writeDraft(DRAFT_KEY, next);
     return next;
   });
   const setField = (key: FieldKey, value: string) => changeDraft((current) => ({ ...current, [key]: value }));
@@ -103,11 +100,11 @@ export function ProfessorScreen() {
   };
   const state = publishing('professor') || professor?.publication.state === 'publishing' ? '반영 중'
     : professor?.publication.state === 'failed' ? '반영 실패' : '공개 중';
-  return <Section title="교수님 페이지" aside={professor && <span title={professor.publication.message ?? undefined}>{state}</span>}>
+  return <Section title="교수님 페이지" aside={professor && <span>{state}</span>}>
+    <PublishFailure publication={professor?.publication} pending={publishing('professor')} />
     {!professor ? <p className="admin-muted">불러오는 중입니다.</p> : draft ? <form className="admin-form" onSubmit={save}>
       <div className="admin-actions"><button type="submit" className="admin-button" disabled={saving}>{saving ? '저장 중' : '저장'}</button>
         <button type="button" className="admin-text-button" disabled={saving} onClick={cancel}>취소</button></div>
-      <p className="admin-muted">이 탭에서 다른 화면으로 이동해도 작성 중인 내용은 보관됩니다.</p>
       {FIELDS.map(([key, label]) => <Field key={key} label={label} optional={key !== 'name'}>
         {key === 'bio' || key === 'sources_note' ? <textarea value={draft[key]} onChange={(e) => setField(key, e.target.value)} />
           : <input value={draft[key]} onChange={(e) => setField(key, e.target.value)} />}

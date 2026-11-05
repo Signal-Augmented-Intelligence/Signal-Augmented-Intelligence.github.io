@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Section } from '@/components/Section';
 import { useDialog } from '@admin/components/Dialog';
+import { PublishFailure } from '@admin/components/PublishFailure';
 import { cell, PhotoGrid, PickPhotos, TextEdit, usePhotoUploads } from '@admin/components/PhotoGrid';
 import { api, ApiError, signedOut } from '@admin/lib/api';
 import { errorBody } from '@admin/lib/errors';
@@ -104,7 +105,8 @@ export function HomeSlidesScreen({ publish: { publishing, track, settled } }: { 
             return (
               <>
                 <p className={cell.caption}>{s.note}</p>
-                <p className={cell.meta} title={s.publication.message ?? undefined}>{status(s)}</p>
+                <p className={cell.meta}>{status(s)}</p>
+                <PublishFailure className={cell.meta} publication={s.publication} pending={publishing(s.id)} />
                 <span className={cell.actions}>
                   <TextEdit label="메모" value={s.note} disabled={locked} open={noteOpen === s.id} onOpen={(open) => setNoteOpen(open ? s.id : null)} onSave={(note) => patch(s, { note })} />
                   {noteOpen !== s.id && (s.hidden

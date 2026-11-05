@@ -46,11 +46,11 @@ const MESSAGES: Record<string, [ErrorCode, string]> = {
   VALIDATION_FAILED: ['VALIDATION_FAILED', '보낸 내용을 받지 못했습니다. 입력을 확인해 주세요.'],
   FILE_TOO_LARGE: ['FILE_TOO_LARGE', '파일이 20 MB를 넘습니다.'],
   UPLOAD_BUSY: ['BUSY', '다른 파일을 처리하는 중입니다. 끝나면 이어서 올립니다.'],
-  CONFLICT: ['CONFLICT', '같은 접수 번호로 다른 내용이 이미 접수됐습니다. 새로 고친 뒤 다시 저장해 주세요.'],
+  CONFLICT: ['CONFLICT', '같은 접수 번호로 다른 내용이 이미 접수됐습니다. 새로고침한 뒤 다시 저장해 주세요.'],
   CONFIGURATION_REQUIRED: ['STORAGE_UNAVAILABLE', '관리 저장소 설정이 끝나지 않았습니다.'],
   INBOX_UNAVAILABLE: ['STORAGE_UNAVAILABLE', '이 계정의 접수 폴더를 쓸 수 없습니다.'],
 };
-const NETWORK_MESSAGE = '관리 화면 서버에 연결할 수 없습니다. 공개 사이트는 그대로 보입니다.';
+const NETWORK_MESSAGE = '관리 화면에 연결할 수 없습니다. 공개 사이트는 그대로 보입니다.';
 
 function toError(error: unknown): ApiError {
   const text = String((error as Error)?.message ?? error ?? '');
@@ -93,7 +93,7 @@ function snapshot(fresh = false): Promise<Snapshot> {
   return value;
 }
 
-const notFound = () => new ApiError('NOT_FOUND', '찾을 수 없습니다. 목록을 새로 고쳐 주세요.', 404);
+const notFound = () => new ApiError('NOT_FOUND', '찾을 수 없습니다. 목록을 새로고침해 주세요.', 404);
 
 function publishOf(job: Job | undefined, id: string): Publish {
   if (!job) return { id, state: 'queued' };
@@ -245,7 +245,7 @@ async function waitApplied(request_id: string, method: Method, path: string, fin
     if (job.state === 'failed' && !(job.error_code === 'PUBLISH_FAILED' && job.result != null)) {
       writePending((pending) => { delete pending[fingerprint]; });
       const [code, message] = job.error_code === 'CONFLICT'
-        ? ['CONFLICT', '다른 곳에서 먼저 고쳤습니다. 새로 고친 뒤 다시 저장해 주세요.'] as const
+        ? ['CONFLICT', '다른 곳에서 먼저 수정했습니다. 새로고침한 뒤 다시 저장해 주세요.'] as const
         : ['INTERNAL', job.message || '저장하지 못했습니다.'] as const;
       throw new ApiError(code, message, 0);
     }
@@ -254,7 +254,7 @@ async function waitApplied(request_id: string, method: Method, path: string, fin
     writePending((pending) => { delete pending[fingerprint]; });
     const data = path === '/publish' ? publishOf(job, request_id)
       : job.result ?? (method === 'PATCH' ? fromCollection(snap, path) : undefined);
-    if (data === undefined) throw new ApiError('INTERNAL', '저장했지만 결과를 읽지 못했습니다. 화면을 새로 고쳐 주세요.', 0);
+    if (data === undefined) throw new ApiError('INTERNAL', '저장했지만 결과를 읽지 못했습니다. 화면을 새로고침해 주세요.', 0);
     return { data, publish: publishOf(job, request_id) };
   }
   throw new ApiError('PENDING', '접수했지만 아직 적용되지 않았습니다. 잠시 뒤 같은 내용으로 다시 저장하면 이어서 기다립니다.', 0);

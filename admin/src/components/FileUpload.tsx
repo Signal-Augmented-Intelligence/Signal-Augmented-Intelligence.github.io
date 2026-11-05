@@ -29,8 +29,10 @@ const ready = (info: FileInfo, name: string): FileValue =>
  * 올리는 중에는 창을 닫거나 새로고침하면 브라우저가 확인을 묻습니다. 처리 중에는 묻지 않습니다(돌아와서 이어서 기다림).
  * onPending: 올리는 동안의 Promise를 넘깁니다. 저장은 이것을 기다렸다가 이어서 합니다.
  */
-export function FileUpload({ name, purpose, accept, maxBytes, tooLarge, value, onChange, onPending }: {
+export function FileUpload({ name, label, purpose, accept, maxBytes, tooLarge, value, onChange, onPending }: {
   name: string;
+  /** 파일 고르기 칸의 이름(화면 낭독용). Field group의 제목과 같게 둡니다. */
+  label: string;
   purpose: FilePurpose;
   accept: string;
   maxBytes: number;
@@ -121,7 +123,7 @@ export function FileUpload({ name, purpose, accept, maxBytes, tooLarge, value, o
   return (
     <span className={styles.upload}>
       <span className={styles.file} data-state={busy ? 'busy' : value ? 'ready' : 'empty'}>
-        <input ref={input} type="file" name={name} accept={accept} onChange={pick} disabled={!!busy} tabIndex={value || busy ? -1 : 0} />
+        <input ref={input} type="file" name={name} aria-label={label} accept={accept} onChange={pick} disabled={!!busy} tabIndex={value || busy ? -1 : 0} />
         {!value && !busy && <span className={styles.button}>파일 선택</span>}
         <span className={value || busy ? styles.chosen : styles.name}>{busy?.name ?? value?.name ?? '선택한 파일 없음'}</span>
         {status && <span className={styles.status}>{status}</span>}

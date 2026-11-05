@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Section } from '@/components/Section';
 import { useDialog } from '@admin/components/Dialog';
 import list from '@admin/components/List.module.css';
+import { PublishFailure } from '@admin/components/PublishFailure';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
 import { errorBody } from '@admin/lib/errors';
 import { formatDay } from '@admin/lib/format';
@@ -135,8 +136,9 @@ export function ResearchScreen() {
                     <span>{p.venue}</span>
                     {p.area_ids.length > 0 && <span>{areaNames(p.area_ids)}</span>}
                   </p>
+                  <PublishFailure publication={p.publication} pending={publishing(p.id)} />
                 </div>
-                <span className={list.status} title={p.publication.message ?? undefined}>{status(p)}</span>
+                <span className={list.status}>{status(p)}</span>
                 <span className={list.actions}>
                   <button type="button" className="admin-text-button" disabled={locked || busy === p.id} onClick={() => setOpen({ kind: 'publication', id: p.id })}>수정</button>
                   <button type="button" className="admin-text-button" disabled={locked || busy === p.id} onClick={() => void hidePublication(p, !p.hidden)}>{p.hidden ? '다시 보이기' : '숨기기'}</button>
@@ -171,8 +173,9 @@ export function ResearchScreen() {
                 <div className={list.main}>
                   <p className={list.title}>{a.title}</p>
                   <p className={list.meta}><span>논문 <span className="num">{a.publication_count}</span>편</span></p>
+                  <PublishFailure publication={a.publication} pending={publishing(a.id)} />
                 </div>
-                <span className={list.status} title={a.publication.message ?? undefined}>{status(a)}</span>
+                <span className={list.status}>{status(a)}</span>
                 <span className={list.actions}>
                   <button type="button" className="admin-text-button" disabled={locked || busy !== null || i === 0} onClick={() => moveArea(i, -1)}>위로</button>
                   <button type="button" className="admin-text-button" disabled={locked || busy !== null || i === areas.length - 1} onClick={() => moveArea(i, 1)}>아래로</button>

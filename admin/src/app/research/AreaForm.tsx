@@ -106,9 +106,9 @@ export function AreaForm({ area, system, onSaved, onCancel, onConflict }: {
         <textarea name="body" value={draft.body} onChange={(e) => set({ body: e.target.value })} />
       </Field>
       {system.storage.connected ? (
-        <Field label="대표 그림" optional limit={`${system.limits.photo_mb} MB 이하`}>
+        <Field label="대표 그림" optional limit={`${system.limits.photo_mb} MB 이하`} group>
           <FileUpload
-            name="figure" purpose="research_figure" accept={system.limits.photo_types.join(',')}
+            name="figure" label="대표 그림" purpose="research_figure" accept={system.limits.photo_types.join(',')}
             maxBytes={system.limits.photo_mb * MB} tooLarge={`그림이 ${system.limits.photo_mb} MB를 넘습니다.`}
             value={draft.figure} onChange={(figure) => set({ figure })}
             onPending={(p) => { pending.current = p; }}
