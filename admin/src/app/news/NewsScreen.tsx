@@ -186,8 +186,8 @@ function NewsForm({ item, publications, onSaved, onCancel, onConflict }: {
 
   return (
     <form ref={form} className={`admin-form ${styles.form}`} onSubmit={submit} noValidate>
-      <Field label="날짜" optional limit="YYYY, YYYY-MM, YYYY-MM-DD">
-        <input name="date" inputMode="numeric" value={draft.date} onChange={(e) => set({ date: e.target.value })} />
+      <Field label="날짜" optional>
+        <input name="date" inputMode="numeric" placeholder="YYYY, YYYY-MM, YYYY-MM-DD" value={draft.date} onChange={(e) => set({ date: e.target.value })} />
       </Field>
       <Field label="소식 제목" limit="한 줄, 500자 이내">
         <input name="text" value={draft.text} placeholder="2026 한국음성학회 학술대회 우수논문 발표상 수상 (박소영, 김선만)" onChange={(e) => set({ text: e.target.value })} />

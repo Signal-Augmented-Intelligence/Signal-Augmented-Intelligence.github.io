@@ -2,8 +2,8 @@
  * Album에만 있는 것: 목록 줄의 대표 사진 칸과 행사 이름 버튼, 펼친 행사(머리 줄·행사 정보·사진), 행사 폼 폭.
  * 목록 한 줄은 components/List.module.css, 사진 칸은 PhotoGrid.module.css.
  */
-.form > form { max-width: 36rem; }
-.row { grid-template-columns: 56px minmax(0, 1fr) 4.5rem 18rem; }
+.form > form { max-width: 40rem; }
+.row { grid-template-columns: 56px minmax(0, 1fr) auto fit-content(18rem); }
 .thumb { width: 56px; aspect-ratio: 1; overflow: hidden; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); }
 .thumb img { width: 100%; height: 100%; object-fit: cover; }
 
