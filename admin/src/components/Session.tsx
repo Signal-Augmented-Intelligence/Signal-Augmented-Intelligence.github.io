@@ -148,9 +148,11 @@ function GoogleAccountNotice() {
   return (
     <div className={formStyles.narrow}>
     <Section title={title}>
-      <p>{body}</p>
-      <div className="admin-actions">
-        <button type="button" className="admin-button" onClick={() => void again()} disabled={busy}>{busy ? '확인 중' : '다시 열기'}</button>
+      <div className="admin-form">
+        <p>{body}</p>
+        <div className="admin-actions">
+          <button type="button" className="admin-button" onClick={() => void again()} disabled={busy}>{busy ? '확인 중' : '다시 열기'}</button>
+        </div>
       </div>
     </Section>
     </div>

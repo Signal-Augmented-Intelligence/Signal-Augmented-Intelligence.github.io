@@ -177,8 +177,8 @@ export function PublicationForm({ publication, people, areas, system, onSaved, o
       <Field label="학회·저널">
         <input name="venue" value={draft.venue} onChange={(e) => set({ venue: e.target.value })} />
       </Field>
-      <Field label="발표일" limit="YYYY, YYYY-MM, YYYY-MM-DD">
-        <input name="pub_date" inputMode="numeric" value={draft.pub_date} onChange={(e) => set({ pub_date: e.target.value })} />
+      <Field label="발표일">
+        <input name="pub_date" inputMode="numeric" placeholder="YYYY, YYYY-MM, YYYY-MM-DD" value={draft.pub_date} onChange={(e) => set({ pub_date: e.target.value })} />
       </Field>
       <Field label="진행 상태" optional>
         <input name="status" value={draft.status} onChange={(e) => set({ status: e.target.value })} />

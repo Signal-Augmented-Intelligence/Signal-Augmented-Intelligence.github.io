@@ -189,7 +189,7 @@ export function HomeContentScreen({ publish: { publishing, track, settled } }: {
         <dl className={styles.details}>{LAB_FIELDS.map(([key, label]) => <div key={key}>
           <dt>{label}</dt><dd>{lab[key] || '—'}</dd>
         </div>)}<div><dt>내부 검토 표시</dt><dd>{lab.draft ? '켜짐' : '꺼짐'}</dd></div></dl>
-        <button type="button" className="admin-text-button" onClick={editLab}>고치기</button>
+        <button type="button" className="admin-text-button" onClick={editLab}>수정</button>
       </>}
     </Section>
     <Section title="시" aside={poem && <span className={styles.status} title={poem.publication.message ?? undefined}>
@@ -239,7 +239,7 @@ export function HomeContentScreen({ publish: { publishing, track, settled } }: {
           <p>{s.lines.join('\n')}</p>
         </div>)}
         {poem.credit && <p>{poem.credit}</p>}
-        <button type="button" className="admin-text-button" onClick={editPoem}>고치기</button>
+        <button type="button" className="admin-text-button" onClick={editPoem}>수정</button>
       </>}
     </Section>
   </>;

@@ -175,7 +175,7 @@ export function TextEdit({ label, value, onSave, disabled, open, onOpen }: {
   const [text, setText] = useState(value);
   const [saving, setSaving] = useState(false);
   if (!open) {
-    return <button type="button" className="admin-text-button" disabled={disabled} onClick={() => { setText(value); onOpen(true); }}>{label} 고치기</button>;
+    return <button type="button" className="admin-text-button" disabled={disabled} onClick={() => { setText(value); onOpen(true); }}>{label} 수정</button>;
   }
   const save = async () => {
     setSaving(true);

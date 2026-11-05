@@ -10,7 +10,7 @@ verifyPrivateBackupCheckout(backup);
 const sitePublic = fs.realpathSync(path.join(process.cwd(), 'public'));
 const targetPublic = path.join(backup, 'public');
 const directories = ['files/seminars', 'files/publications', 'images/seminars', 'images/people',
-  'images/home', 'images/album', 'images/figures'];
+  'images/home', 'images/album', 'images/figures', 'images/notices'];
 const hashes = {};
 function walk(folder) {
   if (!fs.existsSync(folder)) return;

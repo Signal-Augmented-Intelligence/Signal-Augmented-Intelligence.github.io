@@ -161,7 +161,7 @@ export function AlbumScreen() {
             <li key={a.id} className={`${list.row} ${styles.row}`}>
               {summary(a, () => setOpen(a.id))}
               <span className={list.actions}>
-                <button type="button" className="admin-text-button" disabled={locked(a)} onClick={() => setOpen(a.id)}>고치기</button>
+                <button type="button" className="admin-text-button" disabled={locked(a)} onClick={() => setOpen(a.id)}>수정</button>
                 {a.hidden
                   ? <button type="button" className="admin-text-button" disabled={locked(a)} onClick={() => setHidden(a, false)}>다시 보이기</button>
                   : <button type="button" className="admin-text-button" disabled={locked(a)} onClick={() => setHidden(a, true)}>숨기기</button>}

@@ -20,6 +20,7 @@ export default function NoticesPage() {
             <strong className={styles.kind}>{kinds[notice.kind]}</strong>
             <h2 className={styles.title} lang={langOf(notice.title)}>{notice.title}</h2>
             {notice.event_date && <p className={styles.meta}>Date: {formatDate(notice.event_date)}</p>}
+            {notice.photo && <img className={styles.photo} src={notice.photo} alt={notice.title} />}
             {notice.body && <p className={styles.body} lang={langOf(notice.body)}>{notice.body}</p>}
             {notice.link && (notice.link.startsWith('/')
               ? <Link href={notice.link}>Details</Link>

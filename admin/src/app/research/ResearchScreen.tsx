@@ -138,7 +138,7 @@ export function ResearchScreen() {
                 </div>
                 <span className={list.status} title={p.publication.message ?? undefined}>{status(p)}</span>
                 <span className={list.actions}>
-                  <button type="button" className="admin-text-button" disabled={locked || busy === p.id} onClick={() => setOpen({ kind: 'publication', id: p.id })}>고치기</button>
+                  <button type="button" className="admin-text-button" disabled={locked || busy === p.id} onClick={() => setOpen({ kind: 'publication', id: p.id })}>수정</button>
                   <button type="button" className="admin-text-button" disabled={locked || busy === p.id} onClick={() => void hidePublication(p, !p.hidden)}>{p.hidden ? '다시 보이기' : '숨기기'}</button>
                   {canDelete(p, publishing(p.id)) && <button type="button" className="admin-text-button" disabled={deleting !== null || locked || busy === p.id}
                     onClick={() => void remove('publications', p, '논문을 삭제할까요?')}>{deleting === p.id ? '삭제 중' : '삭제'}</button>}
@@ -176,7 +176,7 @@ export function ResearchScreen() {
                 <span className={list.actions}>
                   <button type="button" className="admin-text-button" disabled={locked || busy !== null || i === 0} onClick={() => moveArea(i, -1)}>위로</button>
                   <button type="button" className="admin-text-button" disabled={locked || busy !== null || i === areas.length - 1} onClick={() => moveArea(i, 1)}>아래로</button>
-                  <button type="button" className="admin-text-button" disabled={locked || busy === a.id} onClick={() => setOpen({ kind: 'area', id: a.id })}>고치기</button>
+                  <button type="button" className="admin-text-button" disabled={locked || busy === a.id} onClick={() => setOpen({ kind: 'area', id: a.id })}>수정</button>
                   <button type="button" className="admin-text-button" disabled={locked || busy === a.id} onClick={() => void hideArea(a, !a.hidden)}>{a.hidden ? '다시 보이기' : '숨기기'}</button>
                 </span>
               </li>

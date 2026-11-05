@@ -17,7 +17,7 @@ const manifest = JSON.parse(fs.readFileSync(path.join(backup, 'manifests', `${si
 assert.equal(manifest.format, 1);
 assert.equal(manifest.site_sha, siteSha);
 assert.ok(manifest.files && typeof manifest.files === 'object' && !Array.isArray(manifest.files));
-const managed = /^(?:files\/(?:seminars|publications)|images\/(?:seminars|people|home|album|figures))\//;
+const managed = /^(?:files\/(?:seminars|publications)|images\/(?:seminars|people|home|album|figures|notices))\//;
 const files = Object.entries(manifest.files);
 const mediaRoot = fs.realpathSync(path.join(backup, 'public'));
 for (const [file, expected] of files) {

@@ -36,7 +36,7 @@
   .areaFilter { width: auto; }
 }
 @media (max-width: 640px) {
-  .row { grid-template-columns: minmax(0, 1fr) 76px; gap: 5px 14px; }
+  .row { grid-template-columns: minmax(0, 1fr) 76px; grid-template-rows: auto 1fr; gap: 5px 14px; }
   .date { grid-column: 1; }
   .coverGroup { grid-column: 2; grid-row: 1 / 3; width: 76px; }
   .cover { width: 76px; height: 99px; }

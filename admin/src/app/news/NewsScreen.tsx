@@ -101,7 +101,7 @@ export function NewsScreen() {
                   : n.publication.state === 'failed' ? '반영 실패' : n.hidden ? '숨김' : '공개 중'}
               </span>
               <span className={list.actions}>
-                <button type="button" className="admin-text-button" disabled={locked || busy === n.id} onClick={() => setOpen(n.id)}>고치기</button>
+                <button type="button" className="admin-text-button" disabled={locked || busy === n.id} onClick={() => setOpen(n.id)}>수정</button>
                 <button type="button" className="admin-text-button" disabled={locked || busy === n.id} onClick={() => void setHidden(n, !n.hidden)}>{n.hidden ? '다시 보이기' : '숨기기'}</button>
                 {canDelete(n, publishing(n.id)) && <button type="button" className="admin-text-button" disabled={deleting !== null || locked || busy === n.id}
                   onClick={() => void remove('news', n, '소식을 삭제할까요?')}>{deleting === n.id ? '삭제 중' : '삭제'}</button>}
@@ -186,8 +186,8 @@ function NewsForm({ item, publications, onSaved, onCancel, onConflict }: {
 
   return (
     <form ref={form} className={`admin-form ${styles.form}`} onSubmit={submit} noValidate>
-      <Field label="날짜" optional limit="YYYY, YYYY-MM, YYYY-MM-DD">
-        <input name="date" inputMode="numeric" value={draft.date} onChange={(e) => set({ date: e.target.value })} />
+      <Field label="날짜" optional>
+        <input name="date" inputMode="numeric" placeholder="YYYY, YYYY-MM, YYYY-MM-DD" value={draft.date} onChange={(e) => set({ date: e.target.value })} />
       </Field>
       <Field label="소식 제목" limit="한 줄, 500자 이내">
         <input name="text" value={draft.text} placeholder="2026 한국음성학회 학술대회 우수논문 발표상 수상 (박소영, 김선만)" onChange={(e) => set({ text: e.target.value })} />
