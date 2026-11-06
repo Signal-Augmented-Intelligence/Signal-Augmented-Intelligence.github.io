@@ -16,14 +16,17 @@ import { usePublish } from '@admin/lib/usePublish';
 import { canDelete, useDeletePost } from '@admin/lib/deletePost';
 import styles from './notices.module.css';
 
-type Draft = Pick<NoticeItem, 'date' | 'event_date' | 'kind' | 'title' | 'body' | 'link' | 'popup'> & { photo: FileValue | null };
+type Draft = Pick<NoticeItem, 'date' | 'event_date' | 'kind' | 'title' | 'body' | 'link' | 'popup' | 'pinned' | 'host' | 'paper_deadline' | 'registration_deadline'> & { photo: FileValue | null };
 const MB = 1024 * 1024;
+const DATE_HINT = 'YYYY, YYYY-MM, YYYY-MM-DD';
 const kinds: Record<NoticeItem['kind'], string> = {
   seminar: '세미나', conference: '학술대회', recruitment: '학부연구생 모집', other: '기타',
 };
 const key = (id?: string) => `sai-admin:notices:${id ?? 'new'}`;
 const sorted = (items: NoticeItem[]) => [...items].sort((a, b) => b.date.localeCompare(a.date));
 const todayInSeoul = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
+/** 학술대회 공지는 제목 없이도 저장되므로 목록에서는 주최나 종류 이름으로 대신합니다. */
+const rowTitle = (item: NoticeItem) => item.title || item.host || kinds[item.kind];
 
 export function NoticesScreen() {
   const dialog = useDialog();
@@ -70,9 +73,12 @@ export function NoticesScreen() {
             onCancel={() => setOpen(null)} onConflict={load} /></li>
         : <li key={item.id} className={list.row}>
           <div className={list.main}>
-            <p className={list.title}>{item.title}</p>
+            <p className={list.title}>{rowTitle(item)}</p>
             <p className={list.meta}><span className="num">{formatDay(item.date)}</span><span>{kinds[item.kind]}</span>
-              {item.event_date && <span>일정 {formatDay(item.event_date)}</span>}{item.photo_file_id && <span>사진</span>}{item.popup && <span>첫 화면 띠</span>}</p>
+              {item.event_date && <span>{item.kind === 'conference' ? '발표' : '일정'} {formatDay(item.event_date)}</span>}
+              {item.paper_deadline && <span>제출 마감 {formatDay(item.paper_deadline)}</span>}
+              {item.registration_deadline && <span>사전등록 마감 {formatDay(item.registration_deadline)}</span>}
+              {item.pinned && <span>고정</span>}{item.photo_file_id && <span>사진</span>}{item.popup && <span>첫 화면 띠</span>}</p>
             <PublishFailure publication={item.publication} pending={publishing(item.id)} />
           </div>
           <span className={list.status}>
@@ -96,7 +102,8 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
   const dialog = useDialog();
   const [draft, setDraft] = useState<Draft>(() => ({ date: item?.date ?? '', event_date: item?.event_date ?? '',
     kind: item?.kind ?? 'seminar', title: item?.title ?? '', body: item?.body ?? '',
-    link: item?.link ?? '', popup: item?.popup ?? false,
+    link: item?.link ?? '', popup: item?.popup ?? false, pinned: item?.pinned ?? false,
+    host: item?.host ?? '', paper_deadline: item?.paper_deadline ?? '', registration_deadline: item?.registration_deadline ?? '',
     photo: item?.photo_file_id ? { id: item.photo_file_id, name: '사진', size: null,
       preview_url: item.photo_preview_url, warnings: [] } : null,
     ...readDraft<Draft>(key(item?.id)) }));
@@ -112,11 +119,18 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
     if (saving) return;
     // 서버도 앞뒤 공백을 지우므로, 붙여 넣은 주소의 공백 때문에 저장이 막히지 않게 먼저 지우고 확인합니다.
     const date = draft.date.trim(); const event_date = draft.event_date.trim(); const title = draft.title.trim();
-    const content = draft.body.trim(); const link = draft.link.trim();
+    const content = draft.body.trim(); const conference = draft.kind === 'conference';
+    const link = conference ? '' : draft.link.trim();
+    const host = conference ? draft.host.trim() : '';
+    const paper_deadline = conference ? draft.paper_deadline.trim() : '';
+    const registration_deadline = conference ? draft.registration_deadline.trim() : '';
     const problems: [string, string][] = [];
     if (item && date && !PARTIAL_DATE.test(date)) problems.push(['date', '게시 날짜를 YYYY, YYYY-MM 또는 YYYY-MM-DD로 적어 주세요.']);
-    if (event_date && !PARTIAL_DATE.test(event_date)) problems.push(['event_date', '행사 날짜를 YYYY, YYYY-MM 또는 YYYY-MM-DD로 적어 주세요.']);
-    if (!title) problems.push(['title', '제목을 적어 주세요.']);
+    if (event_date && !PARTIAL_DATE.test(event_date)) problems.push(['event_date', `${conference ? '논문 발표일' : '행사 날짜'}을 YYYY, YYYY-MM 또는 YYYY-MM-DD로 적어 주세요.`]);
+    if (paper_deadline && !PARTIAL_DATE.test(paper_deadline)) problems.push(['paper_deadline', '논문 제출 마감일을 YYYY, YYYY-MM 또는 YYYY-MM-DD로 적어 주세요.']);
+    if (registration_deadline && !PARTIAL_DATE.test(registration_deadline)) problems.push(['registration_deadline', '사전등록 마감일을 YYYY, YYYY-MM 또는 YYYY-MM-DD로 적어 주세요.']);
+    if (host.length > 200) problems.push(['host', '주최는 200자 이내로 적어 주세요.']);
+    if (!title && !conference) problems.push(['title', '제목을 적어 주세요.']);
     else if (title.length > 200) problems.push(['title', '제목은 200자 이내로 적어 주세요.']);
     if (content.length > 20000) problems.push(['body', '내용은 20,000자 이내로 적어 주세요.']);
     if (link && !/^(?:https?:\/\/\S+|\/\S+)$/.test(link)) problems.push(['link', '자세히 보기 주소는 https:// 주소 또는 사이트 내부 주소로 적어 주세요.']);
@@ -132,9 +146,10 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
       const uploaded = wait ? await wait : null;
       if (wait && !uploaded) return;
       const photo = wait ? uploaded : draft.photo;
-      const { kind, popup } = draft;
-      const payload = { date: item ? date : todayInSeoul(), event_date, kind, title, body: content, link, popup,
-        photo_file_id: photo?.id ?? null };
+      const { kind, pinned } = draft;
+      const popup = conference ? false : draft.popup;
+      const payload = { date: item ? date : todayInSeoul(), event_date, kind, title, body: content, link, popup, pinned,
+        host, paper_deadline, registration_deadline, photo_file_id: photo?.id ?? null };
       const body = item ? changedFields(item, payload) : payload;
       if (item && Object.keys(body).length === 0) { cancel(); return; }
       const res = item
@@ -148,24 +163,36 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
     } finally { setSaving(false); }
   };
   const photoLimit = Math.min(system.limits.photo_mb, 20);
+  const conference = draft.kind === 'conference';
   return <form ref={form} className={`admin-form ${styles.form}`} onSubmit={submit} noValidate>
     <Field label="종류"><select value={draft.kind} onChange={(e) => set({ kind: e.target.value as Draft['kind'], popup: false })}>
       {Object.entries(kinds).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
     </select></Field>
     {item && <Field label="게시 날짜"><input name="date" value={draft.date} onChange={(e) => set({ date: e.target.value })} /></Field>}
-    <Field label="행사 날짜" optional><input name="event_date" placeholder="YYYY, YYYY-MM, YYYY-MM-DD" value={draft.event_date} onChange={(e) => set({ event_date: e.target.value })} /></Field>
-    <Field label="제목"><input name="title" value={draft.title} onChange={(e) => set({ title: e.target.value })} /></Field>
-    <Field label="내용" optional><textarea name="body" className={styles.body} value={draft.body} onChange={(e) => set({ body: e.target.value })} /></Field>
-    {system.storage.connected && <Field label="사진" optional limit={`${photoLimit} MB 이하`} group>
-      <FileUpload name="photo" label="사진" purpose="notice" accept={system.limits.photo_types.join(',')}
-        maxBytes={photoLimit * MB} tooLarge={`사진이 ${photoLimit} MB를 넘습니다.`}
+    {conference ? <>
+      <Field label="학술대회명" optional><input name="title" value={draft.title} onChange={(e) => set({ title: e.target.value })} /></Field>
+      <Field label="주최" optional><input name="host" value={draft.host} onChange={(e) => set({ host: e.target.value })} /></Field>
+      <Field label="논문 제출 마감일" optional><input name="paper_deadline" placeholder={DATE_HINT} value={draft.paper_deadline} onChange={(e) => set({ paper_deadline: e.target.value })} /></Field>
+      <Field label="사전등록 마감일" optional><input name="registration_deadline" placeholder={DATE_HINT} value={draft.registration_deadline} onChange={(e) => set({ registration_deadline: e.target.value })} /></Field>
+      <Field label="논문 발표일" optional><input name="event_date" placeholder={DATE_HINT} value={draft.event_date} onChange={(e) => set({ event_date: e.target.value })} /></Field>
+    </> : <>
+      <Field label="행사 날짜" optional><input name="event_date" placeholder={DATE_HINT} value={draft.event_date} onChange={(e) => set({ event_date: e.target.value })} /></Field>
+      <Field label="제목"><input name="title" value={draft.title} onChange={(e) => set({ title: e.target.value })} /></Field>
+    </>}
+    <Field label={conference ? '비고' : '내용'} optional><textarea name="body" className={styles.body} value={draft.body} onChange={(e) => set({ body: e.target.value })} /></Field>
+    {system.storage.connected && <Field label={conference ? '포스터' : '사진'} optional limit={`${photoLimit} MB 이하`} group>
+      <FileUpload name="photo" label={conference ? '포스터' : '사진'} purpose="notice" accept={system.limits.photo_types.join(',')}
+        maxBytes={photoLimit * MB} tooLarge={`${conference ? '포스터가' : '사진이'} ${photoLimit} MB를 넘습니다.`}
         value={draft.photo} onChange={(photo) => set({ photo })}
         onPending={(promise) => { pending.current = promise; }} />
     </Field>}
-    <Field label="자세히 보기 주소" optional><input name="link" value={draft.link} onChange={(e) => set({ link: e.target.value })} /></Field>
+    {!conference && <Field label="자세히 보기 주소" optional><input name="link" value={draft.link} onChange={(e) => set({ link: e.target.value })} /></Field>}
     {draft.kind === 'recruitment' && <Field label="첫 화면 띠" optional>
       <label><input name="popup" type="checkbox" checked={draft.popup} onChange={(e) => set({ popup: e.target.checked })} /> 표시</label>
     </Field>}
+    <Field label="상단 고정" optional>
+      <label><input name="pinned" type="checkbox" checked={draft.pinned} onChange={(e) => set({ pinned: e.target.checked })} /> 고정</label>
+    </Field>
     <div className="admin-actions"><button type="submit" className="admin-button" disabled={saving}>{saving ? '저장 중' : '저장'}</button>
       <button type="button" className="admin-text-button" disabled={saving} onClick={cancel}>취소</button></div>
   </form>;

@@ -1,32 +1,17 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import { getNotices } from '@/lib/content';
-import { formatDate, langOf } from '@/lib/format';
-import styles from './notices.module.css';
+import { localDay } from '@/lib/notices';
+import { NoticesList } from './NoticesList';
 
 export const metadata: Metadata = { title: 'Notices', description: 'SAI Lab seminars, conferences, and announcements.' };
-const kinds = { seminar: 'Seminar', conference: 'Conference', recruitment: 'Recruitment', other: 'Notice' };
 
 export default function NoticesPage() {
   const notices = getNotices();
   return <>
     <PageHeader title="Notices" />
     <div className="container">
-      {notices.length === 0 ? <p className="muted">No notices yet.</p> :
-        <ol className={styles.list}>{notices.map((notice) => <li key={notice.id} id={`notice-${notice.id}`} className={styles.row}>
-          <time className={`${styles.date} num`}>{formatDate(notice.date)}</time>
-          <div>
-            <strong className={styles.kind}>{kinds[notice.kind]}</strong>
-            <h2 className={styles.title} lang={langOf(notice.title)}>{notice.title}</h2>
-            {notice.event_date && <p className={styles.meta}>Date: {formatDate(notice.event_date)}</p>}
-            {notice.photo && <img className={styles.photo} src={notice.photo} alt={notice.title} />}
-            {notice.body && <p className={styles.body} lang={langOf(notice.body)}>{notice.body}</p>}
-            {notice.link && (notice.link.startsWith('/')
-              ? <Link href={notice.link}>Details</Link>
-              : <a href={notice.link} target="_blank" rel="noopener noreferrer">Details</a>)}
-          </div>
-        </li>)}</ol>}
+      {notices.length === 0 ? <p className="muted">No notices yet.</p> : <NoticesList notices={notices} builtOn={localDay()} />}
     </div>
   </>;
 }

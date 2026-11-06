@@ -111,6 +111,7 @@ export type NewsItem = Common & {
 };
 export type NoticeItem = Common & {
   date: string; event_date: string; kind: 'seminar' | 'conference' | 'recruitment' | 'other';
-  title: string; body: string; link: string; popup: boolean;
+  title: string; body: string; link: string; popup: boolean; pinned: boolean;
+  host: string; paper_deadline: string; registration_deadline: string;
   photo_file_id: string | null; photo_preview_url: string | null; publication: ContentPublication;
 };

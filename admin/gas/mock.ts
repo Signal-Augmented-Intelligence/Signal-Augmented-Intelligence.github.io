@@ -40,7 +40,7 @@ const lists: Record<string, Item[]> = {
     { ...common('pb1', 0), title: 'Robust Korean ASR', title_ko: '', type: 'conference-paper', authors: [{ person_id: 'p2' }, { person_id: 'p1' }], venue: 'Interspeech', pub_date: '2026-09', status: '', award: '', links: [], area_ids: ['r1'], pdf_file_id: null, pdf_content_url: null, excerpt: '', body: '', permalink: '/publications/robust-korean-asr/' },
   ],
   '/news': [{ ...common('n1', 0), date: '2026-10-01', text: '논문이 채택되었습니다.', publication_id: 'pb1', link_url: null }],
-  '/notices': [{ ...common('nt1', 0), date: '2026-10-15', event_date: '2026-11-10', kind: 'seminar', title: '11월 세미나', body: '', link: '', popup: false }],
+  '/notices': [{ ...common('nt1', 0), date: '2026-10-15', event_date: '2026-11-10', kind: 'seminar', title: '11월 세미나', body: '', link: '', popup: false, pinned: false, host: '', paper_deadline: '', registration_deadline: '' }],
 };
 const photos: Record<string, Item[]> = {
   a1: [

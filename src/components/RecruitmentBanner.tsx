@@ -25,7 +25,7 @@ export function RecruitmentBanner({ notice }: { notice: Notice }) {
     setOpen(false);
   };
   if (!open) return null;
-  const href = notice.link || `/notices/#notice-${notice.id}`;
+  const href = notice.link || `/notices/${notice.id}/`;
   return <aside className={styles.banner} aria-label="모집 공지">
     <div className={`container container-header ${styles.inner}`}>
       <strong className={styles.tag} lang="ko">모집</strong>
