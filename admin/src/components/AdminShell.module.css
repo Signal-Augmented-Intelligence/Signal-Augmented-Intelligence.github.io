@@ -1,0 +1,43 @@
+/*
+ * PC: 왼쪽 메뉴(200px)와 본문. 메뉴는 공개 사이트 탭과 같은 규칙: 현재 위치만 파랑.
+ * 960px 이하: 메뉴가 띠 아래 가로 탭이 되고, 넘치면 옆으로 밀어 봅니다.
+ */
+.frame { display: grid; grid-template-columns: calc(var(--gutter) + 232px) minmax(0, 1fr); max-width: calc(var(--container) + var(--gutter) * 2); margin: 0 auto; }
+.nav { padding-top: 56px; }
+.navInner { position: sticky; top: calc(var(--header-h) + 24px); display: flex; flex-direction: column; padding-right: 32px; border-right: 1px solid var(--rule); }
+.menu { display: grid; gap: 2px; padding-bottom: 24px; }
+.university { width: 153px; height: 36px; margin: 12px 0 8px 12px; overflow: hidden; }
+.university img { width: 196px; height: auto; max-width: none; transform: translate(-23px, -11px); }
+.groupStart { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule); }
+.item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 12px; border-radius: 6px; color: var(--ink); font-size: 0.9375rem; font-weight: 500; }
+a.item:hover { background: var(--surface); text-decoration: none; }
+.item[aria-current='page'] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.pending { color: var(--muted); cursor: default; }
+.soon { font-size: var(--text-xs); font-weight: 400; }
+.single { grid-template-columns: minmax(0, 1fr); }
+.single .body { padding-left: var(--gutter); }
+.body { min-width: 0; padding-top: 56px; padding-bottom: 96px; padding-left: 48px; }
+/* Section 컴포넌트는 자체 container 여백을 가지므로, 본문 안에서는 없앱니다. */
+.body :global(.container) { padding: 0; }
+
+@media (max-width: 960px) {
+  .frame { grid-template-columns: minmax(0, 1fr); }
+  .nav { position: sticky; top: var(--header-h); z-index: 9; padding-top: 0; background: var(--paper); border-bottom: 1px solid var(--rule); }
+  /* 탭이 넘치면 오른쪽 끝을 흐리게 해서 옆으로 더 있다는 것을 보입니다. */
+  .navInner { position: static; display: block; padding-right: var(--gutter); border-right: 0; overflow-x: auto; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); }
+  .menu::after { content: ''; flex: 0 0 8px; }
+  .menu { display: flex; gap: 28px; padding-bottom: 0; }
+  .university { display: none; }
+  .groupStart { margin-top: 0; padding-top: 0; border-top: 0; }
+  .item { height: 56px; padding: 0; margin-bottom: -1px; border-radius: 0; border-bottom: 2px solid transparent; white-space: nowrap; font-weight: 600; }
+  .item[aria-current='page'] { background: none; border-bottom-color: var(--accent); }
+  .soon { display: none; }
+  .pendingItem { display: none; }
+  .body { padding-top: 32px; padding-left: var(--gutter); }
+}
+
+@media (max-width: 960px) {
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nav { background: var(--paper-glass); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); }
+  }
+}

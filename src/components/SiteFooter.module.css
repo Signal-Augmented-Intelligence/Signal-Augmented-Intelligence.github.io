@@ -1,0 +1,13 @@
+.footer { margin-top: 120px; background: var(--surface); border-top: 1px solid var(--rule); font-size: var(--text-sm); }
+.inner { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 40px 64px; align-items: start; padding-top: 48px; padding-bottom: 32px; }
+.lab { font-size: var(--text-md); font-weight: 650; margin-bottom: 4px; }
+.universityLogo { display: block; width: 150px; height: auto; mix-blend-mode: multiply; }
+.links { display: grid; grid-template-columns: repeat(2, auto); gap: 8px 48px; }
+.links a { color: var(--ink); }
+.links a:hover { color: var(--accent); }
+.bottom { padding-top: 20px; padding-bottom: 32px; border-top: 1px solid var(--rule); color: var(--muted); font-size: var(--text-xs); }
+
+@media (max-width: 640px) {
+  .footer { margin-top: 80px; }
+  .inner { grid-template-columns: 1fr; gap: 28px; }
+}

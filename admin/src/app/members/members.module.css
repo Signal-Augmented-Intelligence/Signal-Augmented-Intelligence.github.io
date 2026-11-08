@@ -1,0 +1,5 @@
+.form { max-width: 40rem; }
+.rowMain { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.portrait { display: block; width: 48px; height: 64px; flex: none; object-fit: cover; background: var(--surface); border-radius: 4px; }
+.formPortrait { display: block; width: 90px; height: 120px; object-fit: cover; background: var(--surface); border-radius: 6px; }
+.formNote { color: var(--muted); font-size: var(--text-sm); }

@@ -1,0 +1,19 @@
+.status { color: var(--muted); font-size: var(--text-sm); }
+.failure { margin-bottom: 16px; color: var(--muted); font-size: var(--text-sm); }
+.details { display: grid; gap: 12px; margin: 0 0 24px; }
+.details > div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 20px; }
+.details dt { color: var(--muted); }
+.details dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.poemForm { max-width: 48rem; }
+.stanzas { display: grid; gap: 18px; }
+.stanza { display: grid; gap: 14px; padding: 18px 0; border-top: 1px solid var(--rule); }
+.stanzaHead { display: flex; justify-content: space-between; align-items: center; gap: 18px; }
+.stanzaActions { display: flex; gap: 16px; }
+.stanza textarea { min-height: 110px; }
+.poemTitle { font-weight: 600; }
+.readStanza { padding: 8px 0 16px; }
+.readStanza p { white-space: pre-line; line-height: 1.7; margin: 8px 0 0; }
+@media (max-width: 600px) {
+  .details > div { grid-template-columns: 1fr; gap: 2px; }
+  .stanzaHead { align-items: flex-start; flex-direction: column; }
+}

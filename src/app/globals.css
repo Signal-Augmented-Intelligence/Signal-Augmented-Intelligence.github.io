@@ -1,0 +1,88 @@
+/* Design tokens and base styles. Component styles live next to each component (*.module.css). */
+:root {
+  color-scheme: light;
+  --paper: #ffffff;
+  --surface: #f4f6f9;
+  --ink: #152030;
+  --muted: #5a6677;
+  --rule: #dce2ea;
+  --accent: #2452c6;
+  --accent-soft: #eaf0fc;
+  --night: #0d1830;         /* header, page banners, Home first screen */
+  --night-glass: rgba(13, 24, 48, 0.86);   /* sticky header: --night, see-through with blur */
+  --paper-glass: rgba(255, 255, 255, 0.78); /* sticky white bars (tabs, 관리 화면 header) */
+  --night-accent: #a9c1ff;  /* links and current item on navy */
+
+  /* Latin: Instrument Sans. Hangul falls through to Pretendard. Formulas: STIX Two Text italic. */
+  --font: 'Instrument Sans Variable', 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', sans-serif;
+  --text-xs: 0.8125rem;   /* 13 */
+  --text-sm: 0.875rem;    /* 14 */
+  --text-md: 1rem;        /* 16 */
+  --text-lg: 1.125rem;    /* 18 */
+  --text-xl: 1.375rem;    /* 22 */
+  --text-2xl: 2.25rem;    /* 36 */
+  --text-hero: 4.5rem;    /* 72 */
+
+  --container: 1160px;
+  --container-header: 1360px; /* 헤더만 본문보다 넓게: 넓은 화면에서 로고와 메뉴가 가운데로 몰리지 않게 */
+  --gutter: 40px;
+  --header-h: 72px;
+  --site-header-h: var(--header-h); /* 공개 사이트 헤더 실제 높이 (휴대폰에서는 로고 아래 메뉴 줄까지 두 줄) */
+}
+
+@media (max-width: 960px) {
+  :root { --gutter: 24px; --text-hero: 3.25rem; --text-2xl: 1.875rem; }
+}
+@media (max-width: 640px) {
+  :root { --site-header-h: 108px; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--site-header-h) + 16px); }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.6;
+  font-feature-settings: 'ss06';
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+img { display: block; max-width: 100%; height: auto; }
+[hidden] { display: none !important; }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 0.18em; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+.container { width: 100%; max-width: calc(var(--container) + var(--gutter) * 2); margin: 0 auto; padding: 0 var(--gutter); }
+.container-header { max-width: calc(var(--container-header) + var(--gutter) * 2); }
+
+.skip-link { position: absolute; left: var(--gutter); top: -100px; z-index: 100; padding: 0.5rem 0.75rem; background: var(--paper); color: var(--ink); }
+.skip-link:focus { top: 0.5rem; }
+
+.muted { color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; }
+.nowrap { white-space: nowrap; }
+
+/* Body copy from markdown (publication and research descriptions). */
+.prose { max-width: 42rem; font-size: var(--text-lg); line-height: 1.7; }
+.prose p + p { margin-top: 1em; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+@media print {
+  header, footer, .skip-link { display: none !important; }
+}

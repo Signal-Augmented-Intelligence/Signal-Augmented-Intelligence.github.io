@@ -1,0 +1,76 @@
+# Add a person only after they confirm name, role, one-line introduction, photo and link.
+# id: lowercase-hyphen, never changed (publications and seminars link to it).
+# group: faculty / phd / ms / undergrad / alumni
+#   faculty is shown on Members > Professor (details in content/professor.yml), the rest on Our Team / Alumni.
+# bio: one-line introduction in Korean; bio_en: the same in English (optional), both written by the member.
+# photo: file name in public/images/people/ (3:4, long side 800px, <= 200 KB). Leave empty for a grey placeholder.
+# aliases: other English spellings printed in papers (optional), so those author names link too.
+# after: alumni only — current position, one line (with the person's consent).
+- id: seon-man-kim
+  name: "Seon Man Kim"
+  name_ko: "김선만"
+  group: faculty
+  role: "Advisor"
+  since:
+  until:
+  bio: ""
+  photo: "seon-man-kim.jpg"
+  url: ""
+  after: ""
+- id: so-yeong-park
+  name: "So Yeong Park"
+  name_ko: "박소영"
+  group: undergrad
+  role: "Undergraduate Researcher"
+  since: 2025-06
+  until:
+  bio: "정교한 음향 표상은 소리의 맥락을 얼마나 충실하게 반영하는가?"
+  bio_en: "Does better acoustic representation guarantee better audio understanding?"
+  photo: "2026-10-30-bc372ee5.jpg"
+  url: ""
+  after: ""
+- id: hyun-jae-shin
+  name: "Hyun Jae Shin"
+  aliases: ["Hyeon Jae Shin"]   # ICTCA 2025, IEIE 2026 papers
+  name_ko: "신현재"
+  group: ms
+  role: "M.S. Student"
+  since:
+  until:
+  bio: "로봇에게 청각이 생긴다면, 무엇에 귀 기울이고 무엇을 판단해야 하는가?"
+  photo: "hyun-jae-shin.jpg"
+  url: ""
+  after: ""
+- id: na-kyung-lee
+  name: "Na Kyung Lee"
+  name_ko: "이나경"
+  group: undergrad
+  role: "Undergraduate Researcher"
+  since:
+  until:
+  bio: "LLM은 주어진 단서로 무엇을 알아낼 수 있으며, 그 추론은 어디까지 신뢰할 수 있는가?"
+  photo: "na-kyung-lee.jpg"
+  url: ""
+  after: ""
+- id: tae-yeon-kim
+  name: "Tae Youn Kim"
+  name_ko: "김태연"
+  group: undergrad
+  role: "Undergraduate Researcher"
+  since:
+  until:
+  bio: "모든 소리를 깨끗이 분리해야만, 그 안에 무엇이 있는지 알 수 있는가?"
+  photo: "2026-11-02-dd2794ae.jpg"
+  url: ""
+  after: ""
+- id: lee-shin-hee
+  name: "Lee Shin Hee"
+  name_ko: "이신희"
+  group: undergrad
+  role: "."
+  since:
+  until:
+  bio: ""
+  photo: ""
+  url: ""
+  after: ""

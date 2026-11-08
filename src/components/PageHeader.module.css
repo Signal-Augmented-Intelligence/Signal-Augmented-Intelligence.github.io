@@ -1,0 +1,27 @@
+.banner { background: var(--night); color: #ffffff; padding: 40px 0 44px; }
+.back { margin-bottom: 18px; font-size: var(--text-sm); }
+.back a { color: var(--night-accent); }
+.title { max-width: 56rem; font-size: 3rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; }
+.titleLong { max-width: 52rem; font-size: 2.25rem; line-height: 1.2; letter-spacing: -0.02em; }
+.lede { max-width: 44rem; margin-top: 14px; font-size: 1.0625rem; color: rgba(255, 255, 255, 0.72); }
+
+.tabBar { position: sticky; top: var(--site-header-h); z-index: 9; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.tabs { display: flex; gap: 36px; }
+.tab { display: flex; align-items: center; height: 60px; margin-bottom: -1px; border-bottom: 2px solid transparent; color: var(--muted); font-size: 0.9375rem; font-weight: 600; }
+.tab:hover { color: var(--ink); text-decoration: none; }
+.tab[aria-current='page'] { color: var(--accent); border-bottom-color: var(--accent); }
+
+.gap { height: 56px; }
+
+@media (max-width: 640px) {
+  .banner { padding: 28px 0 32px; }
+  .title { font-size: 2.25rem; }
+  .titleLong { font-size: 1.625rem; }
+  .tabs { gap: 24px; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .gap { height: 40px; }
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tabBar { background: var(--paper-glass); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); }
+}

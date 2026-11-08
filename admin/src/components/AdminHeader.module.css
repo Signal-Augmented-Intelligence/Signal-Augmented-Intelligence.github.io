@@ -1,0 +1,29 @@
+.header { position: sticky; top: 0; z-index: 10; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: var(--header-h); }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: #111111; }
+.brand:hover { text-decoration: none; }
+.brandLogo { position: relative; display: block; width: 138px; height: 55px; overflow: hidden; flex: none; }
+.logoImage { width: 174px; height: auto; max-width: none; transform: translate(-27px, -19px); }
+.divider { width: 1px; height: 20px; margin: 0 4px; background: var(--rule); }
+.area { font-size: 1.0625rem; font-weight: 500; color: var(--ink); }
+.actions { display: flex; align-items: center; gap: 28px; }
+.link { display: block; padding: 6px 0; color: var(--ink); font-size: 0.9375rem; font-weight: 500; }
+.link:hover { color: var(--accent); text-decoration: none; }
+.button { border: 0; background: none; font: inherit; cursor: pointer; }
+
+@media (max-width: 640px) {
+  .inner { gap: 8px; }
+  .brand { gap: 6px; flex-shrink: 0; white-space: nowrap; }
+  .brandLogo { width: 100px; height: 41px; }
+  .logoImage { width: 128px; transform: translate(-20px, -14px); }
+  .divider { height: 16px; margin: 0 2px; }
+  .area { font-size: var(--text-sm); }
+  .actions { gap: 10px; font-size: var(--text-sm); white-space: nowrap; }
+  .link { font-size: var(--text-sm); }
+  .password { display: none; }
+}
+
+/* 공개 사이트 헤더와 같이, 스크롤하면 아래 글이 흐리게 비쳐 지나갑니다. */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .header { background: var(--paper-glass); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); }
+}

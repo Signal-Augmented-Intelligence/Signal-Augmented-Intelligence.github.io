@@ -1,0 +1,28 @@
+/*
+ * Album에만 있는 것: 목록 줄의 대표 사진 칸과 행사 이름 버튼, 펼친 행사(머리 줄·행사 정보·사진), 행사 폼 폭.
+ * 목록 한 줄은 components/List.module.css, 사진 칸은 PhotoGrid.module.css.
+ */
+.form > form { max-width: 40rem; }
+.row { grid-template-columns: 56px minmax(0, 1fr) auto fit-content(18rem); }
+.thumb { width: 56px; aspect-ratio: 1; overflow: hidden; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+/* 접힌 줄의 행사 이름: 누르면 펼칩니다. 모양은 목록 제목 그대로 둡니다. */
+.titleButton { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.titleButton:hover:not(:disabled) { color: var(--accent); }
+.titleButton:disabled { cursor: default; }
+
+/* 펼친 행사: 머리 줄 아래에 행사 정보와 사진. 둘 다 행사 이름과 같은 선에서 시작해 이 행사의 내용임을 보이게 합니다(대표 사진 칸 56px + 간격 24px). */
+.editor { padding-bottom: 36px; border-bottom: 1px solid var(--rule); }
+.editor .editorHead { border-bottom: 0; }
+.editorBody { display: grid; gap: 40px; padding-left: 80px; }
+.part { display: grid; gap: 16px; }
+.partTitle, .photosTitle { font-size: var(--text-md); font-weight: 600; }
+.photos { display: grid; gap: 16px; }
+.photosHead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; font-size: var(--text-sm); }
+
+@media (max-width: 640px) {
+  .row { grid-template-columns: 48px minmax(0, 1fr) auto; }
+  .thumb { width: 48px; }
+  .editorBody { gap: 32px; padding-left: 0; }
+}

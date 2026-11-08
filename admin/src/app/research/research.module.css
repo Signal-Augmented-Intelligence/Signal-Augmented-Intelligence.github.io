@@ -1,0 +1,28 @@
+/* Research 화면에만 있는 것: 폼 폭, 저자·링크 줄, 분야 고르기. 목록 한 줄은 components/List.module.css. */
+.form { max-width: 40rem; }
+.group { display: grid; gap: 12px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.group legend { margin-bottom: 8px; padding: 0; font-size: var(--text-sm); font-weight: 600; }
+.group legend small { color: var(--muted); font-weight: 400; font-size: inherit; }
+.rows { display: grid; gap: 10px; }
+.authorRow { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr) auto; align-items: center; gap: 8px 12px; }
+.authorRow:has(input) { grid-template-columns: 1.5rem minmax(0, 1fr) minmax(0, 1fr) auto; }
+.linkRow { display: grid; grid-template-columns: 8rem minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+.order { color: var(--muted); font-size: var(--text-sm); text-align: right; }
+.rowActions { display: flex; gap: 12px; font-size: var(--text-sm); }
+.linkRow > button { font-size: var(--text-sm); }
+.group select, .group input:not([type='checkbox']) {
+  width: 100%; min-height: 42px; padding: 8px 12px; border: 1px solid var(--rule); border-radius: 4px;
+  background: var(--paper); color: var(--ink); font: inherit; font-size: var(--text-md);
+}
+.group select:focus, .group input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+.group > button { justify-self: start; font-size: var(--text-sm); }
+.checks { display: flex; flex-wrap: wrap; gap: 10px 24px; }
+.checks :global(.admin-check) { margin-top: 0; }
+.figure { width: 220px; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); }
+
+@media (max-width: 640px) {
+  .authorRow, .authorRow:has(input) { grid-template-columns: 1.5rem minmax(0, 1fr); }
+  .authorRow > input, .authorRow > .rowActions { grid-column: 2; }
+  .linkRow { grid-template-columns: minmax(0, 1fr) auto; }
+  .linkRow > input[type='url'] { grid-column: 1; }
+}

@@ -1,0 +1,11 @@
+# Lab identity. Used by the header, home page, footer and page titles.
+name: "SAI Lab"
+full_name: "Signal Augmented Intelligence"
+name_ko: ""                 # 국문 명칭 확정 후 입력
+institution: "Hanshin University"
+advisor: "Prof. Seon Man Kim"
+intro: "SAI Lab works on learning-based processing of speech and acoustic signals, from enhancement and denoising to speech recognition, for wearable and robotic devices."   # 교수님 확정 전 임시 문구
+email: ""                   # 공식 연락처만. 비워 두면 표시하지 않음 (Contact 메뉴도 숨김)
+location: ""                # 예: 건물·호실. 비워 두면 표시하지 않음
+logo: ""                    # 확정된 로고 파일 경로 (예: /images/sai-logo.svg). 비우면 신호 표시 + 랩명
+draft: false                # true: 검색엔진 노출 차단(noindex) + 푸터에 내부 검토 문구. 공개 승인 후 false

@@ -1,0 +1,12 @@
+/* Years as a row of text links above the list; each year is a big blue heading with a rule. */
+.years { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-bottom: 40px; font-size: 0.9375rem; font-weight: 600; }
+.years a { color: var(--muted); }
+.years a:hover { color: var(--accent); text-decoration: none; }
+.year { scroll-margin-top: calc(var(--header-h) + 84px); }
+.year + .year { margin-top: 48px; }
+.yearTitle { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; color: var(--accent); font-size: 1.875rem; font-weight: 600; letter-spacing: -0.02em; }
+.yearTitle::after { content: ''; flex-grow: 1; height: 1px; background: var(--rule); }
+
+@media (max-width: 640px) {
+  .years { margin-bottom: 28px; }
+}

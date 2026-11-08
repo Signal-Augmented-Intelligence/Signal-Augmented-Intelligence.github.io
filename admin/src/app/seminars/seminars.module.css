@@ -1,0 +1,6 @@
+/* Seminars에만 있는 것: 폼 폭, 분야 추가·이름 바꾸기 줄. 목록 한 줄은 components/List.module.css. */
+.form { max-width: 40rem; }
+
+.inline { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; font-size: var(--text-sm); }
+.inline input { width: min(20rem, 100%); min-height: 40px; padding: 8px 12px; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); color: var(--ink); font: inherit; font-size: var(--text-md); }
+.inline input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }

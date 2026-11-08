@@ -1,0 +1,21 @@
+/*
+ * 목록 한 줄 (규칙 문서 1부 3장 "목록 한 줄"): 왼쪽 이름과 보조 정보, 오른쪽 상태 글자와 동작 글자 버튼, 줄 사이 가는 선.
+ * Seminars, 첫 화면, Album 행사 목록이 같이 씁니다.
+ * 상태 글자는 동작 버튼 바로 왼쪽에 붙입니다(어느 줄의 상태인지 눈으로 바로 이어지게).
+ */
+.list { display: grid; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.main { min-width: 0; }
+.title { font-weight: 600; line-height: 1.45; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 4px; color: var(--muted); font-size: var(--text-sm); }
+.status { min-width: 4.5rem; font-size: var(--text-sm); text-align: right; white-space: nowrap; }
+.actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px 18px; font-size: var(--text-sm); }
+
+/* 줄 자리에서 펼친 폼·내용 */
+.open { padding: 28px 0 32px; border-bottom: 1px solid var(--rule); }
+
+@media (max-width: 640px) {
+  .row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; }
+  .status { min-width: 0; }
+  .actions { grid-column: 1 / -1; justify-content: flex-start; }
+}

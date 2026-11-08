@@ -1,0 +1,12 @@
+.list { display: grid; gap: 12px; max-width: 48rem; }
+/* Lists of one-sentence entries (News) use the full text width with more space between rows. */
+.wide { max-width: 64rem; gap: 18px; }
+.wide .row { grid-template-columns: 120px minmax(0, 1fr); line-height: 1.65; }
+.row { display: grid; grid-template-columns: 152px minmax(0, 1fr); column-gap: 24px; }
+.date { color: var(--muted); font-size: var(--text-sm); padding-top: 1px; }
+.note { display: block; color: var(--muted); font-size: var(--text-sm); }
+
+/* Phones: the date sits above its entry so the text gets the full width. */
+@media (max-width: 640px) {
+  .row, .wide .row { grid-template-columns: minmax(0, 1fr); row-gap: 2px; }
+}

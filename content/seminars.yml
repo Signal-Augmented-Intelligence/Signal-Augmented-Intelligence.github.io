@@ -1,0 +1,25 @@
+# One entry per seminar, any order (the site sorts by the entered post date). See guideline.md section 6.
+# Required: date, presenter, title, summary (one sentence). Everything else is optional.
+#
+# - date: 2026-10-21                 # entered post date, YYYY-MM-DD, no quotes
+#   presenter: so-yeong-park         # people.yml id (a guest's name in plain text also works)
+#   title: "Decoding parameters for Korean ASR"
+#   summary: "한 문장 개요"
+#   area: "Speech Recognition"       # optional: appears in the Areas list; reuse an existing spelling when possible
+#   type: research                   # optional: research / paper-review / tutorial / invited
+#   topics: [korean-asr]             # optional: file names in content/research/ (without .md)
+#   file: "2026-10-21-so-yeong-park.pdf"   # optional: PDF in public/files/seminars/. Empty = title only
+#   cover: "2026-10-21-so-yeong-park.jpg" # optional: PDF first-page image in public/images/seminars/
+#   highlight: false                 # set by the site manager: true shows it on the home page
+- date: 2025-12-11
+  presenter: so-yeong-park
+  title: "우분투 GPU 서버 기반 딥러닝 개발 실전 활용 경험 공유"
+  summary: "서버활용방법개요"
+  file: "2026-10-26-e18b8014.pdf"
+  cover: "2026-10-26-be9c4ab6.jpg"
+- date: 2026-07-07
+  presenter: tae-yeon-kim
+  title: "디지털 파형 주파수 분석 원리"
+  summary: "푸리에 변환 유도를 통한 스펙트로그램 요소 파악"
+  file: "2026-10-29-6f65abdc.pdf"
+  cover: "2026-10-29-b0e3a23b.jpg"

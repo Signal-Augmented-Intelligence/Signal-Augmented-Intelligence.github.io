@@ -1,0 +1,67 @@
+# Lab album. One entry per event; newest first on the page regardless of order here.
+# Photos go in public/images/album/<folder>/ (landscape, long side about 1600px, <= 500 KB each).
+# The Album menu appears once at least one entry has a photo.
+#
+# - date: 2026-11-05                  # YYYY-MM-DD (or YYYY-MM)
+#   title: "2026 가을 세미나"
+#   folder: 2026-11-seminar           # folder name under public/images/album/ (also the page address /album/<folder>/; do not change)
+#   cover: 02.jpg                     # optional: the photo shown on the album list. Empty = the first photo
+#   photos:
+#     - file: 01.jpg
+#       alt: "세미나 발표 장면"          # one short description per photo
+#     - file: 02.jpg
+#       alt: ""
+- date: 2026-10-17
+  title: "2026 한국음성학회·조선대학교 인문데이터과학연구소 가을 공동학술대회"
+  folder: 2026-10-ssp-fall
+  cover: 02.jpg
+  photos:
+    - file: 01.jpg
+      alt: "구두 발표 장면"
+    - file: 02.jpg
+      alt: "발표자가 슬라이드를 설명하는 모습"
+    - file: 03.jpg
+      alt: "발표장 객석에서 본 발표 화면"
+    - file: 04.jpg
+      alt: "시상 장면"
+- date: 2026-10-06
+  title: "연구실 세미나 · 이나경 발표"
+  folder: 2026-10-lab-talk
+  photos:
+    - file: 01.jpg
+      alt: "연구실에서 화면 앞에 서서 발표하는 이나경"
+- date: 2026-06-19
+  title: "2026 한국데이터사이언스학회 하계 종합학술대회"
+  folder: 2026-06-kdss-summer
+  photos:
+    - file: 01.jpg
+      alt: "포스터 앞의 발표자"
+- date: 2026-06-13
+  title: "2026 한국음성학회 봄 공동학술대회"
+  folder: 2026-06-kssp-spring
+  photos:
+    - file: 01.jpg
+      alt: "포스터를 설명하는 발표자"
+- date: 2025-11-15
+  title: "2025 한국스마트미디어학회 추계학술대회"
+  folder: 2025-11-kism-fall
+  photos:
+    - file: 01.jpg
+      alt: "포스터 앞의 발표자"
+- date: 2025-08
+  title: "ICTCA 2025, 부산"
+  folder: 2025-08-ictca
+  cover: 01.jpg
+  photos:
+    - file: 01.jpg
+      alt: "포스터 앞에 선 발표자"
+    - file: 02.jpg
+      alt: "포스터를 설명하는 발표자"
+    - file: 03.jpg
+      alt: "부산으로 가는 기차 안"
+- date: 2025-07-29
+  title: "사족보행 로봇 실험"
+  folder: 2025-07-robot-recording
+  photos:
+    - file: 01.jpg
+      alt: "복도에서 사족보행 로봇에 장비를 연결하는 모습"

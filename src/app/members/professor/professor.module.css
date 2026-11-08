@@ -1,0 +1,43 @@
+.profile { display: grid; grid-template-columns: 200px minmax(0, 1fr); column-gap: 48px; align-items: start; margin-bottom: 80px; }
+.photo { border-radius: 10px; }
+.name { font-size: 2.125rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+.nameKo { margin-left: 8px; color: var(--muted); font-size: 1.375rem; font-weight: 500; }
+.position { margin-top: 10px; font-size: 1.0625rem; font-weight: 500; }
+.profile p { margin-top: 4px; }
+.contact { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 8px 16px; margin-top: 28px; font-size: 0.9375rem; }
+.contact dt { color: var(--muted); }
+.links { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 24px !important; font-size: var(--text-sm); font-weight: 600; }
+
+.areas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.areas > li { padding: 22px 24px; border-radius: 10px; background: var(--surface); font-weight: 600; line-height: 1.45; }
+.ko { display: block; margin-top: 8px; color: var(--muted); font-size: var(--text-sm); font-weight: 400; line-height: 1.6; }
+.keywords { margin-top: 20px; max-width: 52rem; color: var(--muted); font-size: var(--text-sm); }
+
+.pubs > li { display: grid; grid-template-columns: 140px minmax(0, 1fr); column-gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--rule); }
+.pubDate { color: var(--muted); font-size: 0.9375rem; }
+.pubTitle { font-weight: 600; line-height: 1.5; }
+.pubTitle a { color: var(--ink); }
+.pubTitle a:hover { color: var(--accent); text-decoration: none; }
+.pubMeta { margin-top: 4px; color: var(--muted); font-size: var(--text-sm); }
+.pubMeta em { font-style: italic; }
+
+.sub { margin: 36px 0 16px; font-size: var(--text-md); font-weight: 600; }
+.sub:first-child { margin-top: 0; }
+
+@media (max-width: 960px) {
+  .profile { grid-template-columns: 160px minmax(0, 1fr); column-gap: 32px; }
+  .areas { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .profile { grid-template-columns: minmax(0, 1fr); row-gap: 24px; }
+  .profile > :first-child { width: 160px; }
+  .pubs > li { grid-template-columns: minmax(0, 1fr); }
+}
+
+/*
+ * Publications lift a little under the pointer (whole entry opens the title link).
+ * The padding is pulled back with negative margins so the text stays aligned with the rest of the page.
+ */
+.pubs > li { position: relative; border-radius: 8px; transition: background-color 180ms ease; }
+.pubs > li:hover { background: var(--surface); }
+.pubTitle a::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }

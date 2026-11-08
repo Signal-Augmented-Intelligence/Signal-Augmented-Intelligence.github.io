@@ -1,0 +1,20 @@
+.areas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.areas > li { padding-top: 4px; }
+.areaTitle { font-size: var(--text-md); font-weight: 600; line-height: 1.45; }
+.areaTitle a { color: var(--ink); }
+.areaTitle a:hover { color: var(--accent); }
+.areaSummary { margin-top: 10px; color: var(--muted); font-size: var(--text-sm); line-height: 1.65; }
+
+.poem {
+  display: grid;
+  gap: 32px;
+  font-size: 1.0625rem;
+  line-height: 1.9;
+  letter-spacing: -0.01em;
+}
+.credit { align-self: end; color: var(--muted); font-size: var(--text-sm); }
+
+@media (max-width: 960px) {
+  .areas { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .poem { gap: 28px; }
+}
