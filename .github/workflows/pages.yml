@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -45,10 +45,10 @@ jobs:
     environment:
       name: github-pages
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -65,7 +65,7 @@ jobs:
           NEXT_TELEMETRY_DISABLED: 1
       - name: Check out public renditions for Pages
         if: steps.media.outputs.mode == 'pages_artifact'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: Signal-Augmented-Intelligence/SAI_Pages_Media
           token: ${{ secrets.MEDIA_PAGES_READ_TOKEN }}
@@ -82,7 +82,7 @@ jobs:
         run: rm -rf -- .private-media
       - name: Check local links and personal information
         run: npm run check
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: out
   deploy:
@@ -99,4 +99,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
