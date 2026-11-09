@@ -2,12 +2,12 @@
 .groupTitle { margin-bottom: 24px; color: var(--muted); font-size: 0.9375rem; font-weight: 600; }
 .row + .row { margin-top: 40px; }
 .rowTitle { margin-bottom: 16px; font-size: var(--text-sm); font-weight: 600; }
-.team { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 190px)); gap: 40px 28px; }
+.team { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 160px)); gap: 36px 28px; }
 .member { scroll-margin-top: calc(var(--header-h) + 84px); }
 .name { margin-top: 16px; font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; }
 .nameKo { margin-top: 2px; color: var(--muted); font-size: var(--text-sm); }
-.bio { margin-top: 10px; font-size: var(--text-sm); line-height: 1.55; }
-.bioSecond { margin-top: 4px; color: var(--muted); }
+.bio { margin-top: 8px; font-size: var(--text-xs); line-height: 1.45; }
+.bioSecond { margin-top: 3px; color: var(--muted); }
 .link { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 10px; font-size: 0.8125rem; font-weight: 600; }
 
 .alumni { display: grid; }
