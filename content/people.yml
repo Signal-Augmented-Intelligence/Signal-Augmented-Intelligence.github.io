@@ -74,3 +74,14 @@
   photo: ""
   url: ""
   after: ""
+- id: lee-gue-gyuen
+  name: "lee gue gyuen"
+  name_ko: "이규현"
+  group: undergrad
+  role: "Undergraduate Researcher"
+  since:
+  until:
+  bio: ""
+  photo: ""
+  url: ""
+  after: ""
