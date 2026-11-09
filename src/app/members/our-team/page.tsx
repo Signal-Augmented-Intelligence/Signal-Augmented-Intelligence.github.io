@@ -50,7 +50,12 @@ export default function TeamPage() {
                       {m.name_ko && <p className={styles.nameKo} lang="ko">{m.name_ko}</p>}
                       {m.bio_en && <p className={styles.bio} lang={langOf(m.bio_en)}>{m.bio_en}</p>}
                       {m.bio && <p className={`${styles.bio} ${m.bio_en ? styles.bioSecond : ''}`} lang={langOf(m.bio)}>{m.bio}</p>}
-                      {m.url && <p className={styles.link}><a href={m.url}>Website</a></p>}
+                      {(m.url || m.email) && (
+                        <p className={styles.link}>
+                          {m.url && <a href={m.url}>Website</a>}
+                          {m.email && <a href={`mailto:${m.email}`}>Email</a>}
+                        </p>
+                      )}
                     </li>
                   ))}
                 </ul>

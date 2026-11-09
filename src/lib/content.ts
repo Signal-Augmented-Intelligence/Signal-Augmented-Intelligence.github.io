@@ -77,6 +77,8 @@ export type Person = {
   bio_en: string;
   photo: string;
   url: string;
+  /** School address (@hs.ac.kr) shown on Our Team; empty when unset or not a school address. */
+  email: string;
   after: string;
   /** Other spellings of the English name used in papers. */
   aliases: string[];
@@ -85,6 +87,10 @@ function gradeOf(p: Record<string, unknown>): number | null {
   if (str(p.group) !== 'undergrad' || str(p.grade).trim() === '') return null;
   const n = Number(p.grade);
   return Number.isInteger(n) && n >= 1 && n <= 4 ? n : null;
+}
+function schoolEmailOf(p: Record<string, unknown>): string {
+  const email = str(p.email).trim();
+  return /^[^\s@]+@hs\.ac\.kr$/i.test(email) ? email : '';
 }
 export function getPeople(): Person[] {
   return readYaml<Record<string, unknown>[]>('people.yml', []).map((p) => ({
@@ -98,6 +104,7 @@ export function getPeople(): Person[] {
     bio_en: str(p.bio_en),
     photo: str(p.photo),
     url: str(p.url),
+    email: schoolEmailOf(p),
     after: str(p.after),
     aliases: ((p.aliases as string[] | null) ?? []).map(str),
   }));

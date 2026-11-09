@@ -8,7 +8,7 @@
 .nameKo { margin-top: 2px; color: var(--muted); font-size: var(--text-sm); }
 .bio { margin-top: 10px; font-size: var(--text-sm); line-height: 1.55; }
 .bioSecond { margin-top: 4px; color: var(--muted); }
-.link { margin-top: 10px; font-size: 0.8125rem; font-weight: 600; }
+.link { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 10px; font-size: 0.8125rem; font-weight: 600; }
 
 .alumni { display: grid; }
 .alumni > li { display: grid; grid-template-columns: 240px 120px minmax(0, 1fr); column-gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
