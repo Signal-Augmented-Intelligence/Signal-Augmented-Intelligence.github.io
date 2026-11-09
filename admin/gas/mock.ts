@@ -62,7 +62,8 @@ const singles: Record<string, Record<string, unknown> & { version: number }> = {
 const files: Record<string, unknown> = {};
 const jobs: Record<string, Job> = {};
 const fingerprints: Record<string, string> = {};
-let activeUpload: string | null = null;
+/** 소유자 접수(Intake.gs)처럼 사람마다 처리를 기다리는 파일은 5개까지 받습니다. */
+const UPLOAD_PER_USER = 5;
 let lastPublish: { id: string; state: string; finished_at: string | null; message?: string | null } | null = { id: 'old', state: 'done', finished_at: '2026-10-30T09:05:00Z' };
 const mock = { failNext: null as string | null };
 (window as unknown as { __mock: typeof mock }).__mock = mock;
@@ -195,10 +196,10 @@ function submitFile(form: HTMLFormElement) {
   const file = (form.elements.namedItem('file') as HTMLInputElement).files?.[0];
   if (!ID.test(id) || !file || file.size === 0) fail('VALIDATION_FAILED');
   if (file!.size > 20 * 1024 * 1024) fail('FILE_TOO_LARGE');
-  if (activeUpload && activeUpload !== id && !['done', 'failed'].includes(jobs[activeUpload]?.state)) fail('UPLOAD_BUSY');
+  const waiting = Object.values(jobs).filter((job) => job.kind === 'file' && job.request_id !== id && !['done', 'failed'].includes(job.state)).length;
+  if (!jobs[id] && waiting >= UPLOAD_PER_USER) fail('UPLOAD_BUSY');
   const fileId = `file_${id}`;
   if (jobs[id]) return { request_id: id, file_id: fileId, state: 'received' };
-  activeUpload = id;
   jobs[id] = { request_id: id, kind: 'file', state: 'received', error_code: null, message: null };
   const url = URL.createObjectURL(file!);
   later(1500, () => { jobs[id].state = 'stored'; });

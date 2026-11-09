@@ -45,7 +45,7 @@ const MESSAGES: Record<string, [ErrorCode, string]> = {
   FORBIDDEN: ['FORBIDDEN', '이 Google 계정에는 관리 권한이 없습니다.'],
   VALIDATION_FAILED: ['VALIDATION_FAILED', '보낸 내용을 받지 못했습니다. 입력을 확인해 주세요.'],
   FILE_TOO_LARGE: ['FILE_TOO_LARGE', '파일이 20 MB를 넘습니다.'],
-  UPLOAD_BUSY: ['BUSY', '다른 파일을 처리하는 중입니다. 끝나면 이어서 올립니다.'],
+  UPLOAD_BUSY: ['BUSY', '처리를 기다리는 파일이 많습니다. 차례가 오면 이어서 올립니다.'],
   CONFLICT: ['CONFLICT', '같은 접수 번호로 다른 내용이 이미 접수됐습니다. 새로고침한 뒤 다시 저장해 주세요.'],
   CONFIGURATION_REQUIRED: ['STORAGE_UNAVAILABLE', '관리 저장소 설정이 끝나지 않았습니다.'],
   INBOX_UNAVAILABLE: ['STORAGE_UNAVAILABLE', '이 계정의 접수 폴더를 쓸 수 없습니다.'],
@@ -142,6 +142,35 @@ async function read(path: string): Promise<Result<unknown>> {
 }
 
 /* ---------- 변경 접수와 적용 기다리기 ---------- */
+
+/**
+ * 저장은 끝났지만(결과가 사본에 실림) 같은 실행의 공개 사이트 반영이 아직인 접수 번호.
+ * 화면 아래에 "저장됨 · 공개 사이트 반영 중"으로 보이고, 실행이 끝나면(done·failed) 알림 없이 빠집니다.
+ */
+const SITE_STORE = 'sai-admin:site-publishing';
+const REQUEST_ID = /^[a-f0-9-]{36}$/;
+const siteListeners = new Set<(count: number) => void>();
+function readSite(): string[] {
+  try { const raw = localStorage.getItem(SITE_STORE); return raw ? (JSON.parse(raw) as string[]).filter((id) => REQUEST_ID.test(id)) : []; } catch { return []; }
+}
+function writeSite(ids: string[]) {
+  try { if (ids.length > 0) localStorage.setItem(SITE_STORE, JSON.stringify(ids)); else localStorage.removeItem(SITE_STORE); } catch { /* 이 창에서만 보입니다. */ }
+  siteListeners.forEach((listener) => listener(ids.length));
+}
+export function onSitePublishing(listener: (count: number) => void): () => void {
+  siteListeners.add(listener);
+  listener(readSite().length);
+  return () => { siteListeners.delete(listener); };
+}
+/** 사본을 새로 읽어 실행이 끝난 접수 번호를 뺍니다. 남은 개수를 돌려줍니다. */
+export async function refreshSitePublishing(): Promise<number> {
+  const ids = readSite();
+  if (ids.length === 0) return 0;
+  const snap = await snapshot(true);
+  const left = ids.filter((id) => { const job = snap.jobs[id]; return job && job.state !== 'done' && job.state !== 'failed'; });
+  writeSite(left);
+  return left.length;
+}
 
 /** 기다리는 변경의 단계. sending: 보내는 중, received: 접수됨(소유자 작업 대기), applying: 적용·반영 처리 중. */
 export type PendingStage = 'sending' | 'received' | 'applying';
@@ -252,6 +281,7 @@ async function waitApplied(request_id: string, method: Method, path: string, fin
     // The worker records the result before publishing the site, so a result means the save is done.
     if (!APPLIED.includes(job.state) && job.state !== 'failed' && job.result == null) continue;
     writePending((pending) => { delete pending[fingerprint]; });
+    if (job.state !== 'done' && job.state !== 'failed') writeSite([...new Set([...readSite(), request_id])]);
     const data = path === '/publish' ? publishOf(job, request_id)
       : job.result ?? (method === 'PATCH' ? fromCollection(snap, path) : undefined);
     if (data === undefined) throw new ApiError('INTERNAL', '저장했지만 결과를 읽지 못했습니다. 화면을 새로고침해 주세요.', 0);

@@ -17,8 +17,9 @@ export type FileInfo = {
 };
 
 const POLL_MS = 1000;
-const BUSY_RETRY_MS = 2000;
-const BUSY_RETRIES = 60;
+/** 사람마다 처리를 기다리는 파일 수에 상한이 있어, 넘으면 이만큼 기다렸다가 다시 보냅니다(최대 10분). */
+const BUSY_RETRY_MS = 5000;
+const BUSY_RETRIES = 120;
 let uploadQueue: Promise<void> = Promise.resolve();
 const RETRYABLE = new Set(['PROCESSING_FAILED', 'PROCESSING_TIMEOUT', 'STORAGE_UNAVAILABLE']);
 
@@ -30,7 +31,10 @@ export class FileProcessingError extends ApiError {
   }
 }
 
-/** 한 브라우저에서 파일 가공이 끝날 때까지 다음 파일의 전송을 기다립니다. */
+/**
+ * 한 브라우저에서 파일 전송은 한 번에 하나씩, 고른 순서대로 합니다. 가공은 기다리지 않습니다:
+ * 접수된 파일은 실행기가 묶어서 처리하므로, 여러 장을 연달아 보내야 한 번에 처리됩니다.
+ */
 function inUploadOrder<T>(work: () => Promise<T>): Promise<T> {
   const result = uploadQueue.then(work, work);
   uploadQueue = result.then(() => undefined, () => undefined);
@@ -62,8 +66,8 @@ export function uploadFile(file: File, purpose: FilePurpose, onProgress: (percen
     }
     if (!data) throw new ApiError('INTERNAL', '파일을 올리지 못했습니다.', 500);
     if (data.status === 'processing') onProcessing(data);
-    return waitForFile(data);
-  });
+    return data;
+  }).then(waitForFile);
 }
 
 /** 서버에 남아 있는 원본으로 가공만 다시 시도합니다. */
@@ -84,8 +88,8 @@ export function retryFile(id: string, onQueued?: () => void, onProcessing?: (inf
     }
     if (!data) throw new ApiError('INTERNAL', '파일을 다시 처리하지 못했습니다.', 500);
     if (data.status === 'processing') onProcessing?.(data);
-    return waitForFile(data);
-  });
+    return data;
+  }).then(waitForFile);
 }
 
 /** 처리 중인 파일이 ready 또는 failed가 될 때까지 묻습니다. 새로고침 뒤 처리 중이던 파일을 이어서 기다릴 때도 씁니다. */
