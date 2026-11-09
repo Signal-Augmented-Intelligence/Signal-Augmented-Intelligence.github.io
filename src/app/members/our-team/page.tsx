@@ -34,7 +34,7 @@ export default function TeamPage() {
   return (
     <>
       <PageHeader title="Members" tabs={visibleNav(MEMBERS_TABS)} />
-      <Section id="our-team" title="Our Team">
+      <Section id="our-team" title="Our Team" hideTitle>
         {groups.length === 0 && <p className="muted">Members will be listed here.</p>}
         {groups.map((g) => (
           <div key={g.id} id={g.id} className={styles.group}>
