@@ -95,7 +95,29 @@ function snapshot(fresh = false): Promise<Snapshot> {
 
 const notFound = () => new ApiError('NOT_FOUND', '찾을 수 없습니다. 목록을 새로고침해 주세요.', 404);
 
-function publishOf(job: Job | undefined, id: string): Publish {
+/** 공개 반영 작업(실행기가 사본의 collections['/publish-jobs']에 실음). request_ids는 그 작업이 실은 접수 번호. */
+type SitePublish = { id: string; state: 'queued' | 'running' | 'deploying' | 'done' | 'failed'; message?: string | null;
+  request_ids?: string[] };
+/**
+ * 접수 하나가 실린 공개 반영 작업. 저장 결과가 공개 반영 작업 자체인 접수(다시 반영)는 그 작업 번호로 찾습니다.
+ * 사본에 목록이 없으면(이전 실행기) undefined.
+ */
+function sitePublishOf(snap: Snapshot, job: Job | undefined, requestId: string): SitePublish | undefined {
+  const jobs = snap.collections['/publish-jobs'];
+  if (!Array.isArray(jobs)) return undefined;
+  const ownId = (job?.result as { id?: unknown } | null | undefined)?.id;
+  return (jobs as SitePublish[]).find((item) => item?.request_ids?.includes(requestId)
+    || (typeof ownId === 'string' && ownId.startsWith('pub_') && item?.id === ownId));
+}
+/**
+ * 저장과 공개 사이트 반영은 따로입니다. 공개 반영 작업이 사본에 있으면 그 상태(배포 중도 '반영 중'),
+ * 없으면 이전처럼 접수 작업 상태로 판단합니다(실행이 끝나야 공개 완료).
+ */
+function publishOf(snap: Snapshot, job: Job | undefined, id: string): Publish {
+  const site = sitePublishOf(snap, job, id);
+  if (site?.state === 'done') return { id, state: 'done' };
+  if (site?.state === 'failed') return { id, state: 'failed', message: site.message ?? null };
+  if (site) return { id, state: site.state === 'queued' ? 'queued' : 'running' };
   if (!job) return { id, state: 'queued' };
   if (job.state === 'done') return { id, state: 'done' };
   if (job.state === 'failed') return { id, state: 'failed', message: job.message ?? null };
@@ -134,7 +156,7 @@ async function read(path: string): Promise<Result<unknown>> {
   if (publish) {
     const job = snap.jobs[publish[1]];
     if (!job) throw notFound();
-    return { data: publishOf(job, publish[1]) };
+    return { data: publishOf(snap, job, publish[1]) };
   }
   if (file) return { data: fileOf(snap, file[1]) };
   if (!(path in snap.collections)) throw notFound();
@@ -167,7 +189,12 @@ export async function refreshSitePublishing(): Promise<number> {
   const ids = readSite();
   if (ids.length === 0) return 0;
   const snap = await snapshot(true);
-  const left = ids.filter((id) => { const job = snap.jobs[id]; return job && job.state !== 'done' && job.state !== 'failed'; });
+  const left = ids.filter((id) => {
+    const job = snap.jobs[id];
+    if (!job) return false;
+    const state = publishOf(snap, job, id).state;
+    return state !== 'done' && state !== 'failed';
+  });
   writeSite(left);
   return left.length;
 }
@@ -281,11 +308,12 @@ async function waitApplied(request_id: string, method: Method, path: string, fin
     // The worker records the result before publishing the site, so a result means the save is done.
     if (!APPLIED.includes(job.state) && job.state !== 'failed' && job.result == null) continue;
     writePending((pending) => { delete pending[fingerprint]; });
-    if (job.state !== 'done' && job.state !== 'failed') writeSite([...new Set([...readSite(), request_id])]);
-    const data = path === '/publish' ? publishOf(job, request_id)
+    const site = publishOf(snap, job, request_id).state;
+    if (site !== 'done' && site !== 'failed') writeSite([...new Set([...readSite(), request_id])]);
+    const data = path === '/publish' ? publishOf(snap, job, request_id)
       : job.result ?? (method === 'PATCH' ? fromCollection(snap, path) : undefined);
     if (data === undefined) throw new ApiError('INTERNAL', '저장했지만 결과를 읽지 못했습니다. 화면을 새로고침해 주세요.', 0);
-    return { data, publish: publishOf(job, request_id) };
+    return { data, publish: publishOf(snap, job, request_id) };
   }
   throw new ApiError('PENDING', '접수했지만 아직 적용되지 않았습니다. 잠시 뒤 같은 내용으로 다시 저장하면 이어서 기다립니다.', 0);
 }

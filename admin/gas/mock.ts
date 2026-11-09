@@ -64,6 +64,8 @@ const jobs: Record<string, Job> = {};
 const fingerprints: Record<string, string> = {};
 /** 소유자 접수(Intake.gs)처럼 사람마다 처리를 기다리는 파일은 5개까지 받습니다. */
 const UPLOAD_PER_USER = 5;
+/** 실행기가 사본에 싣는 공개 반영 작업(collections['/publish-jobs']). 새것이 앞. */
+const publishJobs: { id: string; state: string; message: string | null; request_ids: string[] }[] = [];
 let lastPublish: { id: string; state: string; finished_at: string | null; message?: string | null } | null = { id: 'old', state: 'done', finished_at: '2026-10-30T09:05:00Z' };
 const mock = { failNext: null as string | null };
 (window as unknown as { __mock: typeof mock }).__mock = mock;
@@ -88,6 +90,7 @@ function snapshot() {
     ...Object.fromEntries(Object.entries(lists).map(([path, items]) => [path, structuredClone(items)])),
     ...structuredClone(singles),
   };
+  collections['/publish-jobs'] = structuredClone(publishJobs);
   for (const album of lists['/albums']) {
     collections[`/albums/${album.id}`] = { ...structuredClone(album), photos: structuredClone(photos[album.id] ?? []) };
   }
@@ -157,18 +160,22 @@ function runJob(id: string, work: () => unknown) {
   later(1500, () => { job.state = 'stored'; });
   later(3500, () => {
     if (failure === 'CONFLICT') { Object.assign(job, { state: 'failed', error_code: 'CONFLICT', message: '버전이 맞지 않습니다.' }); return; }
-    try { job.result = work(); job.state = 'applied'; }
+    try { job.result = work(); }
     catch (err) { Object.assign(job, { state: 'failed', error_code: (err as Error).message, message: '적용하지 못했습니다.' }); return; }
-    lastPublish = { id, state: 'running', finished_at: null };
-    later(2000, () => { job.state = 'publishing'; });
-    later(5000, () => {
+    // 소유자 새 코드처럼 결과가 보이면 접수는 바로 끝나고, 공개 반영은 따로: 반영 중 → push 뒤 배포 중 → 완료(또는 실패).
+    job.state = 'done';
+    const site = { id: `pub_${id.slice(0, 8)}`, state: 'running', message: null as string | null, request_ids: [id] };
+    publishJobs.unshift(site);
+    lastPublish = { id: site.id, state: 'running', finished_at: null };
+    later(2000, () => { site.state = 'deploying'; });
+    later(7000, () => {
       if (failure === 'WORKFLOW_FAILED') {
-        Object.assign(job, { state: 'failed', error_code: 'WORKFLOW_FAILED', message: '공개 반영 작업이 실패했습니다.' });
-        lastPublish = { id, state: 'failed', finished_at: now(), message: job.message };
+        Object.assign(site, { state: 'failed', message: 'GitHub Actions 배포가 failure 상태로 끝났습니다.' });
+        lastPublish = { id: site.id, state: 'failed', finished_at: now(), message: site.message };
         return;
       }
-      job.state = 'done';
-      lastPublish = { id, state: 'done', finished_at: now() };
+      site.state = 'done';
+      lastPublish = { id: site.id, state: 'done', finished_at: now() };
     });
   });
 }
