@@ -89,6 +89,13 @@ try {
   ui.writeDraft('sai-admin:members:new', { name: 'Draft Name' });
   assert.match(member(), /value="Draft Name"/);
   assert.doesNotMatch(member({ member: { id: 'm1', name: 'Saved', name_ko: '', group: 'ms' } }), /Draft Name/, 'a draft belongs to one form');
+  // 학교 메일 칸은 모든 멤버 폼에 있고 저장된 값을 보여 줍니다.
+  assert.match(member({ member: { id: 'm3', name: 'Saved', name_ko: '', group: 'phd', email: 'a@hs.ac.kr' } }),
+    /<input type="email"[^>]*name="email" value="a@hs.ac.kr"/);
+  // 학년은 학부생에게만 있고, 저장된 학년이 골라져 있습니다.
+  assert.doesNotMatch(member({ member: { id: 'm1', name: 'Saved', name_ko: '', group: 'ms' } }), /name="grade"/);
+  assert.match(member({ member: { id: 'm2', name: 'Saved', name_ko: '', group: 'undergrad', grade: 3 } }),
+    /<select name="grade">(?:(?!<\/select>).)*<option value="3" selected="">3학년<\/option>/);
   ui.writeDraft('sai-admin:professor-draft', { version: 1 });
   store.set('unrelated', '1');
   ui.clearLocalWork();

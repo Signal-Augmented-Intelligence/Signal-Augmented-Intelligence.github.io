@@ -3,3 +3,6 @@
 .portrait { display: block; width: 48px; height: 64px; flex: none; object-fit: cover; background: var(--surface); border-radius: 4px; }
 .formPortrait { display: block; width: 90px; height: 120px; object-fit: cover; background: var(--surface); border-radius: 6px; }
 .formNote { color: var(--muted); font-size: var(--text-sm); }
+/* 구분·학년 묶음: 공개 Our Team의 줄과 같은 차례 */
+.group + .group { margin-top: 32px; }
+.groupTitle { padding-bottom: 8px; border-bottom: 1px solid var(--rule); color: var(--muted); font-size: var(--text-sm); font-weight: 600; }

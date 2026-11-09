@@ -18,9 +18,13 @@ export type PickerPerson = { id: string; name: string; name_ko: string; group: s
 export type MemberGroup = 'faculty' | 'phd' | 'ms' | 'undergrad' | 'alumni';
 export type Member = Common & {
   name: string; name_ko: string; aliases: string[]; group: MemberGroup; role: string;
+  /** 학부생의 학년 1~4, 없으면 null. 서버가 아직 받지 않으면 빠져서 옵니다. */
+  grade?: number | null;
   since: string; until: string;
   /** 한 줄 소개: bio는 한국어, bio_en은 영어. bio_en은 서버가 아직 받지 않으면 빠져서 옵니다. */
   bio: string; bio_en?: string; url: string; after: string;
+  /** 학교 메일(@hs.ac.kr)만. 서버가 아직 받지 않으면 빠져서 옵니다. */
+  email?: string;
   photo_file_id: string | null; photo_preview_url: string | null;
   /** Absent on older management server releases. */
   publication?: ContentPublication | { state: 'unverified'; job_id: null; message: null; commit_sha: null };

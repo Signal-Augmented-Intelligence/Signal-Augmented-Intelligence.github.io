@@ -219,6 +219,7 @@ Home 첫 화면과 뉴스 하이라이트 밖의 이미지 슬라이드, 카드 
 - **화면 오류:** 화면을 그리다 오류가 나면 관리 화면 틀 위에 공통 오류 팝업("화면을 표시하지 못했습니다" + "다시 시도")을 띄웁니다(`admin/src/app/error.tsx`). 영어 기본 오류 화면이 나오지 않게 합니다.
 - **휴대폰:** 헤더에는 "공개 사이트"와 "나가기"만 둡니다. 메뉴 탭이 넘치면 오른쪽 끝을 흐리게 합니다.
 - **Research·News·Notices:** 논문은 논문 폼에서 연구 분야를 고르고, 저자는 멤버에서 고르거나 "외부 저자"로 이름을 적고 위로·아래로로 순서를 정합니다. News는 날짜·소식 제목과 관련 논문 또는 근거 링크를 입력합니다. Notices는 종류·행사 날짜·제목·내용·사진·링크·모집 띠 표시 여부를 입력합니다. 교수님 페이지(`professor.yml`)는 Professor 화면에서 수정합니다.
+- **Members:** 목록을 공개 Our Team과 같은 차례(구분, 학부생은 4학년부터 학년마다, 학년 없는 학부생, Alumni)로 묶어 보이고, 위로·아래로는 한 묶음 안에서만 움직입니다(`PUT /people/order`, 교수님 포함 모든 id). 학년은 학부생 폼에만 있고, 구분을 바꾸면 비워집니다. 학년은 해마다 직접 고칩니다. 메일은 학교 메일(`@hs.ac.kr`)만 받습니다(공개 사이트 검사가 개인 메일을 막기 때문).
 - **Home:** 첫 화면 사진 아래에서 랩 정보와 시를 고칩니다. 시는 연을 추가·숨기기·순서 변경할 수 있으며 첫 화면에 보일 연을 고릅니다. 숨긴 연은 원본으로 남습니다.
 - **목록 모양:** 목록 한 줄은 `admin/src/components/List.module.css`, 사진이 주인 목록(Album 행사의 사진, Home 첫 화면 사진)은 `PhotoGrid.tsx`의 정사각형 칸입니다. 사진은 여러 장을 고르거나 칸 위로 끌어다 놓고, 순서는 끌어 옮기기와 "앞으로·뒤로"를 같이 둡니다.
 - **수정은 바꾼 칸만 보냅니다.** 파일 칸(`Field group` + `FileUpload`, `<label>`로 감싸지 않음)은 그대로면 보내지 않고, 새 파일이면 새 id, 빼기면 `null`입니다. 붙어 있던 파일이 글만 고친 저장으로 지워지지 않게 하기 위해서입니다.
@@ -254,6 +255,7 @@ Home 첫 화면과 뉴스 하이라이트 밖의 이미지 슬라이드, 카드 
   name: "So Yeong Park"
   name_ko: "박소영"
   group: undergrad             # faculty / phd / ms / undergrad / alumni
+  grade: 4                     # 학부생만, 학년 1~4 (선택). 없으면 줄을 쓰지 않음
   role: "Undergraduate Researcher"   # group에 따라 정해짐 (관리 화면에는 칸 없음, 저장 시 자동 입력)
   since: 2025-06
   until:                       # 졸업·이탈 시 입력하고 group을 alumni로
@@ -261,6 +263,7 @@ Home 첫 화면과 뉴스 하이라이트 밖의 이미지 슬라이드, 카드 
   bio_en: "Korean speech recognition, LLM applications"   # 같은 소개의 영어 (선택)
   photo: so-yeong-park.jpg     # 없으면 비워 둠 → 회색 칸
   url: "https://green4849.github.io/"
+  email: "id@hs.ac.kr"         # 학교 메일만 (선택, 공개 동의 시). 없으면 줄을 쓰지 않음
   after: ""                    # alumni 진로 (동의 시)
 ```
 

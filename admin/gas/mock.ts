@@ -22,6 +22,10 @@ const lists: Record<string, Item[]> = {
   '/people': [
     { ...common('p1', 0), name: 'Minji Kim', name_ko: '김민지', aliases: [], group: 'faculty', role: 'Professor', since: '2019', until: '', bio: '', bio_en: '', url: '', after: '', photo_file_id: null, photo_preview_url: null },
     { ...common('p2', 1), name: 'Jun Lee', name_ko: '이준', aliases: [], group: 'ms', role: 'M.S. Student', since: '2025', until: '', bio: '', bio_en: '', url: '', after: '', photo_file_id: null, photo_preview_url: swatch('#4b6b5a', 'Jun') },
+    { ...common('p3', 2), name: 'Seo Yeon Han', name_ko: '한서연', aliases: [], group: 'undergrad', grade: 4, role: 'Undergraduate Researcher', since: '2025-03', until: '', bio: '', bio_en: '', url: '', email: 'seoyeon@hs.ac.kr', after: '', photo_file_id: null, photo_preview_url: null },
+    { ...common('p4', 3), name: 'Do Hyun Kang', name_ko: '강도현', aliases: [], group: 'undergrad', grade: 2, role: 'Undergraduate Researcher', since: '2026-03', until: '', bio: '', bio_en: '', url: '', after: '', photo_file_id: null, photo_preview_url: null },
+    { ...common('p5', 4), name: 'Ji Woo Choi', name_ko: '최지우', aliases: [], group: 'undergrad', grade: 4, role: 'Undergraduate Researcher', since: '2025-09', until: '', bio: '', bio_en: '', url: '', after: '', photo_file_id: null, photo_preview_url: null },
+    { ...common('p6', 5), name: 'Ha Eun Yoon', name_ko: '윤하은', aliases: [], group: 'undergrad', grade: null, role: 'Undergraduate Researcher', since: '', until: '', bio: '', bio_en: '', url: '', after: '', photo_file_id: null, photo_preview_url: null },
   ],
   '/albums': [
     { ...common('a1', 0), slug: '2026-workshop', date: '2026-09', title: '가을 워크숍', cover_photo_id: 'ph1', photo_count: 2, cover_preview_url: swatch('#2f5d8a', 'workshop') },
