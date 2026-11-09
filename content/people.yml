@@ -23,6 +23,7 @@
   name: "So Yeong Park"
   name_ko: "박소영"
   group: undergrad
+  grade: 3
   role: "Undergraduate Researcher"
   since: 2025-06
   until:
@@ -30,6 +31,7 @@
   bio_en: "Does better acoustic representation guarantee better audio understanding?"
   photo: "2026-10-30-bc372ee5.jpg"
   url: ""
+  email: "kong02931@hs.ac.kr"
   after: ""
 - id: hyun-jae-shin
   name: "Hyun Jae Shin"
