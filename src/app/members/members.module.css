@@ -1,5 +1,7 @@
 .group + .group { margin-top: 48px; }
 .groupTitle { margin-bottom: 24px; color: var(--muted); font-size: 0.9375rem; font-weight: 600; }
+.row + .row { margin-top: 40px; }
+.rowTitle { margin-bottom: 16px; font-size: var(--text-sm); font-weight: 600; }
 .team { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 190px)); gap: 40px 28px; }
 .member { scroll-margin-top: calc(var(--header-h) + 84px); }
 .name { margin-top: 16px; font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; }
