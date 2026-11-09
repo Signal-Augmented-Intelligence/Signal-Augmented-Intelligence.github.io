@@ -27,6 +27,13 @@ function rowsOf(groupId: string, members: Person[]): Row[] {
   return rows.filter((r) => r.members.length > 0);
 }
 
+/** Starts a new line after each comma-ended phrase ("…생긴다면, 무엇에…" → two lines). The data stays one line. */
+function phraseLines(text: string) {
+  return text.split(/(?<=,)\s+/).map((part, i) => (
+    <span key={i} className={styles.phrase}>{part}</span>
+  ));
+}
+
 export default function TeamPage() {
   const people = getPeople();
   const groups = TEAM_GROUPS.map((g) => ({ ...g, rows: rowsOf(g.id, people.filter((p) => p.group === g.id)) })).filter((g) => g.rows.length > 0 && g.rows[0].members.length > 0);
@@ -49,8 +56,8 @@ export default function TeamPage() {
                       <div className={styles.info}>
                         <p className={styles.name}>{m.name}</p>
                         {m.name_ko && <p className={styles.nameKo} lang="ko">{m.name_ko}</p>}
-                        {m.bio_en && <p className={styles.bio} lang={langOf(m.bio_en)}>{m.bio_en}</p>}
-                        {m.bio && <p className={`${styles.bio} ${m.bio_en ? styles.bioSecond : ''}`} lang={langOf(m.bio)}>{m.bio}</p>}
+                        {m.bio_en && <p className={styles.bio} lang={langOf(m.bio_en)}>{phraseLines(m.bio_en)}</p>}
+                        {m.bio && <p className={`${styles.bio} ${m.bio_en ? styles.bioSecond : ''}`} lang={langOf(m.bio)}>{phraseLines(m.bio)}</p>}
                         {(m.url || m.email) && (
                           <p className={styles.link}>
                             {m.url && <a href={m.url}>Website</a>}

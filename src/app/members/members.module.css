@@ -10,6 +10,8 @@
 .nameKo { margin-top: 2px; color: var(--muted); font-size: var(--text-sm); }
 .bio { margin-top: 6px; font-size: var(--text-xs); line-height: 1.45; }
 .bioSecond { margin-top: 3px; color: var(--muted); }
+/* One block per comma-ended phrase; each phrase wraps with even line lengths. */
+.phrase { display: block; text-wrap: balance; }
 .link { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 0.8125rem; font-weight: 600; }
 
 .alumni { display: grid; }
