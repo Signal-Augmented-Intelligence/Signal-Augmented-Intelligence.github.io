@@ -2,6 +2,8 @@
 # id: lowercase-hyphen, never changed (publications and seminars link to it).
 # group: faculty / phd / ms / undergrad / alumni
 #   faculty is shown on Members > Professor (details in content/professor.yml), the rest on Our Team / Alumni.
+# grade: undergrad only — school year 1 to 4 (optional). Our Team shows one row per year, 4th year first.
+# email: school address (@hs.ac.kr) only, optional, published with the member's consent.
 # bio: one-line introduction in Korean; bio_en: the same in English (optional), both written by the member.
 # photo: file name in public/images/people/ (3:4, long side 800px, <= 200 KB). Leave empty for a grey placeholder.
 # aliases: other English spellings printed in papers (optional), so those author names link too.
@@ -86,5 +88,16 @@
   until:
   bio: ""
   photo: ""
+  url: ""
+  after: ""
+- id: yeong-jun-kim
+  name: "Yeong Jun KIM"
+  name_ko: "김영준"
+  group: undergrad
+  role: "Undergraduate Researcher"
+  since:
+  until:
+  bio: ""
+  photo: "2026-11-09-691a6ae7.jpg"
   url: ""
   after: ""
