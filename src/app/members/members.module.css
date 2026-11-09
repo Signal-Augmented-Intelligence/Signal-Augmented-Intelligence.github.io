@@ -1,20 +1,23 @@
 .group + .group { margin-top: 48px; }
-.groupTitle { margin-bottom: 24px; color: var(--muted); font-size: 0.9375rem; font-weight: 600; }
-.row + .row { margin-top: 40px; }
+.groupTitle { margin-bottom: 20px; color: var(--muted); font-size: 0.9375rem; font-weight: 600; }
+.row + .row { margin-top: 32px; }
 .rowTitle { margin-bottom: 16px; font-size: var(--text-sm); font-weight: 600; }
-.team { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 160px)); gap: 36px 28px; }
-.member { scroll-margin-top: calc(var(--header-h) + 84px); }
-.name { margin-top: 16px; font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; }
+.team { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px 32px; }
+/* Photo on the left, name and research question on the right. */
+.member { display: grid; grid-template-columns: 96px minmax(0, 1fr); column-gap: 16px; align-items: start; scroll-margin-top: calc(var(--header-h) + 84px); }
+.info { min-width: 0; }
+.name { font-size: var(--text-md); font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; }
 .nameKo { margin-top: 2px; color: var(--muted); font-size: var(--text-sm); }
-.bio { margin-top: 8px; font-size: var(--text-xs); line-height: 1.45; }
+.bio { margin-top: 6px; font-size: var(--text-xs); line-height: 1.45; }
 .bioSecond { margin-top: 3px; color: var(--muted); }
-.link { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 10px; font-size: 0.8125rem; font-weight: 600; }
+.link { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 0.8125rem; font-weight: 600; }
 
 .alumni { display: grid; }
 .alumni > li { display: grid; grid-template-columns: 240px 120px minmax(0, 1fr); column-gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
 .alumni .name { margin: 0; font-size: var(--text-md); }
 
 @media (max-width: 640px) {
-  .team { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 16px; }
+  .team { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .member { grid-template-columns: 88px minmax(0, 1fr); column-gap: 14px; }
   .alumni > li { grid-template-columns: minmax(0, 1fr); }
 }

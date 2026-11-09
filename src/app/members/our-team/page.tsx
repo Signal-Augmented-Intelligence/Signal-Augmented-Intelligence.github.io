@@ -45,17 +45,19 @@ export default function TeamPage() {
                 <ul className={styles.team}>
                   {row.members.map((m, index) => (
                     <li key={m.id} id={m.id} className={styles.member}>
-                      <PhotoSlot photo={m.photo} alt={m.name} eager={rowIndex === 0 && index < 4} />
-                      <p className={styles.name}>{m.name}</p>
-                      {m.name_ko && <p className={styles.nameKo} lang="ko">{m.name_ko}</p>}
-                      {m.bio_en && <p className={styles.bio} lang={langOf(m.bio_en)}>{m.bio_en}</p>}
-                      {m.bio && <p className={`${styles.bio} ${m.bio_en ? styles.bioSecond : ''}`} lang={langOf(m.bio)}>{m.bio}</p>}
-                      {(m.url || m.email) && (
-                        <p className={styles.link}>
-                          {m.url && <a href={m.url}>Website</a>}
-                          {m.email && <a href={`mailto:${m.email}`}>Email</a>}
-                        </p>
-                      )}
+                      <PhotoSlot photo={m.photo} alt={m.name} eager={rowIndex === 0 && index < 6} />
+                      <div className={styles.info}>
+                        <p className={styles.name}>{m.name}</p>
+                        {m.name_ko && <p className={styles.nameKo} lang="ko">{m.name_ko}</p>}
+                        {m.bio_en && <p className={styles.bio} lang={langOf(m.bio_en)}>{m.bio_en}</p>}
+                        {m.bio && <p className={`${styles.bio} ${m.bio_en ? styles.bioSecond : ''}`} lang={langOf(m.bio)}>{m.bio}</p>}
+                        {(m.url || m.email) && (
+                          <p className={styles.link}>
+                            {m.url && <a href={m.url}>Website</a>}
+                            {m.email && <a href={`mailto:${m.email}`}>Email</a>}
+                          </p>
+                        )}
+                      </div>
                     </li>
                   ))}
                 </ul>
