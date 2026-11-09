@@ -69,6 +69,8 @@ export type Person = {
   name: string;
   name_ko: string;
   group: Group;
+  /** School year 1–4, undergrad only; null when unset or not an undergrad. */
+  grade: number | null;
   role: string;
   /** One-line introduction: bio in Korean, bio_en in English (either may be empty). */
   bio: string;
@@ -79,12 +81,18 @@ export type Person = {
   /** Other spellings of the English name used in papers. */
   aliases: string[];
 };
+function gradeOf(p: Record<string, unknown>): number | null {
+  if (str(p.group) !== 'undergrad' || str(p.grade).trim() === '') return null;
+  const n = Number(p.grade);
+  return Number.isInteger(n) && n >= 1 && n <= 4 ? n : null;
+}
 export function getPeople(): Person[] {
   return readYaml<Record<string, unknown>[]>('people.yml', []).map((p) => ({
     id: str(p.id),
     name: str(p.name),
     name_ko: str(p.name_ko),
     group: str(p.group) as Group,
+    grade: gradeOf(p),
     role: str(p.role),
     bio: str(p.bio),
     bio_en: str(p.bio_en),
