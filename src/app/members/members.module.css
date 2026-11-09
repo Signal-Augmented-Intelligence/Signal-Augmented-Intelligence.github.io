@@ -4,7 +4,7 @@
 .rowTitle { margin-bottom: 16px; font-size: var(--text-sm); font-weight: 600; }
 .team { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px 32px; }
 /* Photo on the left, name and research question on the right. */
-.member { display: grid; grid-template-columns: 96px minmax(0, 1fr); column-gap: 16px; align-items: start; scroll-margin-top: calc(var(--header-h) + 84px); }
+.member { display: grid; grid-template-columns: 112px minmax(0, 1fr); column-gap: 24px; align-items: start; scroll-margin-top: calc(var(--header-h) + 84px); }
 .info { min-width: 0; }
 .name { font-size: var(--text-md); font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; }
 .nameKo { margin-top: 2px; color: var(--muted); font-size: var(--text-sm); }
@@ -18,6 +18,6 @@
 
 @media (max-width: 640px) {
   .team { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .member { grid-template-columns: 88px minmax(0, 1fr); column-gap: 14px; }
+  .member { grid-template-columns: 100px minmax(0, 1fr); column-gap: 18px; }
   .alumni > li { grid-template-columns: minmax(0, 1fr); }
 }
