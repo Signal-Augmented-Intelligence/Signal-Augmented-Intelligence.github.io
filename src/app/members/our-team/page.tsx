@@ -32,10 +32,10 @@ function isNameOnly(members: Person[]) {
   return members.every((m) => !m.bio && !m.bio_en);
 }
 
-/** Starts a new line after each comma-ended phrase ("…생긴다면, 무엇에…" → two lines). The data stays one line. */
+/** Comma-ended phrases: one line each on wide screens ("…생긴다면," / "무엇에…"); on phones the sentence is just balanced over two lines. The data stays one line. */
 function phraseLines(text: string) {
   return text.split(/(?<=,)\s+/).map((part, i) => (
-    <span key={i} className={styles.phrase}>{part}</span>
+    <span key={i}>{i > 0 && ' '}<span className={styles.phrase}>{part}</span></span>
   ));
 }
 
@@ -57,19 +57,23 @@ export default function TeamPage() {
                 <ul className={`${styles.team} ${isNameOnly(row.members) ? styles.compact : ''}`}>
                   {row.members.map((m, index) => (
                     <li key={m.id} id={m.id} className={styles.member}>
-                      <PhotoSlot photo={m.photo} alt={m.name} eager={rowIndex === 0 && index < 6} />
+                      <PhotoSlot photo={m.photo} alt={m.name} className={styles.photo} eager={rowIndex === 0 && index < 6} />
                       <div className={styles.info}>
                         <p className={styles.name}>{m.name}</p>
                         {m.name_ko && <p className={styles.nameKo} lang="ko">{m.name_ko}</p>}
-                        {m.bio_en && <p className={styles.bio} lang={langOf(m.bio_en)}>{phraseLines(m.bio_en)}</p>}
-                        {m.bio && <p className={`${styles.bio} ${m.bio_en ? styles.bioSecond : ''}`} lang={langOf(m.bio)}>{phraseLines(m.bio)}</p>}
-                        {(m.url || m.email) && (
-                          <p className={styles.link}>
-                            {m.url && <a href={m.url}>Website</a>}
-                            {m.email && <a href={`mailto:${m.email}`}>Email</a>}
-                          </p>
-                        )}
                       </div>
+                      {(m.bio_en || m.bio || m.url || m.email) && (
+                        <div className={styles.about}>
+                          {m.bio_en && <p className={styles.bio} lang={langOf(m.bio_en)}>{phraseLines(m.bio_en)}</p>}
+                          {m.bio && <p className={`${styles.bio} ${m.bio_en ? styles.bioSecond : ''}`} lang={langOf(m.bio)}>{phraseLines(m.bio)}</p>}
+                          {(m.url || m.email) && (
+                            <p className={styles.link}>
+                              {m.url && <a href={m.url}>Website</a>}
+                              {m.email && <a href={`mailto:${m.email}`}>Email</a>}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </li>
                   ))}
                 </ul>
