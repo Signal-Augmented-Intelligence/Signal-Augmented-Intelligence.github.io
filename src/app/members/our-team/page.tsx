@@ -27,6 +27,11 @@ function rowsOf(groupId: string, members: Person[]): Row[] {
   return rows.filter((r) => r.members.length > 0);
 }
 
+/** A row where nobody has an introduction or link: cards sit side by side at their own width instead of spreading over three columns. */
+function isNameOnly(members: Person[]) {
+  return members.every((m) => !m.bio && !m.bio_en && !m.url && !m.email);
+}
+
 /** Starts a new line after each comma-ended phrase ("…생긴다면, 무엇에…" → two lines). The data stays one line. */
 function phraseLines(text: string) {
   return text.split(/(?<=,)\s+/).map((part, i) => (
@@ -49,7 +54,7 @@ export default function TeamPage() {
             {g.rows.map((row, rowIndex) => (
               <div key={row.key} className={styles.row}>
                 {row.title && <h4 className={styles.rowTitle}>{row.title}</h4>}
-                <ul className={styles.team}>
+                <ul className={`${styles.team} ${isNameOnly(row.members) ? styles.compact : ''}`}>
                   {row.members.map((m, index) => (
                     <li key={m.id} id={m.id} className={styles.member}>
                       <PhotoSlot photo={m.photo} alt={m.name} eager={rowIndex === 0 && index < 6} />

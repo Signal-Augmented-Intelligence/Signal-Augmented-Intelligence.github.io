@@ -3,6 +3,9 @@
 .row + .row { margin-top: 32px; }
 .rowTitle { margin-bottom: 16px; font-size: var(--text-sm); font-weight: 600; }
 .team { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px 32px; }
+/* Rows with names only (no introduction or link): each card is as wide as its name. */
+.compact { display: flex; flex-wrap: wrap; gap: 24px 40px; }
+.compact .member { grid-template-columns: 112px auto; }
 /* Photo on the left, name and research question on the right. */
 .member { display: grid; grid-template-columns: 112px minmax(0, 1fr); column-gap: 24px; align-items: start; scroll-margin-top: calc(var(--header-h) + 84px); }
 .info { min-width: 0; }
@@ -21,5 +24,10 @@
 @media (max-width: 640px) {
   .team { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .member { grid-template-columns: 100px minmax(0, 1fr); column-gap: 18px; }
+  /* Names only: three small cards per line, photo above the name. */
+  .compact { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 12px; }
+  .compact .member { grid-template-columns: minmax(0, 1fr); row-gap: 10px; }
+  .compact .name { font-size: var(--text-sm); }
+  .compact .nameKo { font-size: var(--text-xs); }
   .alumni > li { grid-template-columns: minmax(0, 1fr); }
 }
