@@ -4,6 +4,7 @@ import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { useDialog } from '@admin/components/Dialog';
 import { Field, focusField } from '@admin/components/Field';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
+import { overwriteOk, useEditBase } from '@admin/lib/edit';
 import { errorBody, fieldList } from '@admin/lib/errors';
 import type { Album } from '@admin/lib/types';
 
@@ -45,6 +46,7 @@ export function AlbumForm({ album, onSaved, onCancel, onConflict, onDirty }: {
   onDirty?: (dirty: boolean) => void;
 }) {
   const dialog = useDialog();
+  const edit = useEditBase(album);
   const form = useRef<HTMLFormElement>(null);
   const [draft, setDraft] = useState<Draft>(() => readDraft(album?.id) ?? fromAlbum(album));
   const [saving, setSaving] = useState(false);
@@ -76,10 +78,12 @@ export function AlbumForm({ album, onSaved, onCancel, onConflict, onDirty }: {
     setSaving(true);
     try {
       if (album) {
-        const changed = Object.fromEntries(Object.entries(body).filter(([k, v]) => album[k as keyof typeof body] !== v));
+        const changed = edit.changes(body);
         if (Object.keys(changed).length === 0) return;
+        if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
         const res = await api.patch<Album>(`/albums/${album.id}`, { ...changed, version: album.version });
         writeDraft(album.id, null);
+        edit.rebase(res.data);
         setDraft(fromAlbum(res.data));
         onSaved(res.data, res.publish);
       } else {

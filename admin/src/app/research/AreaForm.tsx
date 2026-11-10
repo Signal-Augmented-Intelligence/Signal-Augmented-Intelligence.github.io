@@ -5,7 +5,7 @@ import { useDialog } from '@admin/components/Dialog';
 import { Field, focusField } from '@admin/components/Field';
 import { FileUpload, type FileValue } from '@admin/components/FileUpload';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
-import { changedFields, readDraft, writeDraft } from '@admin/lib/edit';
+import { overwriteOk, readDraft, useEditBase, writeDraft } from '@admin/lib/edit';
 import { errorBody, fieldList } from '@admin/lib/errors';
 import type { ResearchArea, System } from '@admin/lib/types';
 import styles from './research.module.css';
@@ -34,6 +34,7 @@ export function AreaForm({ area, system, onSaved, onCancel, onConflict }: {
   onConflict: () => void;
 }) {
   const dialog = useDialog();
+  const edit = useEditBase(area);
   const form = useRef<HTMLFormElement>(null);
   const [draft, setDraft] = useState<Draft>(() => ({ ...fromArea(area), ...readDraft<Draft>(draftKey(area?.id)) }));
   const [saving, setSaving] = useState(false);
@@ -72,8 +73,9 @@ export function AreaForm({ area, system, onSaved, onCancel, onConflict }: {
         figure_caption: figure ? draft.figure_caption.trim() : '',
       };
       if (area) {
-        const changed = changedFields(area, body);
+        const changed = edit.changes(body);
         if (Object.keys(changed).length === 0) { cancel(); return; }
+        if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
         const res = await api.patch<ResearchArea>(`/research-areas/${area.id}`, { ...changed, version: area.version });
         writeDraft(draftKey(area.id), null);
         onSaved(res.data, res.publish);

@@ -4,7 +4,7 @@ import { type FormEvent, useRef, useState } from 'react';
 import { useDialog } from '@admin/components/Dialog';
 import { Field, FilePicker, focusField } from '@admin/components/Field';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
-import { changedFields, readDraft, writeDraft } from '@admin/lib/edit';
+import { overwriteOk, readDraft, useEditBase, writeDraft } from '@admin/lib/edit';
 import { errorBody, fieldList } from '@admin/lib/errors';
 import { uploadFile, uploadingLabel } from '@admin/lib/files';
 import type { Member, MemberGroup, System } from '@admin/lib/types';
@@ -43,6 +43,7 @@ export function MemberForm({ member, system, onSaved, onCancel, onConflict }: {
   onCancel: () => void; onConflict: () => void;
 }) {
   const dialog = useDialog();
+  const edit = useEditBase(member);
   const form = useRef<HTMLFormElement>(null);
   // 글자 칸만 임시 보관합니다. 고른 사진 파일과 공개 동의 확인은 다시 열면 새로 합니다.
   const [draft, setDraft] = useState<Draft>(() => ({ ...fromMember(member), ...readDraft<Draft>(draftKey(member?.id)) }));
@@ -117,8 +118,9 @@ export function MemberForm({ member, system, onSaved, onCancel, onConflict }: {
       if (photoId) body.photo_file_id = photoId;
       else if (removePhoto) body.photo_file_id = null;
       // 수정은 바꾼 칸만 보냅니다. 오래된 임시 입력이 다른 사람이 고친 칸을 덮어쓰지 않게 합니다.
-      const changed = member ? changedFields(member, body) : body;
+      const changed = edit.changes(body);
       if (member && Object.keys(changed).length === 0) { cancel(); return; }
+      if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
       const result = member
         ? await api.patch<Member>(`/people/${member.id}`, { ...changed, version: member.version })
         : await api.post<Member>('/people', body);

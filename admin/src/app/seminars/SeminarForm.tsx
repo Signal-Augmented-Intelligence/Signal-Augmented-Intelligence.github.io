@@ -5,6 +5,7 @@ import { useDialog } from '@admin/components/Dialog';
 import { Field, focusField } from '@admin/components/Field';
 import { FileUpload, type FileValue } from '@admin/components/FileUpload';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
+import { overwriteOk, useEditBase } from '@admin/lib/edit';
 import { errorBody, fieldList } from '@admin/lib/errors';
 import { getFile } from '@admin/lib/files';
 import type { Presenter, Seminar } from '@admin/lib/types';
@@ -82,6 +83,7 @@ export function SeminarForm({ loaded, seminar, onSaved, onCancel, onConflict }: 
   onConflict: () => void;
 }) {
   const dialog = useDialog();
+  const edit = useEditBase(seminar, changedFields);
   const form = useRef<HTMLFormElement>(null);
   const [draft, setDraft] = useState<Draft>(() => readDraft(seminar?.id) ?? fromSeminar(seminar));
   // ready: 파일 칸을 씀. keep: 파일 칸을 쓸 수 없어(저장소 없음, 정보 못 불러옴) 붙어 있던 파일을 그대로 둠.
@@ -145,8 +147,9 @@ export function SeminarForm({ loaded, seminar, onSaved, onCancel, onConflict }: 
         ...(keep ? {} : { pdf_file_id: pdf?.id ?? null, cover_file_id: cover?.id ?? null }),
       };
       if (seminar) {
-        const changed = changedFields(seminar, body);
+        const changed = edit.changes(body);
         if (Object.keys(changed).length === 0) { cancel(); return; }
+        if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
         const res = await api.patch<Seminar>(`/seminars/${seminar.id}`, { ...changed, version: seminar.version });
         writeDraft(seminar.id, null);
         onSaved(res.data, res.publish);

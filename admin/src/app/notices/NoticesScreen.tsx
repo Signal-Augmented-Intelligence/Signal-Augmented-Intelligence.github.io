@@ -8,7 +8,7 @@ import { FileUpload, type FileValue } from '@admin/components/FileUpload';
 import list from '@admin/components/List.module.css';
 import { PublishFailure } from '@admin/components/PublishFailure';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
-import { changedFields, PARTIAL_DATE, readDraft, writeDraft } from '@admin/lib/edit';
+import { overwriteOk, PARTIAL_DATE, readDraft, useEditBase, writeDraft } from '@admin/lib/edit';
 import { errorBody, fieldList } from '@admin/lib/errors';
 import { formatDay } from '@admin/lib/format';
 import type { NoticeItem, System } from '@admin/lib/types';
@@ -104,6 +104,7 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
   onCancel: () => void; onConflict: () => void;
 }) {
   const dialog = useDialog();
+  const edit = useEditBase(item);
   const [draft, setDraft] = useState<Draft>(() => ({ date: item?.date ?? '', event_date: item?.event_date ?? '',
     kind: item?.kind ?? 'seminar', title: item?.title ?? '', body: item?.body ?? '',
     link: item?.link ?? '', popup: item?.popup ?? false, pinned: item?.pinned ?? false,
@@ -154,8 +155,9 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
       const popup = conference ? false : draft.popup;
       const payload = { date: item ? date : todayInSeoul(), event_date, kind, title, body: content, link, popup, pinned,
         host, paper_deadline, registration_deadline, photo_file_id: photo?.id ?? null };
-      const body = item ? changedFields(item, payload) : payload;
+      const body = edit.changes(payload);
       if (item && Object.keys(body).length === 0) { cancel(); return; }
+      if (!(await overwriteOk(dialog, edit.clashes(body)))) return;
       const res = item
         ? await api.patch<NoticeItem>(`/notices/${item.id}`, { ...body, version: item.version })
         : await api.post<NoticeItem>('/notices', body);

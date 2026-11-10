@@ -5,7 +5,7 @@ import { useDialog } from '@admin/components/Dialog';
 import { Field, focusField } from '@admin/components/Field';
 import { FileUpload, type FileValue } from '@admin/components/FileUpload';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
-import { changedFields, PARTIAL_DATE, readDraft, writeDraft } from '@admin/lib/edit';
+import { overwriteOk, PARTIAL_DATE, readDraft, useEditBase, writeDraft } from '@admin/lib/edit';
 import { errorBody, fieldList } from '@admin/lib/errors';
 import type { Author, PickerPerson, Publication, PublicationType, ResearchArea, System } from '@admin/lib/types';
 import styles from './research.module.css';
@@ -59,6 +59,7 @@ export function PublicationForm({ publication, people, areas, system, onSaved, o
   onConflict: () => void;
 }) {
   const dialog = useDialog();
+  const edit = useEditBase(publication);
   const form = useRef<HTMLFormElement>(null);
   const [draft, setDraft] = useState<Draft>(() => ({ ...fromPublication(publication),
     ...readDraft<Draft>(draftKey(publication?.id)) }));
@@ -111,8 +112,9 @@ export function PublicationForm({ publication, people, areas, system, onSaved, o
         excerpt: draft.excerpt.trim(), body: draft.body.trim(),
       };
       if (publication) {
-        const changed = changedFields(publication, body);
+        const changed = edit.changes(body);
         if (Object.keys(changed).length === 0) { cancel(); return; }
+        if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
         const res = await api.patch<Publication>(`/publications/${publication.id}`, { ...changed, version: publication.version });
         writeDraft(draftKey(publication.id), null);
         onSaved(res.data, res.publish);

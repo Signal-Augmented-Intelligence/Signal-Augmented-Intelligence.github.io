@@ -7,7 +7,7 @@ import { Field, focusField } from '@admin/components/Field';
 import list from '@admin/components/List.module.css';
 import { PublishFailure } from '@admin/components/PublishFailure';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
-import { changedFields, PARTIAL_DATE, readDraft, writeDraft } from '@admin/lib/edit';
+import { overwriteOk, PARTIAL_DATE, readDraft, useEditBase, writeDraft } from '@admin/lib/edit';
 import { errorBody, fieldList } from '@admin/lib/errors';
 import { formatDay } from '@admin/lib/format';
 import type { NewsItem, Publication } from '@admin/lib/types';
@@ -132,6 +132,7 @@ function NewsForm({ item, publications, onSaved, onCancel, onConflict }: {
   onConflict: () => void;
 }) {
   const dialog = useDialog();
+  const edit = useEditBase(item);
   const form = useRef<HTMLFormElement>(null);
   const [draft, setDraft] = useState<Draft>(() => ({
     date: item?.date ?? '', text: item?.text ?? '', publication_id: item?.publication_id ?? '',
@@ -166,8 +167,9 @@ function NewsForm({ item, publications, onSaved, onCancel, onConflict }: {
     setSaving(true);
     try {
       if (item) {
-        const changed = changedFields(item, body);
+        const changed = edit.changes(body);
         if (Object.keys(changed).length === 0) { cancel(); return; }
+        if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
         const res = await api.patch<NewsItem>(`/news/${item.id}`, { ...changed, version: item.version });
         writeDraft(draftKey(item.id), null);
         onSaved(res.data, res.publish);
