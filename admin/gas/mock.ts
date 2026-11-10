@@ -5,6 +5,7 @@
  * 주소 뒤 ?account=forbidden | none 으로 권한 없음·계정 없음을 시험합니다.
  * 주소 뒤 ?publication=failed 로 모든 항목을 공개 반영 실패 상태로 시작합니다.
  * 콘솔에서 __mock.failNext = 'CONFLICT' | 'WORKFLOW_FAILED' 로 다음 변경 하나를 실패시킵니다.
+ * 콘솔에서 __mock.busyNext = N 으로 다음 접수 N번을 OWNER_BUSY(소유자 잠금 대기 초과)로 돌려보냅니다.
  */
 type Item = Record<string, unknown> & { id: string; version: number; sort_order: number; hidden: boolean };
 type Job = { request_id: string; kind: string; state: string; error_code: string | null; message: string | null; result?: unknown };
@@ -67,10 +68,16 @@ const UPLOAD_PER_USER = 5;
 /** 실행기가 사본에 싣는 공개 반영 작업(collections['/publish-jobs']). 새것이 앞. */
 const publishJobs: { id: string; state: string; message: string | null; request_ids: string[] }[] = [];
 let lastPublish: { id: string; state: string; finished_at: string | null; message?: string | null } | null = { id: 'old', state: 'done', finished_at: '2026-10-30T09:05:00Z' };
-const mock = { failNext: null as string | null };
+const mock = { failNext: null as string | null, busyNext: 0 };
 (window as unknown as { __mock: typeof mock }).__mock = mock;
 
 const fail = (code: string) => { throw new Error(code); };
+/** 소유자가 잠금을 얻지 못해 접수 전에 돌려보낸 경우처럼 실패시킵니다. 아무것도 남기지 않습니다. */
+function ownerBusy() {
+  if (mock.busyNext <= 0) return;
+  mock.busyNext -= 1;
+  fail('OWNER_BUSY');
+}
 function actor() {
   const account = params.get('account');
   if (account === 'none') fail('UNAUTHENTICATED');
@@ -182,6 +189,7 @@ function runJob(id: string, work: () => unknown) {
 
 function submitMutation(command: { request_id: string; method: string; path: string; body: unknown; expected_version?: number }) {
   actor();
+  ownerBusy();
   const { request_id: id, method, path, body } = command;
   if (!ID.test(id) || !['POST', 'PATCH', 'PUT', 'DELETE'].includes(method) || !MUTATIONS.some((re) => re.test(path))) fail('VALIDATION_FAILED');
   if ((method === 'PATCH' || method === 'DELETE') && !Number.isInteger(command.expected_version)) fail('VALIDATION_FAILED');
@@ -198,6 +206,7 @@ function submitMutation(command: { request_id: string; method: string; path: str
 
 function submitFile(form: HTMLFormElement) {
   actor();
+  ownerBusy();
   const id = String((form.elements.namedItem('request_id') as HTMLInputElement).value);
   const purpose = String((form.elements.namedItem('purpose') as HTMLInputElement).value);
   const file = (form.elements.namedItem('file') as HTMLInputElement).files?.[0];

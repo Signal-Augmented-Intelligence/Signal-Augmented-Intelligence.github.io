@@ -51,7 +51,11 @@ export function NewsScreen() {
   const saved = (n: NewsItem, publish?: Publish) => {
     setItems((l) => l && [n, ...l.filter((x) => x.id !== n.id)].sort(byDate));
     track(n.id, publish);
-    setOpen(null);
+  };
+  /** 폼의 저장이 끝나면 그 폼만 닫습니다. 다른 줄의 숨기기가 끝나도 열려 있는 폼은 그대로 둡니다. */
+  const savedForm = (key: string) => (n: NewsItem, publish?: Publish) => {
+    saved(n, publish);
+    setOpen((current) => (current === key ? null : current));
   };
 
   const setHidden = async (n: NewsItem, hidden: boolean) => {
@@ -77,7 +81,7 @@ export function NewsScreen() {
       {open === 'new' && (
         <div className={list.open}>
           <h3 className="admin-form-title">새 소식</h3>
-          <NewsForm publications={publications} onSaved={saved} onCancel={() => setOpen(null)} onConflict={load} />
+          <NewsForm publications={publications} onSaved={savedForm('new')} onCancel={() => setOpen(null)} onConflict={load} />
         </div>
       )}
       {items.length === 0 && open !== 'new' ? (
@@ -86,7 +90,7 @@ export function NewsScreen() {
         <ul className={list.list}>
           {items.map((n) => open === n.id ? (
             <li key={n.id} className={list.open}>
-              <NewsForm item={n} publications={publications} onSaved={saved} onCancel={() => setOpen(null)} onConflict={load} />
+              <NewsForm item={n} publications={publications} onSaved={savedForm(n.id)} onCancel={() => setOpen(null)} onConflict={load} />
             </li>
           ) : (
             <li key={n.id} className={list.row}>

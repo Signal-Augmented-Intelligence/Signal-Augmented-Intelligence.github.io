@@ -68,14 +68,17 @@ export function ResearchScreen() {
   const savedPublication = (p: Publication, publish?: Publish) => {
     setLoaded((l) => l && { ...l, publications: [p, ...l.publications.filter((x) => x.id !== p.id)].sort(byDate) });
     track(p.id, publish);
-    setOpen(null);
     void load(); // 분야의 논문 수가 바뀔 수 있습니다.
   };
   const savedArea = (a: ResearchArea, publish?: Publish) => {
     setLoaded((l) => l && { ...l, areas: l.areas.some((x) => x.id === a.id) ? l.areas.map((x) => (x.id === a.id ? a : x)) : [...l.areas, a] });
     track(a.id, publish);
-    setOpen(null);
   };
+  /** 폼의 저장이 끝나면 그 폼만 닫습니다. 다른 줄의 숨기기가 끝나도 열려 있는 폼은 그대로 둡니다. */
+  const closeForm = (kind: 'publication' | 'area', id: string) =>
+    setOpen((current) => (current?.kind === kind && current.id === id ? null : current));
+  const publicationSaved = (key: string) => (p: Publication, publish?: Publish) => { savedPublication(p, publish); closeForm('publication', key); };
+  const areaSaved = (key: string) => (a: ResearchArea, publish?: Publish) => { savedArea(a, publish); closeForm('area', key); };
 
   const hidePublication = async (p: Publication, hidden: boolean) => {
     if (hidden && !(await dialog.confirm('논문을 숨길까요?', HIDE_PUBLICATION, '숨기기'))) return;
@@ -115,7 +118,7 @@ export function ResearchScreen() {
         {open?.kind === 'publication' && open.id === 'new' && (
           <div className={list.open}>
             <h3 className="admin-form-title">새 논문</h3>
-            <PublicationForm people={people} areas={areas} system={system} onSaved={savedPublication} onCancel={() => setOpen(null)} onConflict={load} />
+            <PublicationForm people={people} areas={areas} system={system} onSaved={publicationSaved('new')} onCancel={() => setOpen(null)} onConflict={load} />
           </div>
         )}
         {publications.length === 0 && !(open?.kind === 'publication' && open.id === 'new') ? (
@@ -124,7 +127,7 @@ export function ResearchScreen() {
           <ul className={list.list}>
             {publications.map((p) => open?.kind === 'publication' && open.id === p.id ? (
               <li key={p.id} className={list.open}>
-                <PublicationForm publication={p} people={people} areas={areas} system={system} onSaved={savedPublication} onCancel={() => setOpen(null)} onConflict={load} />
+                <PublicationForm publication={p} people={people} areas={areas} system={system} onSaved={publicationSaved(p.id)} onCancel={() => setOpen(null)} onConflict={load} />
               </li>
             ) : (
               <li key={p.id} className={list.row}>
@@ -157,7 +160,7 @@ export function ResearchScreen() {
         {open?.kind === 'area' && open.id === 'new' && (
           <div className={list.open}>
             <h3 className="admin-form-title">새 연구 분야</h3>
-            <AreaForm system={system} onSaved={savedArea} onCancel={() => setOpen(null)} onConflict={load} />
+            <AreaForm system={system} onSaved={areaSaved('new')} onCancel={() => setOpen(null)} onConflict={load} />
           </div>
         )}
         {areas.length === 0 && !(open?.kind === 'area' && open.id === 'new') ? (
@@ -166,7 +169,7 @@ export function ResearchScreen() {
           <ul className={list.list}>
             {areas.map((a, i) => open?.kind === 'area' && open.id === a.id ? (
               <li key={a.id} className={list.open}>
-                <AreaForm area={a} system={system} onSaved={savedArea} onCancel={() => setOpen(null)} onConflict={load} />
+                <AreaForm area={a} system={system} onSaved={areaSaved(a.id)} onCancel={() => setOpen(null)} onConflict={load} />
               </li>
             ) : (
               <li key={a.id} className={list.row}>

@@ -76,7 +76,11 @@ export function MembersScreen() {
   const saved = (member: Member, publish?: Publish) => {
     setPeople((current) => current && [...current.filter((item) => item.id !== member.id), member].sort(byOrder));
     track(member.id, publish);
-    setEditing(null);
+  };
+  /** 폼의 저장이 끝나면 그 폼만 닫습니다. 다른 줄의 숨기기·순서 저장이 끝나도 열려 있는 폼(고른 사진 포함)은 그대로 둡니다. */
+  const savedForm = (key: string) => (member: Member, publish?: Publish) => {
+    saved(member, publish);
+    setEditing((current) => (current === key ? null : current));
   };
 
   const setHidden = async (member: Member, hidden: boolean) => {
@@ -118,7 +122,7 @@ export function MembersScreen() {
     )}>
       {editing === 'new' && <div className={list.open}>
         <h3 className="admin-form-title">새 멤버</h3>
-        <MemberForm system={system} onSaved={saved} onCancel={() => setEditing(null)} onConflict={load} />
+        <MemberForm system={system} onSaved={savedForm('new')} onCancel={() => setEditing(null)} onConflict={load} />
       </div>}
       {members.length === 0 && editing !== 'new' && <p className="admin-muted">등록된 멤버가 없습니다.</p>}
       {rows.map((row) => (
@@ -127,7 +131,7 @@ export function MembersScreen() {
           <ul className={list.list}>
             {row.members.map((member, index) => editing === member.id ? (
               <li key={member.id} className={list.open}>
-                <MemberForm key={member.id} member={member} system={system} onSaved={saved}
+                <MemberForm key={member.id} member={member} system={system} onSaved={savedForm(member.id)}
                   onCancel={() => setEditing(null)} onConflict={load} />
               </li>
             ) : (

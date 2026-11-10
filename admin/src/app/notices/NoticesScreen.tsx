@@ -50,7 +50,11 @@ export function NoticesScreen() {
   const saved = (notice: NoticeItem, publish?: Publish) => {
     setItems((old) => old && sorted([notice, ...old.filter((item) => item.id !== notice.id)]));
     track(notice.id, publish);
-    setOpen(null);
+  };
+  /** 폼의 저장이 끝나면 그 폼만 닫습니다. 다른 줄의 숨기기가 끝나도 열려 있는 폼은 그대로 둡니다. */
+  const savedForm = (key: string) => (notice: NoticeItem, publish?: Publish) => {
+    saved(notice, publish);
+    setOpen((current) => (current === key ? null : current));
   };
   const setHidden = async (item: NoticeItem) => {
     if (!item.hidden && !(await dialog.confirm('공지를 숨길까요?', '공개 목록과 첫 화면 띠에서 빠집니다. 원본은 남습니다.', '숨기기'))) return;
@@ -66,10 +70,10 @@ export function NoticesScreen() {
   return <Section title="공지" aside={open === null &&
     <button type="button" className="admin-text-button" onClick={() => setOpen('new')}>공지 추가</button>}>
     {open === 'new' && <div className={list.open}><h3 className="admin-form-title">새 공지</h3>
-      <NoticeForm system={system} onSaved={saved} onCancel={() => setOpen(null)} onConflict={load} /></div>}
+      <NoticeForm system={system} onSaved={savedForm('new')} onCancel={() => setOpen(null)} onConflict={load} /></div>}
     {items.length === 0 && open !== 'new' ? <p className="admin-muted">아직 등록된 공지가 없습니다.</p> :
       <ul className={list.list}>{items.map((item) => open === item.id
-        ? <li key={item.id} className={list.open}><NoticeForm item={item} system={system} onSaved={saved}
+        ? <li key={item.id} className={list.open}><NoticeForm item={item} system={system} onSaved={savedForm(item.id)}
             onCancel={() => setOpen(null)} onConflict={load} /></li>
         : <li key={item.id} className={list.row}>
           <div className={list.main}>

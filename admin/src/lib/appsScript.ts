@@ -39,6 +39,10 @@ const SNAPSHOT_MS = 45_000;
 const WAIT_POLL_MS = 3000;
 const WAIT_LIMIT_MS = 10 * 60 * 1000;
 const PENDING_STORE = 'sai-admin:apps-script-requests';
+// The owner answers OWNER_BUSY when its script lock stays taken. The same request id is sent again, so a
+// retry never saves twice.
+const BUSY_RETRY_MS = 5000;
+const BUSY_RETRIES = 24;
 
 const MESSAGES: Record<string, [ErrorCode, string]> = {
   UNAUTHENTICATED: ['UNAUTHENTICATED', 'Google 계정을 확인하지 못했습니다. Google에 로그인한 뒤 다시 열어 주세요.'],
@@ -46,6 +50,7 @@ const MESSAGES: Record<string, [ErrorCode, string]> = {
   VALIDATION_FAILED: ['VALIDATION_FAILED', '보낸 내용을 받지 못했습니다. 입력을 확인해 주세요.'],
   FILE_TOO_LARGE: ['FILE_TOO_LARGE', '파일이 20 MB를 넘습니다.'],
   UPLOAD_BUSY: ['BUSY', '처리를 기다리는 파일이 많습니다. 차례가 오면 이어서 올립니다.'],
+  OWNER_BUSY: ['BUSY', '관리 서버가 다른 저장을 정리하는 중입니다. 잠시 뒤 다시 저장해 주세요.'],
   CONFLICT: ['CONFLICT', '같은 접수 번호로 다른 내용이 이미 접수됐습니다. 새로고침한 뒤 다시 저장해 주세요.'],
   CONFIGURATION_REQUIRED: ['STORAGE_UNAVAILABLE', '관리 저장소 설정이 끝나지 않았습니다.'],
   INBOX_UNAVAILABLE: ['STORAGE_UNAVAILABLE', '이 계정의 접수 폴더를 쓸 수 없습니다.'],
@@ -282,7 +287,16 @@ async function mutate(method: Method, path: string, body: unknown): Promise<Resu
 
   setPending(request_id, 'sending');
   try {
-    await call('submitMutation', { request_id, method, path, body: payload, expected_version: expected });
+    const submission = { request_id, method, path, body: payload, expected_version: expected };
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        await call('submitMutation', submission);
+        break;
+      } catch (error) {
+        if (!(error instanceof ApiError && error.code === 'BUSY') || attempt >= BUSY_RETRIES) throw error;
+        await sleep(BUSY_RETRY_MS);
+      }
+    }
     setPending(request_id, 'received');
     return await waitApplied(request_id, method, path, fingerprint);
   } finally {
