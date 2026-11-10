@@ -27,9 +27,9 @@ function rowsOf(groupId: string, members: Person[]): Row[] {
   return rows.filter((r) => r.members.length > 0);
 }
 
-/** A row where nobody has an introduction or link: cards sit side by side at their own width instead of spreading over three columns. */
+/** A row where nobody has a one-line introduction (links may still be there): cards sit side by side at their own width instead of spreading over three columns. */
 function isNameOnly(members: Person[]) {
-  return members.every((m) => !m.bio && !m.bio_en && !m.url && !m.email);
+  return members.every((m) => !m.bio && !m.bio_en);
 }
 
 /** Starts a new line after each comma-ended phrase ("…생긴다면, 무엇에…" → two lines). The data stays one line. */
