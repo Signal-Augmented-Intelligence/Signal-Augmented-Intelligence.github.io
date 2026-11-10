@@ -4,6 +4,7 @@ import { createContext, type FormEvent, type ReactNode, useCallback, useContext,
 import { Section } from '@/components/Section';
 import { api, ApiError, APPS_SCRIPT, setCsrfToken, setUnauthenticatedHandler, signedOut } from '@admin/lib/api';
 import { errorBody, fieldList } from '@admin/lib/errors';
+import { onOutdated } from '@admin/lib/appsScript';
 import { clearLocalWork } from '@admin/lib/edit';
 import type { System } from '@admin/lib/types';
 import { useDialog } from './Dialog';
@@ -38,6 +39,11 @@ type SessionData = { logged_in: boolean; csrf_token: string };
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const dialog = useDialog();
+  // 새 배포 전에 연 탭: 한 번만 알립니다. 새 화면의 수정은 새로고침해야 적용됩니다.
+  useEffect(() => {
+    if (APPS_SCRIPT) onOutdated(() => void dialog.error('관리 화면 새 버전이 있습니다',
+      '쓰던 내용을 저장하거나 정리한 뒤 브라우저에서 이 페이지를 새로고침해 주세요.'));
+  }, [dialog]);
   const [state, setState] = useState<State>('checking');
   const [reason, setReason] = useState<OutReason>('signed-out');
   const [changing, setChanging] = useState(false);

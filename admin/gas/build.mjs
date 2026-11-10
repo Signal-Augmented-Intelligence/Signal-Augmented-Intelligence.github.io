@@ -10,6 +10,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
+import { createHash } from 'node:crypto';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const admin = join(here, '..');
@@ -60,6 +61,8 @@ function page({ js, css }, before = '') {
   // break that wrapper before our JavaScript runs. Keep the payload ASCII-only and small,
   // then execute the decompressed bundle as a script element inside the HTML Service frame.
   const packed = gzipSync(js).toString('base64');
+  // The intake project reads this back (bootstrap) so a tab opened before a new deployment can tell.
+  const build = createHash('sha256').update(js).update(css).digest('hex').slice(0, 12);
   return `<!doctype html>
 <html lang="ko">
 <head>
@@ -73,7 +76,7 @@ function page({ js, css }, before = '') {
 </head>
 <body>
 <div id="root"></div>
-${before}<script id="sai-app-bundle" type="application/octet-stream">${packed}</script>
+${before}<script id="sai-app-bundle" type="application/octet-stream" data-build="${build}">${packed}</script>
 <script>
 (async function () {
   const encoded = document.getElementById('sai-app-bundle').textContent.trim();

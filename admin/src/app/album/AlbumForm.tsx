@@ -81,7 +81,7 @@ export function AlbumForm({ album, onSaved, onCancel, onConflict, onDirty }: {
         const changed = edit.changes(body);
         if (Object.keys(changed).length === 0) return;
         if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
-        const res = await api.patch<Album>(`/albums/${album.id}`, { ...changed, version: album.version });
+        const res = await api.patch<Album>(`/albums/${album.id}`, edit.request(changed, album.version));
         writeDraft(album.id, null);
         edit.rebase(res.data);
         setDraft(fromAlbum(res.data));

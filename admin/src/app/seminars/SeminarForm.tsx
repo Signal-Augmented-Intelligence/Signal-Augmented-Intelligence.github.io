@@ -150,7 +150,7 @@ export function SeminarForm({ loaded, seminar, onSaved, onCancel, onConflict }: 
         const changed = edit.changes(body);
         if (Object.keys(changed).length === 0) { cancel(); return; }
         if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
-        const res = await api.patch<Seminar>(`/seminars/${seminar.id}`, { ...changed, version: seminar.version });
+        const res = await api.patch<Seminar>(`/seminars/${seminar.id}`, edit.request(changed, seminar.version));
         writeDraft(seminar.id, null);
         onSaved(res.data, res.publish);
         return;

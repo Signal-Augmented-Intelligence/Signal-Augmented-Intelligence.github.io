@@ -50,11 +50,23 @@ export function useEditBase<T extends object>(current: T | undefined,
   diff: (original: T, body: Partial<T>) => Partial<T> = changedFields) {
   const base = useRef(current);
   const at = (value: T | undefined, key: string) => (value as Record<string, unknown> | undefined)?.[key];
+  const clashKeys = (changes: Partial<T>): string[] => (!base.current || !current ? [] : Object.keys(changes)
+    .filter((key) => !same(at(current, key), at(base.current, key))));
   return {
     changes: (body: Partial<T>): Partial<T> => (base.current ? diff(base.current, body) : body),
-    clashes: (changes: Partial<T>): string[] => (!base.current || !current ? [] : Object.keys(changes)
-      .filter((key) => !same(at(current, key), at(base.current, key)))
-      .map((key) => FIELD_LABELS[key] ?? key)),
+    clashes: (changes: Partial<T>): string[] => clashKeys(changes).map((key) => FIELD_LABELS[key] ?? key),
+    /**
+     * 수정 요청 본문: 바꾼 칸, 버전, 그리고 바꾼 칸마다 처음 값(base). 실행기는 그 칸들이 지금도 처음 값이면
+     * 버전이 앞서 있어도(다른 칸 저장, 순서 저장) 합쳐서 저장하고, 하나라도 바뀌었으면 거절합니다.
+     * 덮어쓰기를 고른 칸은 화면이 아는 지금 값을 처음 값으로 삼습니다.
+     */
+    request: (changes: Partial<T>, version: number) => {
+      if (!base.current) return { ...changes, version };
+      const clashing = new Set(clashKeys(changes));
+      const from = Object.fromEntries(Object.keys(changes)
+        .map((key) => [key, at(clashing.has(key) ? current : base.current, key) ?? null]));
+      return { ...changes, version, base: from };
+    },
     /** 폼을 닫지 않고 이어 쓰는 화면(앨범)에서 자기 저장이 끝난 뒤 그 결과를 새 기준으로 삼습니다. */
     rebase: (next: T) => { base.current = next; },
   };

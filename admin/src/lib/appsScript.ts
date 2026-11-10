@@ -39,6 +39,20 @@ const SNAPSHOT_MS = 45_000;
 const WAIT_POLL_MS = 3000;
 const WAIT_LIMIT_MS = 10 * 60 * 1000;
 const PENDING_STORE = 'sai-admin:apps-script-requests';
+const CONFLICT_MESSAGE = '다른 곳에서 같은 칸을 먼저 고쳤습니다. 바뀐 내용을 불러왔으니 확인한 뒤 다시 저장해 주세요.';
+
+/** 이 탭의 화면 빌드(Admin.html의 data-build). 배포된 빌드와 다르면(새 배포 전에 연 탭) 한 번 알립니다. */
+const OWN_BUILD = typeof document === 'undefined' ? null
+  : (document.getElementById('sai-app-bundle') as HTMLElement | null)?.dataset.build ?? null;
+let outdatedHandler: (() => void) | null = null;
+let outdatedShown = false;
+export function onOutdated(handler: () => void) { outdatedHandler = handler; }
+function checkBuild(deployed: unknown) {
+  if (outdatedShown || !OWN_BUILD || typeof deployed !== 'string' || deployed === OWN_BUILD) return;
+  outdatedShown = true;
+  outdatedHandler?.();
+}
+const sameValue = (a: unknown, b: unknown) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
 // The owner answers OWNER_BUSY when its script lock stays taken. The same request id is sent again, so a
 // retry never saves twice.
 const BUSY_RETRY_MS = 5000;
@@ -144,8 +158,9 @@ function fileOf(snap: Snapshot, id: string): unknown {
 async function read(path: string): Promise<Result<unknown>> {
   if (path === '/session') {
     const order = ++requested;
-    const value = call<{ session: { authenticated: boolean }; snapshot: Snapshot }>('bootstrap').then((first) => {
+    const value = call<{ session: { authenticated: boolean }; snapshot: Snapshot; build?: string | null }>('bootstrap').then((first) => {
       if (!first.session.authenticated) throw new ApiError('UNAUTHENTICATED', MESSAGES.UNAUTHENTICATED[1], 0);
+      checkBuild(first.build);
       remember(first.snapshot, order);
       return first.snapshot;
     }).finally(() => { if (loading === value) loading = null; });
@@ -281,6 +296,17 @@ async function mutate(method: Method, path: string, body: unknown): Promise<Resu
   const versioned = method === 'PATCH' || method === 'DELETE';
   const expected = versioned ? version : undefined;
   const payload = versioned ? rest : body ?? null;
+  // 칸 단위 확인(base)이 있는 수정은 보내기 전에 최신 사본과 비교해, 같은 칸이 이미 바뀌었으면 바로 알립니다.
+  // 실행기도 같은 확인을 합니다(그사이 적용된 저장까지 보는 최종 확인).
+  const base = method === 'PATCH' && payload && typeof payload === 'object'
+    ? (payload as { base?: Record<string, unknown> }).base : undefined;
+  if (base) {
+    const current = await snapshot(true).then((snap) => fromCollection(snap, path)).catch(() => undefined) as
+      Record<string, unknown> | undefined;
+    if (current && Object.keys(base).some((key) => !sameValue(current[key], base[key]))) {
+      throw new ApiError('CONFLICT', CONFLICT_MESSAGE, 0);
+    }
+  }
   const fingerprint = JSON.stringify([method, path, payload, expected ?? null]);
   const request_id = readPending()[fingerprint] ?? crypto.randomUUID();
   writePending((pending) => { pending[fingerprint] = request_id; });
@@ -315,7 +341,7 @@ async function waitApplied(request_id: string, method: Method, path: string, fin
     if (job.state === 'failed' && !(job.error_code === 'PUBLISH_FAILED' && job.result != null)) {
       writePending((pending) => { delete pending[fingerprint]; });
       const [code, message] = job.error_code === 'CONFLICT'
-        ? ['CONFLICT', '다른 곳에서 먼저 수정했습니다. 새로고침한 뒤 다시 저장해 주세요.'] as const
+        ? ['CONFLICT', CONFLICT_MESSAGE] as const
         : ['INTERNAL', job.message || '저장하지 못했습니다.'] as const;
       throw new ApiError(code, message, 0);
     }

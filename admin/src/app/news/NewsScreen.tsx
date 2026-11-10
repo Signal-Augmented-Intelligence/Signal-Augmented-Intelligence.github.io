@@ -170,7 +170,7 @@ function NewsForm({ item, publications, onSaved, onCancel, onConflict }: {
         const changed = edit.changes(body);
         if (Object.keys(changed).length === 0) { cancel(); return; }
         if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
-        const res = await api.patch<NewsItem>(`/news/${item.id}`, { ...changed, version: item.version });
+        const res = await api.patch<NewsItem>(`/news/${item.id}`, edit.request(changed, item.version));
         writeDraft(draftKey(item.id), null);
         onSaved(res.data, res.publish);
       } else {

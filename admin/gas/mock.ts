@@ -6,6 +6,8 @@
  * 주소 뒤 ?publication=failed 로 모든 항목을 공개 반영 실패 상태로 시작합니다.
  * 콘솔에서 __mock.failNext = 'CONFLICT' | 'WORKFLOW_FAILED' 로 다음 변경 하나를 실패시킵니다.
  * 콘솔에서 __mock.busyNext = N 으로 다음 접수 N번을 OWNER_BUSY(소유자 잠금 대기 초과)로 돌려보냅니다.
+ * 주소 뒤 ?build=old 또는 콘솔에서 __mock.build = '다른값' 으로 배포된 화면 빌드가 바뀐 것처럼 만듭니다(오래된 탭 안내).
+ * 수정 본문에 base(바꾼 칸의 처음 값)가 있으면 실행기처럼 칸 단위로 판정합니다.
  */
 type Item = Record<string, unknown> & { id: string; version: number; sort_order: number; hidden: boolean };
 type Job = { request_id: string; kind: string; state: string; error_code: string | null; message: string | null; result?: unknown };
@@ -68,7 +70,7 @@ const UPLOAD_PER_USER = 5;
 /** 실행기가 사본에 싣는 공개 반영 작업(collections['/publish-jobs']). 새것이 앞. */
 const publishJobs: { id: string; state: string; message: string | null; request_ids: string[] }[] = [];
 let lastPublish: { id: string; state: string; finished_at: string | null; message?: string | null } | null = { id: 'old', state: 'done', finished_at: '2026-10-30T09:05:00Z' };
-const mock = { failNext: null as string | null, busyNext: 0 };
+const mock = { failNext: null as string | null, busyNext: 0, build: null as string | null };
 (window as unknown as { __mock: typeof mock }).__mock = mock;
 
 const fail = (code: string) => { throw new Error(code); };
@@ -113,7 +115,13 @@ const MUTATIONS = [
 const ID = /^[a-f0-9-]{36}$/i;
 
 /** 소유자 작업이 하는 일: 버전을 확인하고 바꾼 엔티티를 돌려줍니다. */
-function apply(method: string, path: string, body: Record<string, unknown> | null, expected: number | null): unknown {
+function apply(method: string, path: string, input: Record<string, unknown> | null, expected: number | null): unknown {
+  // 실행기(serverless-apply-mutation.mjs)처럼: base가 있으면 바꾼 칸이 처음 값 그대로일 때만 받고 버전은 보지 않습니다.
+  const base = input && typeof input.base === 'object' && input.base ? input.base as Record<string, unknown> : null;
+  const body = input && base ? Object.fromEntries(Object.entries(input).filter(([key]) => key !== 'base')) : input;
+  const stale = (item: Record<string, unknown>) => (base
+    ? Object.keys(base).some((key) => JSON.stringify(item[key] ?? null) !== JSON.stringify(base[key] ?? null))
+    : item.version !== expected);
   const order = path.match(/^(.*)\/order$/);
   const photoPath = path.match(/^\/albums\/([^/]+)\/photos(?:\/([^/]+))?$/);
   if (order) {
@@ -124,7 +132,7 @@ function apply(method: string, path: string, body: Record<string, unknown> | nul
     return structuredClone(list);
   }
   if (singles[path]) {
-    if (singles[path].version !== expected) fail('CONFLICT');
+    if (stale(singles[path])) fail('CONFLICT');
     Object.assign(singles[path], body, { version: singles[path].version + 1, updated_at: now() });
     return structuredClone(singles[path]);
   }
@@ -148,7 +156,7 @@ function apply(method: string, path: string, body: Record<string, unknown> | nul
   const id = path.split('/').pop();
   const item = target?.find((x) => x.id === id);
   if (!item) fail('NOT_FOUND');
-  if (item!.version !== expected) fail('CONFLICT');
+  if (stale(item!)) fail('CONFLICT');
   if (method === 'DELETE') {
     if (!(item as { hidden?: boolean }).hidden) fail('DELETE_NOT_READY');
     target.splice(target.indexOf(item!), 1);
@@ -229,7 +237,9 @@ function submitFile(form: HTMLFormElement) {
 }
 
 const api: Record<string, (...args: never[]) => unknown> = { session: () => ({ authenticated: true, email: actor() }),
-  bootstrap: () => ({ session: { authenticated: true, email: actor() }, snapshot: snapshot() }), snapshot, submitMutation, submitFile };
+  bootstrap: () => ({ session: { authenticated: true, email: actor() }, snapshot: snapshot(),
+    build: mock.build ?? params.get('build') ?? (document.getElementById('sai-app-bundle') as HTMLElement | null)?.dataset.build ?? null }),
+  snapshot, submitMutation, submitFile };
 
 function runner(success: (v: unknown) => void = () => {}, failure: (e: Error) => void = () => {}): unknown {
   const self: Record<string, unknown> = {

@@ -122,7 +122,7 @@ export function MemberForm({ member, system, onSaved, onCancel, onConflict }: {
       if (member && Object.keys(changed).length === 0) { cancel(); return; }
       if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
       const result = member
-        ? await api.patch<Member>(`/people/${member.id}`, { ...changed, version: member.version })
+        ? await api.patch<Member>(`/people/${member.id}`, edit.request(changed, member.version))
         : await api.post<Member>('/people', body);
       writeDraft(draftKey(member?.id), null);
       onSaved(result.data, result.publish);

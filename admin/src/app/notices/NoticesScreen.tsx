@@ -159,7 +159,7 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
       if (item && Object.keys(body).length === 0) { cancel(); return; }
       if (!(await overwriteOk(dialog, edit.clashes(body)))) return;
       const res = item
-        ? await api.patch<NoticeItem>(`/notices/${item.id}`, { ...body, version: item.version })
+        ? await api.patch<NoticeItem>(`/notices/${item.id}`, edit.request(body, item.version))
         : await api.post<NoticeItem>('/notices', body);
       writeDraft(key(item?.id), null);
       onSaved(res.data, res.publish);

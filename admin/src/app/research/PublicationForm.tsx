@@ -115,7 +115,7 @@ export function PublicationForm({ publication, people, areas, system, onSaved, o
         const changed = edit.changes(body);
         if (Object.keys(changed).length === 0) { cancel(); return; }
         if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
-        const res = await api.patch<Publication>(`/publications/${publication.id}`, { ...changed, version: publication.version });
+        const res = await api.patch<Publication>(`/publications/${publication.id}`, edit.request(changed, publication.version));
         writeDraft(draftKey(publication.id), null);
         onSaved(res.data, res.publish);
       } else {

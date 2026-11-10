@@ -76,7 +76,7 @@ export function AreaForm({ area, system, onSaved, onCancel, onConflict }: {
         const changed = edit.changes(body);
         if (Object.keys(changed).length === 0) { cancel(); return; }
         if (!(await overwriteOk(dialog, edit.clashes(changed)))) return;
-        const res = await api.patch<ResearchArea>(`/research-areas/${area.id}`, { ...changed, version: area.version });
+        const res = await api.patch<ResearchArea>(`/research-areas/${area.id}`, edit.request(changed, area.version));
         writeDraft(draftKey(area.id), null);
         onSaved(res.data, res.publish);
       } else {
