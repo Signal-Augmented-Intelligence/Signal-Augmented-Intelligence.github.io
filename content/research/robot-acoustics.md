@@ -9,4 +9,5 @@ publications:       # 관련 논문 permalink
   - /publications/quadruped-footstep-denoising/
   - /publications/quadruped-ego-noise-database/
   - /publications/quadruped-speech-enhancement/
+  - /publications/2026-initial-design-and-implementation-of-a-multichannel-acoustic-evaluation-framework-for-exploring-optimal-microphone-mounting-configurations-on-robots/
 ---
