@@ -13,4 +13,5 @@ publications:       # 관련 논문 permalink
   - /publications/2026-a-review-of-acoustic-based-environmental-perception-technologies-for-quadruped-robot-applications/
   - /publications/2026-acoustic-analysis-of-microphone-positions-on-a-quadruped-robot-for-reliable-voice-command-capture-at-disaster-sites/
   - /publications/2025-dataset-construction-and-deep-learning-benchmark-for-quadruped-robot-ego-noise-removal/
+  - /publications/2025-construction-and-analysis-of-a-robot-generated-noise-database/
 ---
