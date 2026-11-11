@@ -41,8 +41,8 @@
   role: "M.S. Student"
   since:
   until:
-  bio: "로봇에게 청각이 생긴다면, 무엇에 귀 기울이고 무엇을 판단해야 하는가?"
-  bio_en: "If robots could hear, what should they listen for and what judgments should they make?"
+  bio: "로봇은 주변 소리를 통해 상황을 이해하고, 적절하게 행동할 수 있을까?"
+  bio_en: "Can robots understand their surroundings through sound and act appropriately?"
   photo: "2026-11-10-42d90b3d.jpg"
   url: ""
   email: "guswotls@hs.ac.kr"
