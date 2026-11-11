@@ -5,8 +5,11 @@
 .cardLink:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .figure { display: block; aspect-ratio: 3 / 2; padding: 12px 12px 0; }
 .figure img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.cardBody { display: flex; flex-grow: 1; align-items: center; min-height: 96px; padding: 18px 28px 22px; }
+.cardBody { display: flex; flex-grow: 1; flex-direction: column; min-height: 96px; padding: 22px 28px 22px; }
 .cardTitle { font-size: 1.1875rem; font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; }
+/* Shown only when the area has no figure; three lines at most. */
+.cardSummary { display: -webkit-box; overflow: hidden; margin-top: 10px; color: var(--muted); font-size: var(--text-sm); line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.cardMeta { margin-top: auto; padding-top: 16px; color: var(--muted); font-size: var(--text-xs); }
 
 /* Area detail page */
 .detailFigure { margin-bottom: 56px; }
