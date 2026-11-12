@@ -11,3 +11,9 @@
   .footer { margin-top: 80px; }
   .inner { grid-template-columns: 1fr; gap: 28px; }
 }
+
+@media (max-width: 640px) {
+  /* Phones: taller tap areas for small text links. Inline padding (or padding pulled back with negative margins) leaves the text where it was. */
+  .links { row-gap: 0; }
+  .links a { display: inline-block; padding: 8px 0; }
+}

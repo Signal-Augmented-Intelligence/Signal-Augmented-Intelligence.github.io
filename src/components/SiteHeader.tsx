@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getLab } from '@/lib/content';
 import { visibleNav } from '@/lib/nav';
 import { MAIN_NAV } from '@/lib/site';
+import { HeaderAutoHide } from './HeaderAutoHide';
 import { NavLinks } from './NavLinks';
 import styles from './SiteHeader.module.css';
 
@@ -12,6 +13,7 @@ export function SiteHeader() {
   const sections = items.filter((item) => item.href !== '/');
   return (
     <header className={styles.header}>
+      <HeaderAutoHide />
       <div className={`container container-header ${styles.inner}`}>
         <Link href="/" className={styles.brand} aria-label={`${lab.name} home`}>
           {lab.logo

@@ -11,3 +11,8 @@
   .section + .section { margin-top: 56px; }
   .title { font-size: 1.25rem; }
 }
+
+@media (max-width: 640px) {
+  /* Phones: taller tap areas for small text links. Inline padding (or padding pulled back with negative margins) leaves the text where it was. */
+  .aside a { display: inline-block; padding: 12px 0; margin: -12px 0; }
+}

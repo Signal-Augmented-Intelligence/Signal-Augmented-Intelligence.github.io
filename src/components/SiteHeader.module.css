@@ -42,7 +42,14 @@
   .nav { flex: 1; width: 0; overflow-x: auto; gap: 7px; white-space: nowrap; scrollbar-width: none; }
   .nav::-webkit-scrollbar { display: none; }
   .homeNav { white-space: nowrap; }
-  .link { font-size: 0.8125rem; }
+  /* Taller tap area (the text stays where it was: the header row has room for it). */
+  .link { padding: 11px 0; font-size: 0.8125rem; }
+  /* Scrolling down slides the header away; scrolling up brings it back (HeaderAutoHide). */
+  .header { transition: transform 220ms ease; }
+  :global(html[data-header-hidden]) .header { transform: translateY(-100%); }
+}
+@media (max-width: 640px) and (prefers-reduced-motion: reduce) {
+  .header { transition: none; }
 }
 
 /* Narrower than 360px: the section links scroll and fade at the right edge. */

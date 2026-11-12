@@ -48,6 +48,7 @@ export function NewsHighlights({ items }: { items: Highlight[] }) {
     <section
       className={styles.highlights}
       data-dir={back ? 'back' : undefined}
+      data-moved={cycle > 0 ? '' : undefined}
       aria-roledescription="carousel"
       aria-label="뉴스 하이라이트"
       onMouseEnter={() => setPaused(true)}

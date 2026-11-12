@@ -10,3 +10,8 @@
 @media (max-width: 640px) {
   .years { margin-bottom: 28px; }
 }
+
+@media (max-width: 640px) {
+  /* Phones: taller tap areas for small text links. Inline padding (or padding pulled back with negative margins) leaves the text where it was. */
+  .years a { padding-block: 10px; margin-block: -10px; }
+}

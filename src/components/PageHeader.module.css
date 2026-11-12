@@ -19,9 +19,21 @@
   .titleLong { font-size: 1.625rem; }
   .tabs { gap: 24px; overflow-x: auto; scrollbar-width: none; }
   .tabs::-webkit-scrollbar { display: none; }
+  .tab { height: 48px; }
   .gap { height: 40px; }
+  /* When the header slides away (HeaderAutoHide), the tab bar moves up to the top of the screen. */
+  .tabBar { transition: top 220ms ease; }
+  :global(html[data-header-hidden]) .tabBar { top: 0; }
+}
+@media (max-width: 640px) and (prefers-reduced-motion: reduce) {
+  .tabBar { transition: none; }
 }
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .tabBar { background: var(--paper-glass); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); }
+}
+
+@media (max-width: 640px) {
+  /* Phones: taller tap areas for small text links. Inline padding (or padding pulled back with negative margins) leaves the text where it was. */
+  .back a { padding-block: 10px; }
 }

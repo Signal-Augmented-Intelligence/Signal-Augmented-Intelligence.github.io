@@ -2,3 +2,8 @@
 .kind { display: inline-block; min-width: 2.5em; margin-right: 12px; color: var(--ink); font-size: var(--text-sm); font-weight: 700; }
 .go { white-space: nowrap; }
 .go + .go { margin-left: 4px; }
+
+@media (max-width: 640px) {
+  /* Phones: taller tap areas for small text links. Inline padding (or padding pulled back with negative margins) leaves the text where it was. */
+  .go { padding-block: 10px; }
+}

@@ -18,3 +18,10 @@
   .tag { display: none; }
   .title { flex: 1 1 100%; white-space: normal; }
 }
+
+@media (max-width: 640px) {
+  /* Phones: taller tap areas for small text links. Inline padding (or padding pulled back with negative margins) leaves the text where it was. */
+  .link { padding: 10px 0; margin: -10px 0; }
+  .actions button { padding: 10px 4px; margin: -10px 0; }
+  .actions .close { width: 40px; height: 40px; margin: -6px; }
+}

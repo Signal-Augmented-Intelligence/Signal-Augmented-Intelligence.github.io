@@ -41,3 +41,8 @@
 .pubs > li { position: relative; border-radius: 8px; transition: background-color 180ms ease; }
 .pubs > li:hover { background: var(--surface); }
 .pubTitle a::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+
+@media (max-width: 640px) {
+  /* Phones: taller tap areas for the contact and profile links (inline padding leaves the text where it was). */
+  .contact a, .links a { padding-block: 8px; }
+}

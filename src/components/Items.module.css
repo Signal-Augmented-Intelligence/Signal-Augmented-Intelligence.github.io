@@ -45,3 +45,8 @@
 }
 /* Author links and the label link stay clickable above the whole-entry link. */
 .item .authors :global(.person-link), .item .link { position: relative; z-index: 1; }
+
+@media (max-width: 640px) {
+  /* Phones: taller tap areas for small text links. Inline padding (or padding pulled back with negative margins) leaves the text where it was. */
+  .authors :global(.person-link), .link, .meta :global(.person-link) { padding-block: 6px; }
+}

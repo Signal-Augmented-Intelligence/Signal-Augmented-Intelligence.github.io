@@ -18,3 +18,8 @@
   .areas { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .poem { gap: 28px; }
 }
+
+@media (max-width: 640px) {
+  /* Phones: taller tap area for the area title links (inline padding leaves the text where it was). */
+  .areaTitle a { padding-block: 8px; }
+}
