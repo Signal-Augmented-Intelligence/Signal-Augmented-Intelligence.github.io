@@ -1,0 +1,23 @@
+/* 입력 칸 모양은 .admin-field textarea와 같게. 문단 하나가 저장 글의 한 줄입니다. */
+.wrap { position: relative; }
+.editor {
+  min-height: 120px; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 4px;
+  background: var(--paper); color: var(--ink); font-size: var(--text-md); font-weight: 400; line-height: 1.6;
+  white-space: pre-wrap; overflow-wrap: anywhere; outline: none;
+}
+.editor:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+.editor p { margin: 0; min-height: 1.6em; }
+.editor strong { font-weight: 700; }
+
+/* 고른 글자 아래에 뜨는 작은 메뉴. 휴대폰의 OS 메뉴(보통 위쪽)와 겹치지 않게 아래에 둡니다. */
+.menu {
+  position: absolute; z-index: 5; display: flex; gap: 2px; padding: 4px;
+  border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); box-shadow: 0 4px 14px rgba(13, 24, 48, 0.12);
+  font-size: var(--text-sm); font-weight: 500; white-space: nowrap;
+}
+.menu button { padding: 6px 10px; border: 0; border-radius: 4px; background: none; color: var(--ink); font: inherit; cursor: pointer; }
+.menu button:hover, .menu button[aria-pressed='true'] { background: var(--surface); }
+.bold { font-weight: 700; }
+
+/* 화면에는 보이지 않는 폼 칸(이름으로 찾기용). */
+.wrap .proxy { position: absolute; top: 0; left: 0; width: 1px; height: 1px; min-height: 0; padding: 0; border: 0; opacity: 0; pointer-events: none; resize: none; }
