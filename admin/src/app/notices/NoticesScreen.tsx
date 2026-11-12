@@ -5,6 +5,7 @@ import { Section } from '@/components/Section';
 import { useDialog } from '@admin/components/Dialog';
 import { Field, focusField } from '@admin/components/Field';
 import { FileUpload, type FileValue } from '@admin/components/FileUpload';
+import { MarkedTextarea } from '@admin/components/MarkedTextarea';
 import list from '@admin/components/List.module.css';
 import { PublishFailure } from '@admin/components/PublishFailure';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
@@ -185,7 +186,7 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
       <Field label="행사 날짜" optional><input name="event_date" placeholder={DATE_HINT} value={draft.event_date} onChange={(e) => set({ event_date: e.target.value })} /></Field>
       <Field label="제목"><input name="title" value={draft.title} onChange={(e) => set({ title: e.target.value })} /></Field>
     </>}
-    <Field label={conference ? '비고' : '내용'} optional><textarea name="body" className={styles.body} value={draft.body} onChange={(e) => set({ body: e.target.value })} /></Field>
+    <MarkedTextarea label={conference ? '비고' : '내용'} optional name="body" className={styles.body} value={draft.body} onChange={(body) => set({ body })} />
     {system.storage.connected && <Field label={conference ? '포스터' : '사진'} optional limit={`${photoLimit} MB 이하`} group>
       <FileUpload name="photo" label={conference ? '포스터' : '사진'} purpose="notice" accept={system.limits.photo_types.join(',')}
         maxBytes={photoLimit * MB} tooLarge={`${conference ? '포스터가' : '사진이'} ${photoLimit} MB를 넘습니다.`}

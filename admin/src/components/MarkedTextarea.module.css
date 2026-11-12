@@ -1,0 +1,9 @@
+/* 칸 이름과 [굵게]: 이름은 왼쪽, 버튼은 같은 줄 오른쪽. */
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.bold { font-weight: 700; }
+
+/* 미리보기: 공개 사이트처럼 줄바꿈을 지키고 굵게·링크만 그립니다. 칸과 구분되게 옅은 바탕. */
+.preview { display: grid; gap: 6px; padding: 12px 14px; border-radius: 4px; background: var(--surface); font-weight: 400; }
+.text { color: var(--ink); font-size: var(--text-md); line-height: 1.6; white-space: pre-line; overflow-wrap: anywhere; }
+.text strong { font-weight: 700; }
+.text a { color: var(--accent); text-decoration: underline; text-underline-offset: 0.18em; }
