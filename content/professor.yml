@@ -13,7 +13,7 @@
 name: "Seon Man Kim"
 name_ko: "김선만"
 position: "Assistant Professor (조교수)"
-affiliation: "Department of AI·SW, Hanshin University (한신대학교 AI·SW학과)"
+affiliation: "School of Computing and Artificial Intelligence, Hanshin University (한신대학교 AI·SW대학)"
 field: "Speech, acoustic and audio AI (음성/음향/오디오 AI)"
 office: "18503"
 email: "smkim@hs.ac.kr"
@@ -27,7 +27,7 @@ bio: ""                      # 약력 문단 (교수님 확인 후 입력)
 education:
   - degree: "Ph.D."
     date: "2013-02-25"
-    school: "광주과학기술원(GIST) 일반대학원 정보기전공학과"
+    school: "광주과학기술원(GIST) 일반대학원 정보기전공학부"
 
 career: []                   # - period: "2018.12 – 2024.08"  /  role: "…"  (교수님 확인 후)
 
