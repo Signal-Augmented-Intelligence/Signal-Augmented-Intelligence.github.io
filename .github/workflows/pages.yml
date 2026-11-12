@@ -38,6 +38,8 @@ jobs:
         run: npm run build:admin:apps-script
       - name: Check management screen routes and forms
         run: npm run check:admin
+      - name: Check text marks (notice bold and colors)
+        run: npm run check:marks
   build:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest

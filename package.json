@@ -8,7 +8,8 @@
     "dev:admin": "next dev admin",
     "build:admin": "next build admin",
     "build:admin:apps-script": "node admin/gas/build.mjs",
-    "check:admin": "node scripts/check-admin.mjs"
+    "check:admin": "node scripts/check-admin.mjs",
+    "check:marks": "node --experimental-strip-types --no-warnings scripts/check-text-marks.mjs"
   },
   "dependencies": {
     "@fontsource-variable/instrument-sans": "5.3.0",
