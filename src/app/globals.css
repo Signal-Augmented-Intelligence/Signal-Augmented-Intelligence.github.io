@@ -8,6 +8,7 @@
   --rule: #dce2ea;
   --accent: #2452c6;
   --accent-soft: #eaf0fc;
+  --mark-red: #c62828;      /* {red|…} in notice text (내용 표기), 5.6:1 on white */
   --night: #0d1830;         /* header, page banners, Home first screen */
   --night-glass: rgba(13, 24, 48, 0.86);   /* sticky header: --night, see-through with blur */
   --paper-glass: rgba(255, 255, 255, 0.78); /* sticky white bars (tabs, 관리 화면 header) */
