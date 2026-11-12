@@ -2,8 +2,8 @@ import { execFileSync } from 'node:child_process';
 
 export function verifyPrivateBackupCheckout(folder) {
   const remote = execFileSync('git', ['remote', 'get-url', 'origin'], { cwd: folder, encoding: 'utf8' }).trim();
-  // The organization was renamed from Signal-Augmented-Intelligence to HS-SCI; clones made before the rename keep the old remote.
-  const approved = ['HS-SCI', 'Signal-Augmented-Intelligence'].flatMap((org) => [
+  // The organization was renamed Signal-Augmented-Intelligence → HS-SCI → hs-sai-lab; clones made before a rename keep the old remote.
+  const approved = ['hs-sai-lab', 'HS-SAI-Lab', 'HS-SCI', 'Signal-Augmented-Intelligence'].flatMap((org) => [
     `https://github.com/${org}/SAI_Pages_Media.git`,
     `https://github.com/${org}/SAI_Pages_Media`,
     `git@github.com:${org}/SAI_Pages_Media.git`,

@@ -1,7 +1,7 @@
 # SAI Lab website
 
 SAI Lab — Signal Augmented Intelligence, Hanshin University.
-Site: https://hs-sci.github.io/ · Organization: https://github.com/HS-SCI
+Site: https://hs-sai-lab.github.io/ · Organization: https://github.com/hs-sai-lab
 
 **Read `guideline.md` first.** It covers design rules, content formats, seminar uploads, review checklist and handover.
 

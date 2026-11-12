@@ -54,4 +54,4 @@ export const TEAM_GROUPS = [
   { id: 'undergrad', title: 'Undergraduate Researchers' },
 ] as const;
 
-export const SITE_URL = 'https://hs-sci.github.io';
+export const SITE_URL = 'https://hs-sai-lab.github.io';
