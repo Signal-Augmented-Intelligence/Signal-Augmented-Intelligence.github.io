@@ -17,9 +17,9 @@ SAI Lab (Signal Augmented Intelligence LAB), 한신대학교 · 지도교수 김
 | 연구실 | SAI Lab — Signal Augmented Intelligence |
 | 소속 | Hanshin University |
 | 지도교수 | Prof. Seon Man Kim (김선만) |
-| GitHub 조직 | [`Signal-Augmented-Intelligence`](https://github.com/Signal-Augmented-Intelligence) |
-| 사이트 저장소 | `Signal-Augmented-Intelligence/Signal-Augmented-Intelligence.github.io` |
-| 사이트 주소 | `https://signal-augmented-intelligence.github.io/` |
+| GitHub 조직 | [`HS-SCI`](https://github.com/HS-SCI) (2026-11-12에 `Signal-Augmented-Intelligence`에서 이름 변경) |
+| 사이트 저장소 | `HS-SCI/hs-sci.github.io` |
+| 사이트 주소 | `https://hs-sci.github.io/` |
 | 세미나 PDF | 사이트 저장소 `public/files/seminars/` |
 | 세미나 PDF 표지 | 사이트 저장소 `public/images/seminars/` (선택) |
 | 기술 | Next.js(React) 정적 내보내기, GitHub Pages, GitHub Actions, 관리 화면(Google Apps Script), 원본 DB(Google Drive) |
