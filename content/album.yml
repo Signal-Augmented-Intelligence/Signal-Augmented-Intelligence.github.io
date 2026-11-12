@@ -30,6 +30,17 @@
   photos:
     - file: 01.jpg
       alt: "연구실에서 화면 앞에 서서 발표하는 이나경"
+- date: 2026-06-23
+  title: "2026 대한전자공학회 하계종합학술대회, 제주"
+  folder: 2026-06-ieie-summer
+  cover: 01.jpg
+  photos:
+    - file: 01.jpg
+      alt: "학술대회 안내판 앞 단체 사진"
+    - file: 03.jpg
+      alt: "함께한 저녁 식사"
+    - file: 02.jpg
+      alt: "제주 녹차밭에서 교수님과 함께"
 - date: 2026-06-19
   title: "2026 한국데이터사이언스학회 하계 종합학술대회"
   folder: 2026-06-kdss-summer
