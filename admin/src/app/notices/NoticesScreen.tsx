@@ -5,6 +5,7 @@ import { Section } from '@/components/Section';
 import { useDialog } from '@admin/components/Dialog';
 import { Field, focusField } from '@admin/components/Field';
 import { FileUpload, type FileValue } from '@admin/components/FileUpload';
+import { MarkedTextarea } from '@admin/components/MarkedTextarea';
 import list from '@admin/components/List.module.css';
 import { PublishFailure } from '@admin/components/PublishFailure';
 import { api, ApiError, type Publish, signedOut } from '@admin/lib/api';
@@ -138,7 +139,7 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
     if (!title && !conference) problems.push(['title', '제목을 적어 주세요.']);
     else if (title.length > 200) problems.push(['title', '제목은 200자 이내로 적어 주세요.']);
     if (content.length > 20000) problems.push(['body', '내용은 20,000자 이내로 적어 주세요.']);
-    if (link && !/^(?:https?:\/\/\S+|\/\S+)$/.test(link)) problems.push(['link', '자세히 보기 주소는 https:// 주소 또는 사이트 내부 주소로 적어 주세요.']);
+    if (link && !/^(?:https?:\/\/\S+|\/\S+)$/.test(link)) problems.push(['link', '바깥 링크는 https:// 주소 또는 사이트 내부 주소로 적어 주세요.']);
     if (draft.popup && draft.kind !== 'recruitment') problems.push(['popup', '첫 화면 띠는 학부연구생 모집 공지에만 표시할 수 있습니다.']);
     if (problems.length > 0) {
       await dialog.error('저장하지 못했습니다', fieldList(problems.map(([, message]) => message)));
@@ -185,14 +186,14 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
       <Field label="행사 날짜" optional><input name="event_date" placeholder={DATE_HINT} value={draft.event_date} onChange={(e) => set({ event_date: e.target.value })} /></Field>
       <Field label="제목"><input name="title" value={draft.title} onChange={(e) => set({ title: e.target.value })} /></Field>
     </>}
-    <Field label={conference ? '비고' : '내용'} optional><textarea name="body" className={styles.body} value={draft.body} onChange={(e) => set({ body: e.target.value })} /></Field>
+    <MarkedTextarea label={conference ? '비고' : '내용'} optional name="body" className={styles.body} value={draft.body} onChange={(body) => set({ body })} />
     {system.storage.connected && <Field label={conference ? '포스터' : '사진'} optional limit={`${photoLimit} MB 이하`} group>
       <FileUpload name="photo" label={conference ? '포스터' : '사진'} purpose="notice" accept={system.limits.photo_types.join(',')}
         maxBytes={photoLimit * MB} tooLarge={`${conference ? '포스터가' : '사진이'} ${photoLimit} MB를 넘습니다.`}
         value={draft.photo} onChange={(photo) => set({ photo })}
         onPending={(promise) => { pending.current = promise; }} />
     </Field>}
-    {!conference && <Field label="자세히 보기 주소" optional><input name="link" value={draft.link} onChange={(e) => set({ link: e.target.value })} /></Field>}
+    {!conference && <Field label="바깥 링크" optional><input name="link" value={draft.link} onChange={(e) => set({ link: e.target.value })} /></Field>}
     {draft.kind === 'recruitment' && <Field label="첫 화면 띠" optional>
       <label><input name="popup" type="checkbox" checked={draft.popup} onChange={(e) => set({ popup: e.target.checked })} /> 표시</label>
     </Field>}

@@ -112,6 +112,43 @@ export function ResearchScreen() {
 
   return (
     <>
+      <Section title="연구 분야" aside={!locked && (
+        <button type="button" className="admin-text-button" onClick={() => setOpen({ kind: 'area', id: 'new' })}>분야 추가</button>
+      )}>
+        {open?.kind === 'area' && open.id === 'new' && (
+          <div className={list.open}>
+            <h3 className="admin-form-title">새 연구 분야</h3>
+            <AreaForm system={system} onSaved={areaSaved('new')} onCancel={() => setOpen(null)} onConflict={load} />
+          </div>
+        )}
+        {areas.length === 0 && !(open?.kind === 'area' && open.id === 'new') ? (
+          <p className="admin-muted">아직 등록된 연구 분야가 없습니다.</p>
+        ) : (
+          <ul className={list.list}>
+            {areas.map((a, i) => open?.kind === 'area' && open.id === a.id ? (
+              <li key={a.id} className={list.open}>
+                <AreaForm area={a} system={system} onSaved={areaSaved(a.id)} onCancel={() => setOpen(null)} onConflict={load} />
+              </li>
+            ) : (
+              <li key={a.id} className={list.row}>
+                <div className={list.main}>
+                  <p className={list.title}>{a.title}</p>
+                  <p className={list.meta}><span>논문 <span className="num">{a.publication_count}</span>편</span></p>
+                  <PublishFailure publication={a.publication} pending={publishing(a.id)} />
+                </div>
+                <span className={list.status}>{status(a)}</span>
+                <span className={list.actions}>
+                  <button type="button" className="admin-text-button" disabled={locked || busy !== null || i === 0} onClick={() => moveArea(i, -1)}>위로</button>
+                  <button type="button" className="admin-text-button" disabled={locked || busy !== null || i === areas.length - 1} onClick={() => moveArea(i, 1)}>아래로</button>
+                  <button type="button" className="admin-text-button" disabled={locked || busy === a.id} onClick={() => setOpen({ kind: 'area', id: a.id })}>수정</button>
+                  <button type="button" className="admin-text-button" disabled={locked || busy === a.id} onClick={() => void hideArea(a, !a.hidden)}>{a.hidden ? '다시 보이기' : '숨기기'}</button>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Section>
+
       <Section title="논문" aside={!locked && (
         <button type="button" className="admin-text-button" onClick={() => setOpen({ kind: 'publication', id: 'new' })}>논문 추가</button>
       )}>
@@ -147,43 +184,6 @@ export function ResearchScreen() {
                   <button type="button" className="admin-text-button" disabled={locked || busy === p.id} onClick={() => void hidePublication(p, !p.hidden)}>{p.hidden ? '다시 보이기' : '숨기기'}</button>
                   {canDelete(p, publishing(p.id)) && <button type="button" className="admin-text-button" disabled={deleting !== null || locked || busy === p.id}
                     onClick={() => void remove('publications', p, '논문을 삭제할까요?')}>{deleting === p.id ? '삭제 중' : '삭제'}</button>}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Section>
-
-      <Section title="연구 분야" aside={!locked && (
-        <button type="button" className="admin-text-button" onClick={() => setOpen({ kind: 'area', id: 'new' })}>분야 추가</button>
-      )}>
-        {open?.kind === 'area' && open.id === 'new' && (
-          <div className={list.open}>
-            <h3 className="admin-form-title">새 연구 분야</h3>
-            <AreaForm system={system} onSaved={areaSaved('new')} onCancel={() => setOpen(null)} onConflict={load} />
-          </div>
-        )}
-        {areas.length === 0 && !(open?.kind === 'area' && open.id === 'new') ? (
-          <p className="admin-muted">아직 등록된 연구 분야가 없습니다.</p>
-        ) : (
-          <ul className={list.list}>
-            {areas.map((a, i) => open?.kind === 'area' && open.id === a.id ? (
-              <li key={a.id} className={list.open}>
-                <AreaForm area={a} system={system} onSaved={areaSaved(a.id)} onCancel={() => setOpen(null)} onConflict={load} />
-              </li>
-            ) : (
-              <li key={a.id} className={list.row}>
-                <div className={list.main}>
-                  <p className={list.title}>{a.title}</p>
-                  <p className={list.meta}><span>논문 <span className="num">{a.publication_count}</span>편</span></p>
-                  <PublishFailure publication={a.publication} pending={publishing(a.id)} />
-                </div>
-                <span className={list.status}>{status(a)}</span>
-                <span className={list.actions}>
-                  <button type="button" className="admin-text-button" disabled={locked || busy !== null || i === 0} onClick={() => moveArea(i, -1)}>위로</button>
-                  <button type="button" className="admin-text-button" disabled={locked || busy !== null || i === areas.length - 1} onClick={() => moveArea(i, 1)}>아래로</button>
-                  <button type="button" className="admin-text-button" disabled={locked || busy === a.id} onClick={() => setOpen({ kind: 'area', id: a.id })}>수정</button>
-                  <button type="button" className="admin-text-button" disabled={locked || busy === a.id} onClick={() => void hideArea(a, !a.hidden)}>{a.hidden ? '다시 보이기' : '숨기기'}</button>
                 </span>
               </li>
             ))}
