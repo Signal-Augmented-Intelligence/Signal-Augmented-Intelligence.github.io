@@ -120,8 +120,8 @@ Home 첫 화면과 뉴스 하이라이트 밖의 이미지 슬라이드, 카드 
 | `/members/professor/` | Members ▸ Professor (`/members/`도 여기로) | `members/professor/` + `content/professor.yml` |
 | `/members/our-team/` | Members ▸ Our Team | `members/our-team/` + `content/people.yml` |
 | `/members/alumni/` | Members ▸ Alumni | `members/alumni/` |
-| `/research/` | Research ▸ Areas (상위 메뉴 Research가 여는 곳) | `research/page.tsx` + `content/research/*.md` |
-| `/research/<주제>/` | 주제 상세 | `research/[slug]/` |
+| `/research/` | Research ▸ Areas (**지금은 공개하지 않음** → Publications로 이동) | `research/page.tsx` + `content/research/*.md` |
+| `/research/<주제>/` | 주제 상세 (**지금은 공개하지 않음** → Publications로 이동) | `research/[slug]/` |
 | `/research/publications/` | Research ▸ Publications (`/publications/`도 여기로. 논문별 페이지는 없음) | `research/publications/` |
 | `/publications/<논문>/` | 논문 상세 | `publications/[slug]/` + `content/publications/*.md` |
 | `/seminars/` | Seminars | `seminars/` + `content/seminars.yml` |
@@ -133,7 +133,7 @@ Home 첫 화면과 뉴스 하이라이트 밖의 이미지 슬라이드, 카드 
 예전 주소 `/people/`, `/people/seon-man-kim/`은 새 주소로 자동 이동합니다.
 
 ### Home
-사진 캐러셀 첫 화면(랩명 타이포그래피, 시 한 연, 전문 읽기 버튼) → **뉴스** (`content/news.yml` 최신 5건, 뉴스 페이지와 같은 목록) → Research Areas(분야별 제목과 한 줄 설명) → Recent Publications 3편 → 시 전문(`#poem`). 소식이 하나도 없으면 그 섹션은 나오지 않습니다. 세미나의 `highlight` 값은 더 이상 화면에 쓰지 않으며, 관리 화면의 "첫 화면에 보이기" 버튼도 없앴습니다.
+사진 캐러셀 첫 화면(랩명 타이포그래피, 시 한 연, 전문 읽기 버튼) → **뉴스** (`content/news.yml` 최신 5건, 뉴스 페이지와 같은 목록) → Research Areas(지금은 숨김) → Recent Publications 3편 → 시 전문(`#poem`). 소식이 하나도 없으면 그 섹션은 나오지 않습니다. 세미나의 `highlight` 값은 더 이상 화면에 쓰지 않으며, 관리 화면의 "첫 화면에 보이기" 버튼도 없앴습니다.
 
 ### Members ▸ Professor
 사진(왼쪽, 260px) + 이름 · 직위 · 소속 · 분야 · 연락처 · 프로필 링크 → Biography(입력 시) → Education & Career → Research Areas → Courses Taught(입력 시) → Publications → Intellectual Property. 비어 있는 항목은 표시되지 않습니다. 학생 수상 소식은 News에 표시합니다.
@@ -150,7 +150,7 @@ Home 첫 화면과 뉴스 하이라이트 밖의 이미지 슬라이드, 카드 
 사진 없이 한 줄: 이름, 국문 이름, 현재 소속 (진로는 본인 동의 시에만). 졸업생이 한 명도 없으면 Alumni 탭과 사이트맵 항목이 빠지고 `/members/alumni/`는 Our Team으로 넘어갑니다. `alumni` 멤버가 생기면 저절로 다시 보입니다.
 
 ### Research ▸ Areas / 주제 상세
-2026-11-11부터 공개합니다(`src/lib/site.ts`의 `SHOW_RESEARCH_AREAS`가 `true`). 값을 `false`로 바꾸면 Areas 탭·Home의 Research Areas 섹션·푸터 링크·사이트맵 항목이 빠지고, 상위 메뉴 Research와 `/research/`, `/research/<주제>/`가 Publications로 넘어갑니다. 내용은 관리 화면의 연구 분야에서 고칩니다.
+**지금은 공개 사이트에 드러내지 않습니다.** 2026-11-11에 공개했다가 2026-11-12에 다시 숨겼습니다(`src/lib/site.ts`의 `SHOW_RESEARCH_AREAS`가 `false`). 그동안 상위 메뉴 Research는 Publications로 바로 가고, Areas 탭·Home의 Research Areas 섹션·푸터 링크·사이트맵 항목이 빠지며, `/research/`와 `/research/<주제>/`는 Publications로 넘어갑니다. `content/research/`의 데이터, 관리 화면의 연구 분야, 논문의 연구 분야 연결은 그대로 둡니다. 다시 공개할 때는 이 값만 `true`로 바꾸면 아래 모양으로 나옵니다.
 
 - 목록: 3열 카드(960px 이하 1열). 위쪽 대표 그림, 제목, 맨 아래 관련 논문 수(보조색 13px, 예: `8 publications`, 사이트에 있는 논문만 셈). 대표 그림이 없으면 그림 칸 대신 제목 아래 한 줄 설명(summary, 보조색 14px, 3줄까지)을 둡니다. 카드에서 상세 페이지로 이동합니다.
 - Research 제목과 Areas 탭 아래에서는 `Research Areas` 섹션 제목을 반복해 보이지 않습니다. 접근성용 제목은 유지합니다.

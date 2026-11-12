@@ -3,10 +3,10 @@
 export type NavItem = { title: string; href: string; match?: string[]; requires?: 'contact' | 'album' | 'alumni' };
 
 /**
- * Research areas (content/research/, edited in the 관리 화면) are public. Set to false to hide them again:
+ * Research areas stay in content/research/ and the 관리 화면, but the public site hides them for now (shown 2026-11-11, hidden again 2026-11-12):
  * no Areas tab, Research opens Publications, /research/ and /research/<area>/ forward to Publications, Home has no areas section.
  */
-export const SHOW_RESEARCH_AREAS = true;
+export const SHOW_RESEARCH_AREAS = false;
 
 export const MAIN_NAV: NavItem[] = [
   { title: 'Members', href: '/members/professor/', match: ['/members/'] },
