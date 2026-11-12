@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Fragment, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { MarkedText } from '@/components/MarkedText';
 import { PageHeader } from '@/components/PageHeader';
 import { Redirect, redirectMetadata } from '@/components/Redirect';
 import { getNotices, type Notice } from '@/lib/content';
@@ -25,12 +26,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return n ? { title: noticeTitle(n), description: `${NOTICE_KINDS[n.kind]} notice from SAI Lab.` } : redirectMetadata;
 }
 
-/** Remarks keep their line breaks; web addresses in them become links. */
+/** Remarks keep their line breaks; **bold** and web addresses are drawn by MarkedText (guideline "내용 표기"). */
 function Remarks({ text }: { text: string }) {
-  const parts = text.split(/(https?:\/\/[^\s<>"')]+)/g);
-  return <p className={styles.remarks}>{parts.map((p, i) => /^https?:\/\//.test(p)
-    ? <a key={i} href={p} target="_blank" rel="noopener noreferrer">{p}</a>
-    : <Fragment key={i}>{p}</Fragment>)}</p>;
+  return <p className={styles.remarks}><MarkedText text={text} /></p>;
 }
 
 function facts(n: Notice): [string, ReactNode][] {
