@@ -138,7 +138,7 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
     if (!title && !conference) problems.push(['title', '제목을 적어 주세요.']);
     else if (title.length > 200) problems.push(['title', '제목은 200자 이내로 적어 주세요.']);
     if (content.length > 20000) problems.push(['body', '내용은 20,000자 이내로 적어 주세요.']);
-    if (link && !/^(?:https?:\/\/\S+|\/\S+)$/.test(link)) problems.push(['link', '자세히 보기 주소는 https:// 주소 또는 사이트 내부 주소로 적어 주세요.']);
+    if (link && !/^(?:https?:\/\/\S+|\/\S+)$/.test(link)) problems.push(['link', '바깥 링크는 https:// 주소 또는 사이트 내부 주소로 적어 주세요.']);
     if (draft.popup && draft.kind !== 'recruitment') problems.push(['popup', '첫 화면 띠는 학부연구생 모집 공지에만 표시할 수 있습니다.']);
     if (problems.length > 0) {
       await dialog.error('저장하지 못했습니다', fieldList(problems.map(([, message]) => message)));
@@ -192,7 +192,7 @@ function NoticeForm({ item, system, onSaved, onCancel, onConflict }: {
         value={draft.photo} onChange={(photo) => set({ photo })}
         onPending={(promise) => { pending.current = promise; }} />
     </Field>}
-    {!conference && <Field label="자세히 보기 주소" optional><input name="link" value={draft.link} onChange={(e) => set({ link: e.target.value })} /></Field>}
+    {!conference && <Field label="바깥 링크" optional><input name="link" value={draft.link} onChange={(e) => set({ link: e.target.value })} /></Field>}
     {draft.kind === 'recruitment' && <Field label="첫 화면 띠" optional>
       <label><input name="popup" type="checkbox" checked={draft.popup} onChange={(e) => set({ popup: e.target.checked })} /> 표시</label>
     </Field>}
