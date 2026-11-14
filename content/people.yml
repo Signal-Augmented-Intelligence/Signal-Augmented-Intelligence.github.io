@@ -69,10 +69,11 @@
   role: "Undergraduate Researcher"
   since:
   until:
-  bio: "모든 소리를 깨끗이 분리해야만, 그 안에 무엇이 있는지 알 수 있는가?"
-  bio_en: "Must every sound be cleanly separated before we can know what lies within it?"
+  bio: "소리가 어디서 오는지 알면, 섞인 소리를 더 잘 나눌 수 있는가?"
+  bio_en: "Does knowing where a sound comes from help us separate it from the mixture?"
   photo: "2026-11-02-dd2794ae.jpg"
   url: ""
+  email: "composedly13@hs.ac.kr"
   after: ""
 - id: lee-shin-hee
   name: "Shin Hee Lee"
