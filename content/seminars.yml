@@ -23,3 +23,9 @@
   summary: "푸리에 변환 유도를 통한 스펙트로그램 요소 파악"
   file: "2026-10-29-6f65abdc.pdf"
   cover: "2026-10-29-b0e3a23b.jpg"
+- date: 2026-10-06
+  presenter: na-kyung-lee
+  title: "러시아 군 통신의 상황정보 분석을 위한 데이터베이스 구축 연구"
+  summary: "NSRIC 러시아 군 무전 기록의 수집·전처리·번역을 통한 다국어 발화 데이터베이스 구축"
+  file: "2026-11-14-e4285106.pdf"
+  cover: "2026-11-14-229ea8f8.jpg"
