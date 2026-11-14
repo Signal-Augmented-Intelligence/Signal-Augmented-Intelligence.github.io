@@ -8,6 +8,7 @@ pub_date: "2025"
 status: ""
 award: ""
 links: []
+pdf: "2026-11-14-9d83c81b.pdf"
 permalink: "/publications/android-low-latency-audio-platform/"
 excerpt: "An early look at whether Android can run a hearing-assistance speech enhancement model in real time."
 ---
