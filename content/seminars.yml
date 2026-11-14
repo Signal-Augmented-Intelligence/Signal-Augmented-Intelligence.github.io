@@ -29,3 +29,9 @@
   summary: "NSRIC 러시아 군 무전 기록의 수집·전처리·번역을 통한 다국어 발화 데이터베이스 구축"
   file: "2026-11-14-e4285106.pdf"
   cover: "2026-11-14-229ea8f8.jpg"
+- date: 2026-07-22
+  presenter: tae-yeon-kim
+  title: "2026 DCASE 공간음향 분할 베이스라인 재현과 학습"
+  summary: "DCASE 2026 Task 4 베이스라인의 4채널 음원 분리·태깅 구조 재현과 학습 실험"
+  file: "2026-11-14-e3bf3b8e.pdf"
+  cover: "2026-11-14-24883468.jpg"
